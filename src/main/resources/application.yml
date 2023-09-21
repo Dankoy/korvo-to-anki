@@ -1,0 +1,14 @@
+spring:
+  application:
+    name:  korvo-to-anki
+
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:vocabulary_builder.sqlite3?cache=shared
+
+logging:
+  level:
+    ru.dankoy.*: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    file: "%d %p %c{1.} [%t] %m%n"
