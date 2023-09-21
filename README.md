@@ -7,6 +7,13 @@ by [vocabulary_builder plugin](https://github.com/koreader/koreader/wiki/Vocabul
 of [KOReader](https://github.com/koreader/koreader) into text file that can be easily
 imported to anki
 
+### Stack
+
+* Java 17
+* Spring boot 3.12
+* Spring shell
+* Spring boot jdbc
+
 ### Usage
 
 `java -jar -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
