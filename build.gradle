@@ -8,7 +8,7 @@ group = 'ru.dankoy'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '20'
+    sourceCompatibility = '17'
 }
 
 configurations {
@@ -26,10 +26,13 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter'
+
+    implementation 'org.xerial:sqlite-jdbc'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
