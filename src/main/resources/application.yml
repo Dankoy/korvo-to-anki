@@ -12,3 +12,29 @@ logging:
   pattern:
     console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
     file: "%d %p %c{1.} [%t] %m%n"
+
+korvo-to-anki:
+  google-translator-url: "https://translate.googleapis.com/translate_a/single"
+  trans-params:
+    client: "gtx"                               # (using "t" raises 403 Forbidden)
+    ie: "UTF-8"                                 # input encoding
+    oe: "UTF-8"                                 # output encoding
+    sl: "auto"                                  # source language (we need to specify "auto" to detect language)
+    tl: "ru"                                    # target language
+    hl: ${korvo-to-anki.trans-params.sl}        # ?
+    otf: 1                                      # ?
+    ssel: 0                                     # ?
+    tsel: 0                                     # ?
+    dt:                                         # what we want in result
+      - "t"                                     # translation of source text
+      - "at"                                    # alternate translations
+      - "md"                                    # definitions of source text
+#                    # Next options only give additional results when text is a single word
+#      - "bd"        # dictionary (articles, reverse translations, etc)
+#      - "ex"        # examples
+#      - "ld"        # ?
+#      - "qca"       # ?
+#      - "rw"        # "see also" list
+#      - "rm"        # transcription / transliteration of source and translated texts
+#      - "ss"        # synonyms of source text, if it's one word
+debug: false
