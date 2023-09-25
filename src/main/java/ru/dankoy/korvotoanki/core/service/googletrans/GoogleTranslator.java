@@ -1,6 +1,7 @@
 package ru.dankoy.korvotoanki.core.service.googletrans;
 
 import java.util.List;
+import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 
 /*
 * Used info from:
@@ -11,6 +12,6 @@ import java.util.List;
 
 public interface GoogleTranslator {
 
-  String translate(String text, String targetLanguage, String sourceLanguage,
+  GoogleTranslation translate(String text, String targetLanguage, String sourceLanguage,
       List<String> dtOptions);
 }
