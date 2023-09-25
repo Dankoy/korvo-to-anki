@@ -16,7 +16,7 @@ public class GoogleTranslateCommand {
   private final ObjectMapperService objectMapperService;
 
 
-  // gt --text hello --options t,at,md
+  // gt --text hello --options t,at,md,bd
   @Command(command = "google-translate",
       alias = "gt",
       description = "Translate text using google translate")
