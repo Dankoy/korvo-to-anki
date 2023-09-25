@@ -11,7 +11,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.GoogleTranslatorProperties;
+import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException;
+import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParser;
 
 
 @Slf4j
@@ -23,8 +25,10 @@ public class GoogleTranslatorOkHttp implements GoogleTranslator {
 
   private final GoogleTranslatorProperties googleTranslatorProperties;
 
+  private final GoogleTranslatorParser googleTranslatorParser;
+
   @Override
-  public String translate(String text,
+  public GoogleTranslation translate(String text,
       String targetLanguage,
       String sourceLanguage,
       List<String> dtOptions
@@ -68,7 +72,10 @@ public class GoogleTranslatorOkHttp implements GoogleTranslator {
     try (var response = call.execute()) {
 
       checkStatus(response);
-      return response.body() != null ? response.body().string() : "";
+      var body = response.body() != null ? response.body().string() : "";
+
+      return googleTranslatorParser.parse(body);
+
 
     } catch (Exception e) {
       throw new GoogleTranslatorException(e);
