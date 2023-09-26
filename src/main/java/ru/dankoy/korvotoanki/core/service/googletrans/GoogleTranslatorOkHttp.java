@@ -9,8 +9,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.dankoy.korvotoanki.config.GoogleTranslatorProperties;
+import ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException;
 import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParser;
@@ -27,6 +28,11 @@ public class GoogleTranslatorOkHttp implements GoogleTranslator {
 
   private final GoogleTranslatorParser googleTranslatorParser;
 
+
+  @Cacheable(cacheManager = "cacheManager",
+      value = "googleTranslations",
+      key = "#text + #targetLanguage + #sourceLanguage + T(java.lang.Integer).toString(#dtOptions.hashCode())"
+  )
   @Override
   public GoogleTranslation translate(String text,
       String targetLanguage,
