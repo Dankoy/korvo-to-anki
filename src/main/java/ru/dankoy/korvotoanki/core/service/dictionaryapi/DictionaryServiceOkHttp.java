@@ -10,6 +10,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
@@ -27,6 +28,10 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
   private final ObjectMapper mapper;
 
+  @Cacheable(cacheManager = "cacheManager",
+      value = "dictionaryApi",
+      key = "#word"
+  )
   @Override
   public List<Word> define(String word) {
 
