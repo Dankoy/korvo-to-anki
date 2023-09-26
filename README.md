@@ -13,6 +13,13 @@ imported to anki
 * Spring boot 3.12
 * Spring shell
 * Spring boot jdbc
+* Caffeine cache
+* OkHttp
+
+### Integrations
+Added integration with external services for word translation and definition lookup:
+1. Google translate. [See also](https://koreader.rocks/doc/modules/ui.translator.html)
+2. [dictionaryapi.dev](https://dictionaryapi.dev/)
 
 ### Usage
 
