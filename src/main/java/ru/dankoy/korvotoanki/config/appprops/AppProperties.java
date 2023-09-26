@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.config;
+package ru.dankoy.korvotoanki.config.appprops;
 
 
 import lombok.Getter;
