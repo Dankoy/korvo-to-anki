@@ -26,30 +26,33 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
   public GoogleTranslation parse(String data) {
 
     String transcriptionString = null;
+    List<String> translationsStrings = new ArrayList<>();
+    List<Definition> defs = new ArrayList<>();
 
     JsonNode jsonNodeRoot = toJsonNode(data);
 
     // translation and transcription.
     ArrayNode translationAndTranscriptionNode = (ArrayNode) jsonNodeRoot.get(0);
-    ArrayNode multipleTranslations = (ArrayNode) jsonNodeRoot.get(5);
-
+    JsonNode multipleTranslations = jsonNodeRoot.get(5);
     ArrayNode definitions = (ArrayNode) jsonNodeRoot.get(12);
 
     // obtain transcription
-    JsonNode transcription = translationAndTranscriptionNode.get(1).get(3);
+    JsonNode transcription = translationAndTranscriptionNode.get(1);
     if (Objects.nonNull(transcription)) {
-      transcriptionString = transcription.asText();
+      JsonNode transcriptionNode = transcription.get(3);
+      transcriptionString = Objects.nonNull(transcriptionNode) ? transcriptionNode.asText() : null;
     }
 
     // obtain list of translations
-    ArrayNode mts = (ArrayNode) multipleTranslations.get(0).get(2);
-    List<String> translations = IntStream.range(0, mts.size())
-        .mapToObj(mts::get)
-        .map(c -> (ArrayNode) c)
-        .map(n -> n.get(0).asText())
-        .toList();
+    if (Objects.nonNull(multipleTranslations) && !multipleTranslations.isNull()) {
+      ArrayNode mts = (ArrayNode) multipleTranslations.get(0).get(2);
+      translationsStrings = IntStream.range(0, mts.size())
+          .mapToObj(mts::get)
+          .map(c -> (ArrayNode) c)
+          .map(n -> n.get(0).asText())
+          .toList();
+    }
 
-    List<Definition> defs = new ArrayList<>();
     // obtain definitions
     if (Objects.nonNull(definitions)) {
       defs = IntStream.range(0, definitions.size())
@@ -63,7 +66,7 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
     }
 
     var googleTranslation = new GoogleTranslation(transcriptionString);
-    googleTranslation.getTranslations().addAll(translations);
+    googleTranslation.getTranslations().addAll(translationsStrings);
     googleTranslation.getDefinitions().addAll(defs);
 
     return googleTranslation;
