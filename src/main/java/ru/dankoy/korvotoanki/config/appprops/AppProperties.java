@@ -11,9 +11,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "korvo-to-anki")
-public class AppProperties implements GoogleTranslatorProperties, DebugProperties {
+public class AppProperties implements GoogleTranslatorProperties, DebugProperties, DictionaryApiProperties {
 
   private final String googleTranslatorUrl;
+
+  private final String dictionaryApiUrl;
 
   @Autowired
   private final GoogleParamsProperties googleParamsProperties;

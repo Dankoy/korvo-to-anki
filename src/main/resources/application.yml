@@ -14,6 +14,7 @@ logging:
     file: "%d %p %c{1.} [%t] %m%n"
 
 korvo-to-anki:
+  dictionary-api-url: "https://api.dictionaryapi.dev/api/v2/entries/en/"
   google-translator-url: "https://translate.googleapis.com/translate_a/single"
   trans-params:
     client: "gtx"                               # (using "t" raises 403 Forbidden)
