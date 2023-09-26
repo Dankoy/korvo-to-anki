@@ -1,0 +1,25 @@
+package ru.dankoy.korvotoanki.core.domain.dictionaryapi;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@Data
+public class Word {
+
+  @JsonProperty("word")
+  private String data;
+
+  // could be null, but one of the Phonetics object could contain text with transcription
+  private String phonetic;
+
+  private List<Phonetics> phonetics;
+
+  private List<Meaning> meanings;
+
+}
