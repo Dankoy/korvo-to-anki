@@ -13,6 +13,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.dankoy.korvotoanki.config.appprops.DebugProperties;
 
 @RequiredArgsConstructor
 @Configuration
