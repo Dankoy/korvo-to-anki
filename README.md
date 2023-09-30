@@ -100,7 +100,7 @@ If you have too many words (450 and more) then app will hit the rate limiter of 
 service [dictionaryapi.dev](https://dictionaryapi.dev/). The current limit is 450 requests in 5
 minutes. When reached app fall asleep for 5 minutes and then retry to get word definition of last
 word and run further as normal until requests limit is reached again.    
-With all limitations export of 3080 words with sleep timeout was done in _**20 minutes**_
+With all limitations export of 3080 words with sleep timeout was done in about _**30 minutes**_
 
 ### Example
 
