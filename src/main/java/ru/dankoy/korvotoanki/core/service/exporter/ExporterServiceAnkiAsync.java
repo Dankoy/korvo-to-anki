@@ -25,7 +25,7 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 @RequiredArgsConstructor
 public class ExporterServiceAnkiAsync implements ExporterService {
 
-  private static final int STEP_SIZE = 10;
+  private static final int STEP_SIZE = 25;
   private static final AtomicInteger atomicInteger = new AtomicInteger(0);
   private static final CountDownLatch latch = new CountDownLatch(2);
 
@@ -74,9 +74,9 @@ public class ExporterServiceAnkiAsync implements ExporterService {
     for (Vocabulary v : vocabularies) {
       var i = atomicInteger.getAndIncrement();
       if (i != 0 && i % STEP_SIZE == 0) {
-        log.info("atomic - {}", i);
-        log.info("Sleep {}", Thread.currentThread().getName());
-        sleep(4000);
+        log.info("processed - {}", i);
+        log.debug("Sleep {}", Thread.currentThread().getName());
+        sleep(6000);
       }
       var ankiData = ankiConverterService.convert(v, sourceLanguage, targetLanguage, options);
       log.info("Thread {} obtained new anki for word {}", Thread.currentThread().getName(),
