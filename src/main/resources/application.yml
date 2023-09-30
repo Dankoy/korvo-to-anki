@@ -7,7 +7,7 @@ spring:
 
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:vocabulary_builder.sqlite3?cache=shared
+    url: jdbc:sqlite:vocabulary_builder.sqlite3
 
 logging:
   level:
