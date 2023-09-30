@@ -1,11 +1,9 @@
 package ru.dankoy.korvotoanki.core.service.io;
 
 import java.io.File;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import ru.dankoy.korvotoanki.core.exceptions.IoException;
 
@@ -15,13 +13,15 @@ public class IOServiceFile implements IOService {
   private final Path fileOutput;
   private final Path fileInput;
 
-  public IOServiceFile(String fileName, String fileInput) {
+  public IOServiceFile(String fileOut, String fileInput) {
 
-    URL url = getClass().getProtectionDomain().getCodeSource().getLocation();
-    String path = url.getPath() + File.separator + fileName;
+    String pathToDir = System.getProperty("user.dir");
 
-    this.fileOutput = Paths.get(path);
-    this.fileInput = Paths.get(fileInput);
+    String pathOutput = pathToDir + File.separator + fileOut;
+    String pathInput = pathToDir + File.separator + fileInput;
+
+    this.fileOutput = Paths.get(pathOutput);
+    this.fileInput = Paths.get(pathInput);
   }
 
   @Override
