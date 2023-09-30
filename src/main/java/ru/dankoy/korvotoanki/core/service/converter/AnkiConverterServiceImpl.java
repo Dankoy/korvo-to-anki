@@ -34,7 +34,12 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
     } catch (TooManyRequestsException e) {
       log.warn("Hit rate limiter - {}. Going to sleep for 5 minutes and retry", e.getMessage());
       sleep(310000);
-      daResult = dictionaryService.define(vocabulary.word());
+      //todo: make advanced retry when too many requests
+      try {
+        daResult = dictionaryService.define(vocabulary.word());
+      } catch (DictionaryApiException e2) {
+        log.warn(String.format("Couldn't get definition from dictionaryapi.dev - %s", e2));
+      }
     }
     catch (DictionaryApiException e) {
       log.warn(String.format("Couldn't get definition from dictionaryapi.dev - %s", e));
