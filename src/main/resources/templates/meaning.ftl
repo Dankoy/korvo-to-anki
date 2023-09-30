@@ -1,3 +1,8 @@
+<#if ankiData.transcription?? && ankiData.transcription?has_content>
+  <p>
+    transcription: ${ankiData.transcription}
+  </p>
+</#if>
 <ul>
     <#if ankiData.meanings?? && ankiData.meanings?has_content>
         <#list ankiData.meanings as meaning>
