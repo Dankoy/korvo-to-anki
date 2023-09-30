@@ -24,7 +24,7 @@ public class GoogleTranslateCommand {
       @Option(required = true, description = "text to translate") String text,
       @Option(required = false, defaultValue = "auto", description = "source language") String sourceLanguage,
       @Option(required = false, defaultValue = "ru", description = "target language") String targetLanguage,
-      @Option(required = false, defaultValue = "t,at,md", description = "options") String[] options
+      @Option(required = false, defaultValue = "t,at,md,rm", description = "options") String[] options
   ) {
 
     List<String> optionsList = Arrays.asList(options);
