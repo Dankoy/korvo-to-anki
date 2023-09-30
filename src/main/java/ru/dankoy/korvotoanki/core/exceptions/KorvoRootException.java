@@ -9,4 +9,8 @@ public class KorvoRootException extends RuntimeException {
   public KorvoRootException(Exception e) {
     super(e);
   }
+
+  public KorvoRootException(String message) {
+    super(message);
+  }
 }

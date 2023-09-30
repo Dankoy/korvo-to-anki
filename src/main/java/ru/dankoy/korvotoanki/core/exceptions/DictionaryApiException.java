@@ -10,4 +10,7 @@ public class DictionaryApiException extends KorvoRootException {
     super(message, e);
   }
 
+  public DictionaryApiException(String message) {
+    super(message);
+  }
 }

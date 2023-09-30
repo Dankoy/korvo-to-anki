@@ -1,10 +1,13 @@
 spring:
   application:
-    name:  korvo-to-anki
+    name: korvo-to-anki
+  freemarker:
+    enabled: true
+    template-loader-path: /templates/
 
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:vocabulary_builder.sqlite3?cache=shared
+    url: jdbc:sqlite:vocabulary_builder.sqlite3
 
 logging:
   level:
@@ -14,6 +17,7 @@ logging:
     file: "%d %p %c{1.} [%t] %m%n"
 
 korvo-to-anki:
+  async: true
   dictionary-api-url: "https://api.dictionaryapi.dev/api/v2/entries/en/"
   google-translator-url: "https://translate.googleapis.com/translate_a/single"
   trans-params:
@@ -30,12 +34,12 @@ korvo-to-anki:
       - "t"                                     # translation of source text
       - "at"                                    # alternate translations
       - "md"                                    # definitions of source text
+      - "rm"                                    # transcription / transliteration of source and translated texts
 #                    # Next options only give additional results when text is a single word
 #      - "bd"        # dictionary (articles, reverse translations, etc)
 #      - "ex"        # examples
 #      - "ld"        # ?
 #      - "qca"       # ?
 #      - "rw"        # "see also" list
-#      - "rm"        # transcription / transliteration of source and translated texts
 #      - "ss"        # synonyms of source text, if it's one word
 debug: false

@@ -2,6 +2,7 @@ package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
+import ru.dankoy.korvotoanki.core.exceptions.TooManyRequestsException;
 
 
 @Slf4j
@@ -51,23 +53,36 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
     try (var response = call.execute()) {
 
-      checkStatus(response);
-      var body = response.body() != null ? response.body().string() : "{}";
-
+      var body = receiveBody(response);
+      checkStatus(response, body);
       return mapper.readValue(body, new TypeReference<List<Word>>() {
       });
 
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new DictionaryApiException(e);
     }
   }
 
-  private void checkStatus(Response response) {
+  private String receiveBody(Response response) {
+
+    try {
+      return response.body() != null ? response.body().string() : "{}";
+    } catch (Exception e) {
+      log.debug("Unable to get response body");
+    }
+
+    return "{}";
+  }
+
+  private void checkStatus(Response response, String body) {
 
     if (!response.isSuccessful()) {
-      log.error("Something went wrong");
-      throw new DictionaryApiException("Response is not success",
-          new RuntimeException(String.valueOf(response.body())));
+
+      if (response.code() == 429) {
+        throw new TooManyRequestsException("Too many requests to dictionaryapi");
+      }
+
+      throw new DictionaryApiException(body);
     }
 
   }
