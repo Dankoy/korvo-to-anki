@@ -130,3 +130,7 @@ With all limitations export of 3080 words with sleep timeout was done in about _
 
 ### Example
 
+![img.png](screenshots/img.png)    
+![img.png](screenshots/img2.png)   
+![img.png](screenshots/img3.png)    
+![img.png](screenshots/img4.png)
