@@ -35,11 +35,37 @@ To change modes run jar with variable: **-Dkorvo-to-anki=sync**
 
 #### On linux
 
-`java -jar -Dkorvo-to-anki=async -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
+`java -jar -Dkorvo-to-anki.async=true -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
 
 #### On windows
 
 `java "-Dspring.datasource.url=jdbc:sqlite:\path\to\vocabulary_builder.sqlite3" -jar .\korvo-to-anki.jar`
+
+#### Command to export
+
+```text
+SYNOPSIS
+       anki-exporter --sourceLanguage String --targetLanguage String --options String[]
+
+OPTIONS
+       --sourceLanguage String
+       source language
+       [Optional, default = auto]
+
+       --targetLanguage String
+       target language
+       [Optional, default = ru]
+
+       --options String[]
+       options
+       [Optional, default = t,at,md,rm]
+
+       --help or -h
+       help for anki-exporter
+       [Optional]
+```
+
+`ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm`
 
 The result of run is going to be stored in the same folder as jar with name - korvo-to-anki.txt
 
