@@ -31,11 +31,16 @@ database are going to be consumed in sync way (O(n)). In async mode all words in
 are going to be split in two lists and consumed in parallel in two threads.    
 Default is async mode.
 
-To change modes run jar with variable: **-Dkorvo-to-anki=sync**
+To change modes run jar with variable: **-Dkorvo-to-anki.async=true**
+
+#### Available options of jar startup
+
+    * korvo-to-anki.api.dictionaryApiEnabled: true/false - turn of or off dictionaryapi service
+    * korvo-to-anki.async: true/false - turn on or off async run
 
 #### On linux
 
-`java -jar -Dkorvo-to-anki.async=true -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
+`java -jar Dkorvo-to-anki.async=false -Dkorvo-to-anki.api.dictionaryApiEnabled=false -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
 
 #### On windows
 
@@ -102,7 +107,6 @@ dictionaryapi. To show them in card one has to change card template.
 {{hint:Meaning}}
 ```
 
-
 #### Example result
 
 ```text
@@ -127,6 +131,8 @@ service [dictionaryapi.dev](https://dictionaryapi.dev/). The current limit is 45
 minutes. When reached app fall asleep for 5 minutes and then retry to get word definition of last
 word and run further as normal until requests limit is reached again.    
 With all limitations export of 3080 words with sleep timeout was done in about _**30 minutes**_
+
+Dictionary api works only with english source language. Any other languages won't work same as auto.
 
 ### Example
 
