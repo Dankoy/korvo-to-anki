@@ -18,19 +18,21 @@ logging:
 
 korvo-to-anki:
   async: true
+  api:
+    dictionaryApiEnabled: true
   dictionary-api-url: "https://api.dictionaryapi.dev/api/v2/entries/en/"
   google-translator-url: "https://translate.googleapis.com/translate_a/single"
   trans-params:
     client: "gtx"                               # (using "t" raises 403 Forbidden)
     ie: "UTF-8"                                 # input encoding
     oe: "UTF-8"                                 # output encoding
-    sl: "auto"                                  # source language (we need to specify "auto" to detect language)
+    sl: "en"                                  # source language (we need to specify "auto" to detect language)
     tl: "ru"                                    # target language
     hl: ${korvo-to-anki.trans-params.sl}        # ?
     otf: 1                                      # ?
     ssel: 0                                     # ?
     tsel: 0                                     # ?
-    dt:                                         # what we want in result
+    dt: # what we want in result
       - "t"                                     # translation of source text
       - "at"                                    # alternate translations
       - "md"                                    # definitions of source text

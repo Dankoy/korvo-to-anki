@@ -21,7 +21,7 @@ public class AnkiExporterCommand {
       alias = "ae",
       description = "Export to anki. Translate and define text using google translator and dictionaryapi.dev")
   public String export(
-      @Option(required = false, defaultValue = "auto", description = "source language") String sourceLanguage,
+      @Option(required = false, defaultValue = "en", description = "source language") String sourceLanguage,
       @Option(required = false, defaultValue = "ru", description = "target language") String targetLanguage,
       @Option(required = false, defaultValue = "t,at,md,rm", description = "options") String[] options
   ) {

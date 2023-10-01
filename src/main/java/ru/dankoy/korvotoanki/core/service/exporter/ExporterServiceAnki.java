@@ -22,15 +22,11 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 public class ExporterServiceAnki implements ExporterService {
 
   private static final int STEP_SIZE = 10;
-  private int counter = 0;
-
   private final VocabularyService vocabularyService;
-
   private final AnkiConverterService ankiConverterService;
-
   private final TemplateCreatorService templateCreatorService;
-
   private final IOService ioService;
+  private int counter = 0;
 
   @Override
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {

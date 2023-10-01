@@ -3,7 +3,7 @@ package ru.dankoy.korvotoanki.core.domain.anki;
 import java.util.List;
 
 /**
- * @param type noun, verb
+ * @param type        noun, verb
  * @param definitions actual definitions
  * @param synonyms
  * @param antonyms
