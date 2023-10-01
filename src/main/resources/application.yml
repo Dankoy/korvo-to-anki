@@ -32,7 +32,7 @@ korvo-to-anki:
     otf: 1                                      # ?
     ssel: 0                                     # ?
     tsel: 0                                     # ?
-    dt:                                         # what we want in result
+    dt: # what we want in result
       - "t"                                     # translation of source text
       - "at"                                    # alternate translations
       - "md"                                    # definitions of source text
