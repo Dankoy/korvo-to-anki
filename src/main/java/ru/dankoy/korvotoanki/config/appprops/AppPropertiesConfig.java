@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties({AppProperties.class, GoogleParamsProperties.class})
+@EnableConfigurationProperties({AppProperties.class, GoogleParamsProperties.class,
+    ExternalApiParams.class})
 public class AppPropertiesConfig {
 
 }
