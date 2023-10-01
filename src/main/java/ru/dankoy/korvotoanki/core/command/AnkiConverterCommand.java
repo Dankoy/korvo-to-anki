@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
+import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
@@ -23,13 +24,13 @@ public class AnkiConverterCommand {
       description = "Translate and define text using google translator and dictionaryapi.dev")
   public String translateAndConvert(
       @Option(required = true, description = "text to translate") String text,
-      @Option(required = false, defaultValue = "auto", description = "source language") String sourceLanguage,
+      @Option(required = false, defaultValue = "en", description = "source language") String sourceLanguage,
       @Option(required = false, defaultValue = "ru", description = "target language") String targetLanguage,
       @Option(required = false, defaultValue = "t,at,md,rm", description = "options") String[] options
   ) {
 
     var vocabulary = new Vocabulary(text,
-        null,
+        new Title(0, null, 0L),
         0L,
         0L,
         0L,
@@ -39,7 +40,8 @@ public class AnkiConverterCommand {
         0L);
 
     List<String> optionsList = Arrays.asList(options);
-    var ankiData = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, optionsList);
+    var ankiData = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage,
+        optionsList);
 
     return objectMapperService.convertToString(ankiData);
   }
