@@ -22,7 +22,7 @@ public class GoogleTranslateCommand {
       description = "Translate text using google translate")
   public String translate(
       @Option(required = true, description = "text to translate") String text,
-      @Option(required = false, defaultValue = "auto", description = "source language") String sourceLanguage,
+      @Option(required = false, defaultValue = "en", description = "source language") String sourceLanguage,
       @Option(required = false, defaultValue = "ru", description = "target language") String targetLanguage,
       @Option(required = false, defaultValue = "t,at,md,rm", description = "options") String[] options
   ) {
