@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties({AppProperties.class, GoogleParamsProperties.class,
-    ExternalApiParams.class})
+    ExternalApiParams.class, FilesParams.class})
 public class AppPropertiesConfig {
 
 }
