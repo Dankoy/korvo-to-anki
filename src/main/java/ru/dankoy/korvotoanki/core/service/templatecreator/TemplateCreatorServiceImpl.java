@@ -51,6 +51,8 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
       throw new KorvoRootException("Interrupted while waiting for task completion", e);
     }
 
+    executorService.shutdown();
+
     // create full template
     templateDataFull.put("ankiDataList", dtos);
 
