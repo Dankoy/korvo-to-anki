@@ -50,7 +50,7 @@ public class IOServiceFile implements IOService {
 
 
   @Override
-  public String readAllLines() {
+  public String readAllLines() throws IOException {
 
     if (Files.exists(file)) {
       log.info("Found file - {}", file);
@@ -62,7 +62,7 @@ public class IOServiceFile implements IOService {
       }
     } else {
       log.warn("File not found - {}", file);
-      return "";
+      throw new IOException();
     }
   }
 

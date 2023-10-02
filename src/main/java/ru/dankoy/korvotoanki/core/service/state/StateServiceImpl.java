@@ -1,8 +1,8 @@
 package ru.dankoy.korvotoanki.core.service.state;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -53,15 +53,14 @@ public class StateServiceImpl implements StateService {
         getFileNameFormatterService(),
         filesProperties.getStateFileName());
 
-    var state = ioServiceState.readAllLines();
-
     List<State> stateList = new ArrayList<>();
 
     try {
+      var state = ioServiceState.readAllLines();
       stateList = mapper.readValue(state, new TypeReference<List<State>>() {
       });
-    } catch (JsonProcessingException e) {
-      log.warn("Couldn't convert string to object - '{}'", state);
+    } catch (IOException e) {
+      log.warn("Unable to read state from file");
     }
 
     return stateList;
