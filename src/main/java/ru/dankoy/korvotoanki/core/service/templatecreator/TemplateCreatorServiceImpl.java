@@ -1,5 +1,6 @@
 package ru.dankoy.korvotoanki.core.service.templatecreator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +23,9 @@ import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder;
 @RequiredArgsConstructor
 public class TemplateCreatorServiceImpl implements TemplateCreatorService {
 
-  private static final CountDownLatch latch = new CountDownLatch(
-      Runtime.getRuntime().availableProcessors());
-
   private final TemplateBuilder templateBuilder;
+  private CountDownLatch latch = new CountDownLatch(
+      Runtime.getRuntime().availableProcessors());
 
   @Override
   public String create(List<AnkiData> ankiDataList) {
@@ -38,11 +38,14 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
     List<List<AnkiData>> splitted = splitToPartitions(ankiDataList, cores);
     ExecutorService executorService = Executors.newFixedThreadPool(cores);
 
+    int toLatch = 0;
     for (List<AnkiData> sp : splitted) {
-
       executorService.execute(() -> convertToDto(dtos, sp));
-
+      toLatch++;
     }
+
+    toLatch = Math.min(toLatch, Runtime.getRuntime().availableProcessors());
+    latch = new CountDownLatch(toLatch);
 
     try {
       latch.await();
@@ -61,6 +64,12 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
 
 
   private List<List<AnkiData>> splitToPartitions(List<AnkiData> list, int cores) {
+
+    if (list.size() < cores) {
+      List<List<AnkiData>> l = new ArrayList<>();
+      l.add(list);
+      return l;
+    }
 
     final int G = list.size() / cores; // chunks size
     final int NG = (list.size() + G - 1) / G;
