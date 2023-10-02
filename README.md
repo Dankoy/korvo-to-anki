@@ -31,6 +31,12 @@ database are going to be consumed in sync way (O(n)). In async mode all words in
 are going to be split in two lists and consumed in parallel in two threads.    
 Default is async mode.
 
+#### Run result
+
+The result of run is going to be stored in the same folder as jar with name -
+**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki.state** file with the json of already exported
+words. On new run will check for state file and filter already exported words from new run.
+
 To change modes run jar with variable: **-Dkorvo-to-anki.async=true**
 
 #### Available options of jar startup
@@ -71,8 +77,6 @@ OPTIONS
 ```
 
 `ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm`
-
-The result of run is going to be stored in the same folder as jar with name - korvo-to-anki.txt
 
 #### Show definitions in cards
 
