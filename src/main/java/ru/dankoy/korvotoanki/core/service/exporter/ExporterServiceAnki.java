@@ -15,6 +15,7 @@ import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
+import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
@@ -30,6 +31,7 @@ public class ExporterServiceAnki implements ExporterService {
   private final AnkiConverterService ankiConverterService;
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
+  private final StateService stateService;
   private int counter = 0;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
@@ -55,29 +57,37 @@ public class ExporterServiceAnki implements ExporterService {
 
     List<AnkiData> ankiDataList = new ArrayList<>();
 
-    List<Vocabulary> vocab = vocabularyService.getAll();
+    List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
 
-    for (Vocabulary v : vocab) {
+    List<Vocabulary> filtered = stateService.filterState(vocabulariesFull);
 
-      if (counter != 0 && counter % STEP_SIZE == 0) {
-        sleep(4000);
+    if (!filtered.isEmpty()) {
+      for (Vocabulary v : filtered) {
+
+        if (counter != 0 && counter % STEP_SIZE == 0) {
+          sleep(4000);
+        }
+
+        var ankiData = ankiConverterService.convert(v, sourceLanguage, targetLanguage, options);
+        ankiDataList.add(ankiData);
+
+        counter++;
+
       }
 
-      var ankiData = ankiConverterService.convert(v, sourceLanguage, targetLanguage, options);
-      ankiDataList.add(ankiData);
+      var template = templateCreatorService.create(ankiDataList);
 
-      counter++;
+      var ioService = getIoService(
+          getFileProviderService(),
+          getFileNameFormatterService(),
+          filesProperties.getExportFileName());
 
+      ioService.print(template);
+      stateService.saveState(vocabulariesFull);
+
+    } else {
+      log.info("State is the same as database. Export is not necessary.");
     }
-
-    var template = templateCreatorService.create(ankiDataList);
-
-    var ioService = getIoService(
-        getFileProviderService(),
-        getFileNameFormatterService(),
-        filesProperties.getExportFileName());
-
-    ioService.print(template);
 
   }
 

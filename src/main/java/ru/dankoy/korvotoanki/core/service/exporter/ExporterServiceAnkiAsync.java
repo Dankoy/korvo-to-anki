@@ -19,6 +19,7 @@ import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
+import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
@@ -30,12 +31,14 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 public class ExporterServiceAnkiAsync implements ExporterService {
 
   private static final int STEP_SIZE = 30;
+  private static final int THREADS = 2;
   private static final AtomicInteger atomicInteger = new AtomicInteger(0);
   private final VocabularyService vocabularyService;
   private final AnkiConverterService ankiConverterService;
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
-  private CountDownLatch latch;
+  private final StateService stateService;
+  private CountDownLatch latch = new CountDownLatch(0);
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
   // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
@@ -59,19 +62,29 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {
 
     List<AnkiData> ankiDataList = new CopyOnWriteArrayList<>();
+    ExecutorService executorService = Executors.newFixedThreadPool(THREADS);
 
-    latch = new CountDownLatch(2);
-    ExecutorService executorService = Executors.newFixedThreadPool(2);
+    List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
+    List<Vocabulary> filtered = stateService.filterState(vocabulariesFull);
 
-    List<Vocabulary> vocab = vocabularyService.getAll();
+    if (!filtered.isEmpty() && filtered.size() < THREADS) {
 
-    List<Vocabulary> oneV = vocab.subList(0, vocab.size() / 2);
-    List<Vocabulary> twoV = vocab.subList((vocab.size() / 2), vocab.size());
+      latch = new CountDownLatch(1);
+      executorService.execute(
+          () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
 
-    executorService.execute(
-        () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
-    executorService.execute(
-        () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+    } else if (filtered.size() >= THREADS) {
+
+      latch = new CountDownLatch(THREADS);
+      List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
+      List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
+
+      executorService.execute(
+          () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
+      executorService.execute(
+          () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+
+    }
 
     try {
       latch.await();
@@ -82,14 +95,19 @@ public class ExporterServiceAnkiAsync implements ExporterService {
 
     executorService.shutdown();
 
-    var template = templateCreatorService.create(ankiDataList);
+    if (!filtered.isEmpty()) {
+      var template = templateCreatorService.create(ankiDataList);
 
-    var ioService = getIoService(
-        getFileProviderService(),
-        getFileNameFormatterService(),
-        filesProperties.getExportFileName());
+      var ioService = getIoService(
+          getFileProviderService(),
+          getFileNameFormatterService(),
+          filesProperties.getExportFileName());
+      ioService.print(template);
 
-    ioService.print(template);
+      stateService.saveState(vocabulariesFull);
+    } else {
+      log.info("State is the same as database. Export is not necessary.");
+    }
 
   }
 
