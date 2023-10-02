@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
+import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
+import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
@@ -25,8 +29,26 @@ public class ExporterServiceAnki implements ExporterService {
   private final VocabularyService vocabularyService;
   private final AnkiConverterService ankiConverterService;
   private final TemplateCreatorService templateCreatorService;
-  private final IOService ioService;
+  private final FilesProperties filesProperties;
   private int counter = 0;
+
+  // The IoService is provided type, that's why we inject it using @Lookup annotation.
+  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+  @Lookup
+  public IOService getIoService(FileProviderService fileProviderService,
+      FileNameFormatterService fileNameFormatterService, String fileName) {
+    return null;
+  }
+
+  @Lookup
+  public FileProviderService getFileProviderService() {
+    return null;
+  }
+
+  @Lookup
+  public FileNameFormatterService getFileNameFormatterService() {
+    return null;
+  }
 
   @Override
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {
@@ -49,6 +71,11 @@ public class ExporterServiceAnki implements ExporterService {
     }
 
     var template = templateCreatorService.create(ankiDataList);
+
+    var ioService = getIoService(
+        getFileProviderService(),
+        getFileNameFormatterService(),
+        filesProperties.getExportFileName());
 
     ioService.print(template);
 
