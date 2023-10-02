@@ -17,6 +17,9 @@ logging:
     file: "%d %p %c{1.} [%t] %m%n"
 
 korvo-to-anki:
+  files:
+    export-file-name: ${spring.application.name}
+    state-file-name: ${spring.application.name}.state
   async: true
   api:
     dictionaryApiEnabled: true
@@ -44,4 +47,4 @@ korvo-to-anki:
 #      - "qca"       # ?
 #      - "rw"        # "see also" list
 #      - "ss"        # synonyms of source text, if it's one word
-debug: false
+debug: true
