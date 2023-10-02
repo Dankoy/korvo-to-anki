@@ -1,34 +1,41 @@
 package ru.dankoy.korvotoanki.core.service.io;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.exceptions.IoException;
+import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
+import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 
+@Service
+@Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
 public class IOServiceFile implements IOService {
 
-  private final Path fileOutput;
-  private final Path fileInput;
+  private final Path file;
 
-  public IOServiceFile(String fileOut, String fileInput) {
+  public IOServiceFile(
+      FileProviderService fileProviderService,
+      FileNameFormatterService fileNameFormatterService,
+      String fileName) {
 
-    String pathToDir = System.getProperty("user.dir");
+    //  Lookup doesn't work in prototype beans.
+    //  Had to move these methods in client code of exporter service
 
-    String pathOutput = pathToDir + File.separator + fileOut;
-    String pathInput = pathToDir + File.separator + fileInput;
+    //    var fileProviderService = fileProviderServiceBeanFactory.get();
+    //    var fileNameFormatterService = fileNameFormatterServiceBeanFactory.get();
 
-    this.fileOutput = Paths.get(pathOutput);
-    this.fileInput = Paths.get(pathInput);
+    this.file = fileProviderService.provide(fileNameFormatterService.format(fileName));
   }
 
   @Override
   public void print(String message) {
     try {
-      Files.writeString(fileOutput, message);
-      log.info("Saved file as - {}", fileOutput.toFile());
+      Files.writeString(file, message);
+      log.info("Saved file as - {}", file.toFile());
     } catch (Exception e) {
       throw new IoException(e);
     }
