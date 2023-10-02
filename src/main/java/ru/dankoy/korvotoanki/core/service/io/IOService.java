@@ -4,6 +4,8 @@ public interface IOService {
 
   void print(String message);
 
+  String readAllLines();
+
   String readLn();
 
   long readLong();

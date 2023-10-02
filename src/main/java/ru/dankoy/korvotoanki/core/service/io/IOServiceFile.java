@@ -1,7 +1,10 @@
 package ru.dankoy.korvotoanki.core.service.io;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -25,10 +28,14 @@ public class IOServiceFile implements IOService {
     //  Lookup doesn't work in prototype beans.
     //  Had to move these methods in client code of exporter service
 
-    //    var fileProviderService = fileProviderServiceBeanFactory.get();
-    //    var fileNameFormatterService = fileNameFormatterServiceBeanFactory.get();
+    if (fileName.endsWith("state")) {
+      this.file = fileProviderService.provide(fileName);
+    } else if (fileName.startsWith("export")) {
+      this.file = fileProviderService.provide(fileNameFormatterService.format(fileName));
+    } else {
+      this.file = fileProviderService.provide(fileName);
+    }
 
-    this.file = fileProviderService.provide(fileNameFormatterService.format(fileName));
   }
 
   @Override
@@ -38,6 +45,24 @@ public class IOServiceFile implements IOService {
       log.info("Saved file as - {}", file.toFile());
     } catch (Exception e) {
       throw new IoException(e);
+    }
+  }
+
+
+  @Override
+  public String readAllLines() {
+
+    if (Files.exists(file)) {
+      log.info("Found file - {}", file);
+      try {
+        List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+        return String.join("", lines);
+      } catch (IOException e) {
+        throw new IoException(e);
+      }
+    } else {
+      log.warn("File not found - {}", file);
+      return "";
     }
   }
 
