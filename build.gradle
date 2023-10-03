@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter'
 
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.squareup.okhttp3:okhttp'
@@ -53,6 +55,10 @@ dependencyManagement {
     }
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+    testLogging.showStandardStreams = true
+    afterTest { desc, result ->
+        logger.quiet "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
 }
