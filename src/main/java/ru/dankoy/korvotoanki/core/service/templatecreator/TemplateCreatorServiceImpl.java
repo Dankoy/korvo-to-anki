@@ -24,8 +24,7 @@ import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder;
 public class TemplateCreatorServiceImpl implements TemplateCreatorService {
 
   private final TemplateBuilder templateBuilder;
-  private CountDownLatch latch = new CountDownLatch(
-      Runtime.getRuntime().availableProcessors());
+  private CountDownLatch latch;
 
   @Override
   public String create(List<AnkiData> ankiDataList) {
@@ -38,14 +37,11 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
     List<List<AnkiData>> splitted = splitToPartitions(ankiDataList, cores);
     ExecutorService executorService = Executors.newFixedThreadPool(cores);
 
-    int toLatch = 0;
+    latch = new CountDownLatch(splitted.size());
+
     for (List<AnkiData> sp : splitted) {
       executorService.execute(() -> convertToDto(dtos, sp));
-      toLatch++;
     }
-
-    toLatch = Math.min(toLatch, Runtime.getRuntime().availableProcessors());
-    latch = new CountDownLatch(toLatch);
 
     try {
       latch.await();
