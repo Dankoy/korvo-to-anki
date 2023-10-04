@@ -12,7 +12,9 @@ spring:
 
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:vocabulary_builder.sqlite3
+    url: jdbc:sqlite:file::memory:?cache=shared
+  liquibase:
+    enabled: true
 
 logging:
   level:

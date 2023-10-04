@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: Dankoy
+      comment: "Create test title"
+      changes:
+        - insert:
+            tableName: title
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: name
+                  value: "Title1"
+              - column:
+                  name: filter
+                  value: "1"
+      rollback:
+        - delete:
+            tableName: title
+            where: id = 1
