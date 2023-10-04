@@ -38,7 +38,7 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
   private final StateService stateService;
-  private CountDownLatch latch = new CountDownLatch(0);
+  private CountDownLatch latch;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
   // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
@@ -67,35 +67,36 @@ public class ExporterServiceAnkiAsync implements ExporterService {
     List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
     List<Vocabulary> filtered = stateService.filterState(vocabulariesFull);
 
-    if (!filtered.isEmpty() && filtered.size() < THREADS) {
-
-      latch = new CountDownLatch(1);
-      executorService.execute(
-          () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
-
-    } else if (filtered.size() >= THREADS) {
-
-      latch = new CountDownLatch(THREADS);
-      List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
-      List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
-
-      executorService.execute(
-          () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
-      executorService.execute(
-          () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
-
-    }
-
-    try {
-      latch.await();
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new KorvoRootException("Interrupted while waiting for task completion", e);
-    }
-
-    executorService.shutdown();
-
     if (!filtered.isEmpty()) {
+
+      if (filtered.size() < THREADS) {
+
+        latch = new CountDownLatch(filtered.size());
+        executorService.execute(
+            () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
+
+      } else {
+
+        latch = new CountDownLatch(THREADS);
+        List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
+        List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
+
+        executorService.execute(
+            () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
+        executorService.execute(
+            () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+
+      }
+
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new KorvoRootException("Interrupted while waiting for task completion", e);
+      }
+
+      executorService.shutdown();
+
       var template = templateCreatorService.create(ankiDataList);
 
       var ioService = getIoService(
@@ -104,7 +105,8 @@ public class ExporterServiceAnkiAsync implements ExporterService {
           filesProperties.getExportFileName());
       ioService.print(template);
 
-      stateService.saveState(vocabulariesFull);
+      stateService.saveState(filtered);
+
     } else {
       log.info("State is the same as database. Export is not necessary.");
     }
