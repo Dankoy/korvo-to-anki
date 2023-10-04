@@ -83,16 +83,22 @@ public class StateServiceImpl implements StateService {
   @Override
   public void saveState(List<Vocabulary> vocabularies) {
 
+    // add new exported data to existing state
+
     var ioServiceState = getIoService(
         getFileProviderService(),
         getFileNameFormatterService(),
         filesProperties.getStateFileName());
 
+    final List<State> currentState = checkState();
+
     List<State> states = vocabularies.stream()
         .map(v -> new State(v.word()))
         .toList();
 
-    var string = mapperService.convertToString(states);
+    currentState.addAll(states);
+
+    var string = mapperService.convertToString(currentState);
 
     ioServiceState.print(string);
 
