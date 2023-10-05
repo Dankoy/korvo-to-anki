@@ -49,9 +49,6 @@ class DictionaryServiceOkHttpTest {
   @MockBean
   private DictionaryApiProperties dictionaryApiProperties;
 
-//  @Autowired
-//  private ObjectMapper mapper;
-
   @Autowired
   private DictionaryService dictionaryService;
 
