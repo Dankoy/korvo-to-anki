@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: Dankoy
+      comment: "Create test vocabularies"
+      changes:
+        - insert:
+            tableName: vocabulary
+            columns:
+              - column:
+                  name: word
+                  value: "contemplating"
+              - column:
+                  name: title_id
+                  value: "1"
+              - column:
+                  name: create_time
+                  value: "1695239837"
+              - column:
+                  name: review_time
+                  value: "1695239837"
+              - column:
+                  name: due_time
+                  value: "1695240137"
+              - column:
+                  name: review_count
+                  value: "0"
+              - column:
+                  name: prev_context
+                  value: "combined forces.” He hoped to the gods it didn’t come to that.\nShe fell silent, "
+              - column:
+                  name: next_context
+                  value: " a gratifying slaughter. Maybe even the final battle that would confirm her mastery. Most of all"
+              - column:
+                  name: streak_count
+                  value: "0"
+        - insert:
+            tableName: vocabulary
+            columns:
+              - column:
+                  name: word
+                  value: "word"
+              - column:
+                  name: title_id
+                  value: "1"
+              - column:
+                  name: create_time
+                  value: "1695239837"
+              - column:
+                  name: review_time
+                  value: "1695239837"
+              - column:
+                  name: due_time
+                  value: "1695240137"
+              - column:
+                  name: review_count
+                  value: "0"
+              - column:
+                  name: streak_count
+                  value: "0"
+      rollback:
+        - delete:
+            tableName: title
+            where: word in ("contemplating","word")

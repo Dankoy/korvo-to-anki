@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: Dankoy
+      changes:
+        - createTable:
+            tableName: vocabulary
+            columns:
+              - column:
+                  name: word
+                  type: varchar(512)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title_id
+                  type: integer
+                  constraints:
+                    foreignKeyName: "fk_title_id"
+                    references: title(id)
+                    nullable: false
+              - column:
+                  name: create_time
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: review_time
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: due_time
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: review_count
+                  type: INTEGER
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: prev_context
+                  type: varchar(1024)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: next_context
+                  type: varchar(1024)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: streak_count
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false

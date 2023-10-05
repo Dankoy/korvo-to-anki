@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: korvo-to-anki
+  freemarker:
+    enabled: true
+    template-loader-path: /templates/
+  shell:
+    interactive:
+      enabled: false
+    main:
+      allow-circular-references: true
+
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:file::memory:?cache=shared
+  liquibase:
+    enabled: true
+
+logging:
+  level:
+    ru.dankoy.*: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    file: "%d %p %c{1.} [%t] %m%n"
+
+korvo-to-anki:
+  files:
+    export-file-name: export-${spring.application.name}
+    state-file-name: ${spring.application.name}.state
+  async: true
+  api:
+    dictionaryApiEnabled: true
+  dictionary-api-url: "https://api.dictionaryapi.dev/api/v2/entries/en/"
+  google-translator-url: "https://translate.googleapis.com/translate_a/single"
+  trans-params:
+    client: "gtx"                               # (using "t" raises 403 Forbidden)
+    ie: "UTF-8"                                 # input encoding
+    oe: "UTF-8"                                 # output encoding
+    sl: "en"                                  # source language (we need to specify "auto" to detect language)
+    tl: "ru"                                    # target language
+    hl: ${korvo-to-anki.trans-params.sl}        # ?
+    otf: 1                                      # ?
+    ssel: 0                                     # ?
+    tsel: 0                                     # ?
+    dt: # what we want in result
+      - "t"                                     # translation of source text
+      - "at"                                    # alternate translations
+      - "md"                                    # definitions of source text
+      - "rm"                                    # transcription / transliteration of source and translated texts
+#                    # Next options only give additional results when text is a single word
+#      - "bd"        # dictionary (articles, reverse translations, etc)
+#      - "ex"        # examples
+#      - "ld"        # ?
+#      - "qca"       # ?
+#      - "rw"        # "see also" list
+#      - "ss"        # synonyms of source text, if it's one word
+debug: false
