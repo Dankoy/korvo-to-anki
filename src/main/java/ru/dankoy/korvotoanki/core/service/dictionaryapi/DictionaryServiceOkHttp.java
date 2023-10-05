@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
@@ -55,6 +56,10 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
       var body = receiveBody(response);
       checkStatus(response, body);
+
+      if (body == null) {
+        return Stream.of(Word.emptyWord()).toList();
+      }
       return mapper.readValue(body, new TypeReference<List<Word>>() {
       });
 
@@ -66,12 +71,12 @@ public class DictionaryServiceOkHttp implements DictionaryService {
   private String receiveBody(Response response) {
 
     try {
-      return response.body() != null ? response.body().string() : "{}";
+      return response.body() != null ? response.body().string() : null;
     } catch (Exception e) {
       log.debug("Unable to get response body");
     }
 
-    return "{}";
+    return null;
   }
 
   private void checkStatus(Response response, String body) {
