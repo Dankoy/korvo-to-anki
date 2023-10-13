@@ -26,27 +26,13 @@ Added integration with external services for word translation and definition loo
 
 ### Usage
 
-There are two modes of work: sync and async. In sync mode all words in vocabulary-builder
-database are going to be consumed in sync way (O(n)). In async mode all words in vocabulary-builder
-are going to be split in two lists and consumed in parallel in two threads.    
-Default is async mode.
-
-#### Run result
-
-The result of run is going to be stored in the same folder as jar with name -
-**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki.state** file with the json of already exported
-words. On new run will check for state file and filter already exported words from new run.
-
-To change modes run jar with variable: **-Dkorvo-to-anki.async=true**
-
 #### Available options of jar startup
 
-    * korvo-to-anki.api.dictionaryApiEnabled: true/false - turn of or off dictionaryapi service
-    * korvo-to-anki.async: true/false - turn on or off async run
+    * korvo-to-anki.api.dictionaryApiEnabled: true/false - turn on or off dictionaryapi service integration. Default - true
 
 #### On linux
 
-`java -jar Dkorvo-to-anki.async=false -Dkorvo-to-anki.api.dictionaryApiEnabled=false -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
+`java -jar -Dkorvo-to-anki.api.dictionaryApiEnabled=false -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
 
 #### On windows
 
@@ -77,6 +63,14 @@ OPTIONS
 ```
 
 `ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm`
+
+Options t,at,md,rm are the only options that currently works. These options are google translate options.
+
+#### Run result
+
+The result of run is going to be stored in the same folder as jar with name -
+**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki.state** file with the json of already exported
+words. On new run will check for state file and filter already exported words from new run.
 
 #### Show definitions in cards
 
