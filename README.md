@@ -32,7 +32,7 @@ Added integration with external services for word translation and definition loo
 
 #### On linux
 
-`java -jar -Dkorvo-to-anki.api.dictionaryApiEnabled=false -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
+`java -jar -Dspring.datasource.url=jdbc:sqlite:/path/to/vocabulary_builder.sqlite3 korvo-to-anki.jar `
 
 #### On windows
 
