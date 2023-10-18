@@ -13,7 +13,7 @@ public class DateTimeProviderImpl implements DateTimeProvider {
   @Override
   public String now() {
 
-    var format = "yyyy-MM-dd_HH:mm:ss";
+    var format = "yyyy-MM-dd_HH-mm-ss";
 
     var localDateTime = LocalDateTime.now();
 

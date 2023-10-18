@@ -24,7 +24,7 @@ class DateTimeProviderImplTest {
   @Test
   void now() {
 
-    var format = "yyyy-MM-dd_HH:mm:ss";
+    var format = "yyyy-MM-dd_HH-mm-ss";
     var ld = LocalDate.of(1989, 1, 13);
     var lt = LocalTime.of(10, 10, 10);
     var ldt = LocalDateTime.of(ld, lt);

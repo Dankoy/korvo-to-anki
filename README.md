@@ -26,6 +26,14 @@ Added integration with external services for word translation and definition loo
 
 ### Usage
 
+Program will look up every word in GT for translation, transcription and definitions (with default
+options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms and examples and
+transcription. If word in dictionary api is found then only this data is used. If word in dictionary
+api is not found, then data from GT is used. If none found, then meanings are empty, because GT at
+least has a translation.    
+GT can translate from any language to any language, but dictionary api works only with english
+source language.
+
 #### Available options of jar startup
 
     * korvo-to-anki.api.dictionaryApiEnabled: true/false - turn on or off dictionaryapi service integration. Default - true
@@ -64,12 +72,14 @@ OPTIONS
 
 `ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm`
 
-Options t,at,md,rm are the only options that currently works. These options are google translate options.
+Options t,at,md,rm are the only options that currently works. These options are google translate
+options.
 
 #### Run result
 
 The result of run is going to be stored in the same folder as jar with name -
-**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki.state** file with the json of already exported
+**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki.state** file with the json of already
+exported
 words. On new run will check for state file and filter already exported words from new run.
 
 #### Show definitions in cards
