@@ -2,6 +2,8 @@
 
 [![Java CI with Gradle](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml)
 
+[Link to latest release](https://github.com/Dankoy/korvo-to-anki/releases/latest). Download *app.jar.zip*.
+
 Convert sqlite created
 by [vocabulary_builder plugin](https://github.com/koreader/koreader/wiki/Vocabulary-builder)
 of [KOReader](https://github.com/koreader/koreader) into text file that can be easily
