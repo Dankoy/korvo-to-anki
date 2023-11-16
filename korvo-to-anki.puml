@@ -1,0 +1,575 @@
+@startuml
+!pragma layout smetana
+
+class ru.dankoy.korvotoanki.core.command.TitleCommand {
+- TitleService titleService
+- ObjectMapperService objectMapperService
++ String count()
++ String getById(long)
++ String getAll()
++ String insert(String)
++ String deleteById(long)
++ String update(long,String,long)
+}
+class ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word {
+- String data
+- String phonetic
+- List<Phonetics> phonetics
+- List<Meaning> meanings
++ {static} Word emptyWord()
+}note left of ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word::phonetic
+ could be null, but one of the Phonetics object could contain text with transcription
+end note
+
+class ru.dankoy.korvotoanki.config.TemplateBuilderConfig {
+~ TemplateBuilder templateBuilder(String)
+}
+class ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics {
+- String text
+- String audio
+- String sourceUrl
+}
+interface ru.dankoy.korvotoanki.core.service.state.StateService {
+~ List<State> checkState()
+~ List<Vocabulary> filterState(List<Vocabulary>)
+~ void saveState(List<Vocabulary>)
+}
+interface ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabric {
+~ AnkiData createAnkiData(Vocabulary,GoogleTranslation,List<Word>)
+}
+interface ru.dankoy.korvotoanki.core.service.io.IOService {
+~ void print(String)
+~ String readAllLines()
+~ String readLn()
+~ long readLong()
+}
+class ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException {
+}
+class ru.dankoy.korvotoanki.core.command.DictionaryApiCommand {
+- DictionaryService dictionaryService
+- ObjectMapperService objectMapperService
++ String define(String)
+}note left of ru.dankoy.korvotoanki.core.command.DictionaryApiCommand::define(String)
+ da --word hello
+end note
+
+class ru.dankoy.korvotoanki.core.domain.Title {
+- long id
+- String name
+- long filter
++ long id()
++ long filter()
++ String name()
+}
+class ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParserImpl {
+- ObjectMapper mapper
++ GoogleTranslation parse(String)
+- JsonNode toJsonNode(String)
+}
+class ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException {
+}
+class ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition {
+- String info
+- List<String> synonyms
+- List<String> antonyms
+- String example
+}
+class ru.dankoy.korvotoanki.core.domain.anki.AnkiData {
+- String word
+- String myExample
+- List<String> translations
+- String transcription
+- List<Meaning> meanings
+- String book
+}note left of ru.dankoy.korvotoanki.core.domain.anki.AnkiData::translations
+ from google translate
+end note
+note right of ru.dankoy.korvotoanki.core.domain.anki.AnkiData::transcription
+ from dictionaryapi, if not found then from Google Translate or null
+end note
+note left of ru.dankoy.korvotoanki.core.domain.anki.AnkiData::meanings
+ from dictionaryapi, if not found then from Google Translate or empty
+end note
+
+class ru.dankoy.korvotoanki.core.dao.vocabulary.BookResultSetExtractor {
++ Map<String,Vocabulary> extractData(ResultSet)
+}
+interface ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService {
+~ String format(String)
+}
+class ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiAsync {
+- {static} int STEP_SIZE
+- {static} int THREADS
+- {static} AtomicInteger atomicInteger
+- VocabularyService vocabularyService
+- AnkiConverterService ankiConverterService
+- TemplateCreatorService templateCreatorService
+- FilesProperties filesProperties
+- StateService stateService
+- CountDownLatch latch
++ IOService getIoService(FileProviderService,FileNameFormatterService,String)
++ FileProviderService getFileProviderService()
++ FileNameFormatterService getFileNameFormatterService()
++ void export(String,String,List<String>)
+- void asyncFunc(List<AnkiData>,List<Vocabulary>,String,String,List<String>)
+- void sleep(long)
+}note left of ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiAsync::getIoService(FileProviderService,FileNameFormatterService,String)
+ @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+end note
+
+class ru.dankoy.korvotoanki.core.dao.vocabulary.VocabularyDaoJdbc {
+- {static} String COLUMN_TITLE_ID
+- NamedParameterJdbcOperations namedParameterJdbcOperations
++ List<Vocabulary> getAll()
++ List<Vocabulary> getByTitle(Title)
++ long count()
+}
+class ru.dankoy.korvotoanki.config.AppConfig {
++ ObjectMapper objectMapper()
+}
+interface ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryService {
+~ List<Word> define(String)
+}
+class ru.dankoy.korvotoanki.core.service.io.IOServiceFile {
+- Path file
++ void print(String)
++ String readAllLines()
++ String readLn()
++ long readLong()
+}
+interface ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService {
+~ AnkiData convert(Vocabulary,String,String,List<String>)
+}
+class ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceImpl {
+- DictionaryService dictionaryService
+- GoogleTranslator googleTranslator
+- AnkiDataFabric ankiDataFabric
+- ExternalApiProperties externalApiProperties
++ AnkiData convert(Vocabulary,String,String,List<String>)
+- void sleep(long)
+}
+interface ru.dankoy.korvotoanki.config.appprops.ExternalApiProperties {
+~ boolean isDictionaryApiEnabled()
+}
+enum ru.dankoy.korvotoanki.config.Languages {
++  EN
++  RU
++  AUTO
+}
+class ru.dankoy.korvotoanki.config.CachingConfig {
++ CacheManager cacheManager()
+- Caffeine<Object,Object> caffeineCacheBuilder()
+}
+class ru.dankoy.korvotoanki.core.command.AnkiConverterCommand {
+- AnkiConverterService ankiConverterService
+- ObjectMapperService objectMapperService
++ String translateAndConvert(String,String,String,String[])
+}
+note left of ru.dankoy.korvotoanki.core.command.AnkiConverterCommand::translateAndConvert(String,String,String,String[])
+ ac --word hello
+end note
+
+class ru.dankoy.korvotoanki.core.domain.anki.Meaning {
+- String type
+- List<Definition> definitions
+- List<String> synonyms
+- List<String> antonyms
++ String type()
++ List<String> antonyms()
++ List<Definition> definitions()
++ List<String> synonyms()
+}
+
+note top of ru.dankoy.korvotoanki.core.domain.anki.Meaning
+ * @param type        noun, verb
+ * @param definitions actual definitions
+ * @param synonyms
+ * @param antonyms
+end note
+
+interface ru.dankoy.korvotoanki.core.dao.title.TitleDao {
+~ List<Title> getAll()
+~ Title getById(long)
+~ Title getByName(String)
+~ long insert(String)
+~ void deleteById(long)
+~ void update(Title)
+~ long count()
+}
+interface ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties {
+~ String getDictionaryApiUrl()
+}
+interface ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService {
+~ String convertToString(Object)
+}
+class ru.dankoy.korvotoanki.config.appprops.ExternalApiParams {
+- boolean dictionaryApiEnabled
+}
+class ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp {
+- OkHttpClient okHttpClient
+- GoogleTranslatorProperties googleTranslatorProperties
+- GoogleTranslatorParser googleTranslatorParser
++ GoogleTranslation translate(String,String,String,List<String>)
+- void checkStatus(Response)
+}
+class ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning {
+- String partOfSpeech
+- List<Definition> definitions
+- List<String> synonyms
+- List<String> antonyms
+}
+interface ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParser {
+~ GoogleTranslation parse(String)
+}
+class ru.dankoy.korvotoanki.core.command.VocabularyCommand {
+- VocabularyService vocabularyService
+- TitleService titleService
+- ObjectMapperService objectMapperService
++ String count()
++ String getByTitle(String)
++ String getAll()
+}
+class ru.dankoy.korvotoanki.config.appprops.AppProperties {
+- String googleTranslatorUrl
+- String dictionaryApiUrl
+- GoogleParamsProperties googleParamsProperties
+- boolean debug
+}
+interface ru.dankoy.korvotoanki.config.appprops.FilesProperties {
+~ String getExportFileName()
+~ String getStateFileName()
+}
+class ru.dankoy.korvotoanki.config.OkHttpConfig {
+- DebugProperties debugProperties
++ OkHttpClient okHttpClient()
+}
+class ru.dankoy.korvotoanki.config.OkHttpConfig$UserAgentInterceptor {
+- String userAgent
++ Response intercept(Chain)
+}
+class ru.dankoy.korvotoanki.core.domain.googletranslation.Definition {
+- String type
+- String info
++ String type()
++ String info()
+}
+note top of ru.dankoy.korvotoanki.core.domain.googletranslation.Definition
+
+ * @param type noun, verb, exclamation, etc
+ * @param info the actual definition
+ 
+end note
+
+class ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabricImpl {
++ AnkiData createAnkiData(Vocabulary,GoogleTranslation,List<Word>)
+- String obtainVocabularyExample(Vocabulary)
+- String chooseTranscription(GoogleTranslation,List<Word>)
+- List<Meaning> chooseDefinitions(GoogleTranslation,List<Word>)
+}
+interface ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProvider {
+~ String now()
+}
+interface ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder {
+~ String writeTemplate(Map<String,Object>,String)
+~ String loadTemplateFromString(String,String,Map<String,Object>)
+}
+class ru.dankoy.korvotoanki.config.appprops.AppPropertiesConfig {
+}
+class ru.dankoy.korvotoanki.core.exceptions.TooManyRequestsException {
+}
+class ru.dankoy.korvotoanki.core.service.state.StateServiceImpl {
+- FilesProperties filesProperties
+- ObjectMapper mapper
+- ObjectMapperService mapperService
++ IOService getIoService(FileProviderService,FileNameFormatterService,String)
++ FileProviderService getFileProviderService()
++ FileNameFormatterService getFileNameFormatterService()
++ List<State> checkState()
++ List<Vocabulary> filterState(List<Vocabulary>)
++ void saveState(List<Vocabulary>)
+}note left of ru.dankoy.korvotoanki.core.service.state.StateServiceImpl::getIoService(FileProviderService,FileNameFormatterService,String)
+ @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+end note
+
+class ru.dankoy.korvotoanki.config.CommandConfig {
+}
+class ru.dankoy.korvotoanki.core.command.AnkiExporterCommand {
+- ExporterService exporterService
++ String export(String,String,String[])
+}note left of ru.dankoy.korvotoanki.core.command.AnkiExporterCommand::export(String,String,String[])
+ ae --word hello
+end note
+
+interface ru.dankoy.korvotoanki.core.service.title.TitleService {
+~ List<Title> getAll()
+~ Title getById(long)
+~ Title getByName(String)
+~ long insert(String)
+~ void deleteById(long)
+~ void update(Title)
+~ long count()
+}
+interface ru.dankoy.korvotoanki.config.appprops.DebugProperties {
+~ boolean isDebug()
+}
+class ru.dankoy.korvotoanki.core.exceptions.TitleDaoException {
+}
+interface ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator {
+~ GoogleTranslation translate(String,String,String,List<String>)
+}
+class ru.dankoy.korvotoanki.config.appprops.FilesParams {
+- String exportFileName
+- String stateFileName
+}
+class ru.dankoy.korvotoanki.core.domain.Vocabulary {
+- String word
+- Title title
+- long createTime
+- long reviewTime
+- long dueTime
+- long reviewCount
+- String prevContext
+- String nextContext
+- long streakCount
++ String nextContext()
++ String word()
++ String prevContext()
++ Title title()
++ long reviewCount()
++ long reviewTime()
++ long dueTime()
++ long createTime()
++ long streakCount()
+}
+class ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc {
+- NamedParameterJdbcOperations namedParameterJdbcOperations
++ List<Title> getAll()
++ Title getById(long)
++ Title getByName(String)
++ long insert(String)
++ void deleteById(long)
++ void update(Title)
++ long count()
+}
+class ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc$TitleMapper {
++ Title mapRow(ResultSet,int)
+}
+interface ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService {
+~ List<Vocabulary> getAll()
+~ List<Vocabulary> getByTitle(Title)
+~ long count()
+}
+class ru.dankoy.korvotoanki.core.exceptions.ObjectMapperException {
+}
+class ru.dankoy.korvotoanki.core.dto.State {
+- String word
+}
+class ru.dankoy.korvotoanki.core.command.GoogleTranslateCommand {
+- GoogleTranslator googleTranslator
+- ObjectMapperService objectMapperService
++ String translate(String,String,String,String[])
+}note left of ru.dankoy.korvotoanki.core.command.GoogleTranslateCommand::translate(String,String,String,String[])
+ gt --text hello --options t,at,md,bd
+end note
+
+class ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki {
+- {static} int STEP_SIZE
+- VocabularyService vocabularyService
+- AnkiConverterService ankiConverterService
+- TemplateCreatorService templateCreatorService
+- FilesProperties filesProperties
+- StateService stateService
+- int counter
++ IOService getIoService(FileProviderService,FileNameFormatterService,String)
++ FileProviderService getFileProviderService()
++ FileNameFormatterService getFileNameFormatterService()
++ void export(String,String,List<String>)
+- void sleep(long)
+}note left of ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki::getIoService(FileProviderService,FileNameFormatterService,String)
+ @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+end note
+
+interface ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties {
+~ String getGoogleTranslatorUrl()
+~ GoogleParamsProperties getGoogleParamsProperties()
+}
+interface ru.dankoy.korvotoanki.core.service.exporter.ExporterService {
+~ void export(String,String,List<String>)
+}
+class ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorServiceImpl {
+- TemplateBuilder templateBuilder
+- CountDownLatch latch
++ String create(List<AnkiData>)
+- List<List<AnkiData>> splitToPartitions(List<AnkiData>,int)
+- void convertToDto(List<AnkiDataDTO>,List<AnkiData>)
+}
+class ru.dankoy.korvotoanki.config.appprops.GoogleParamsProperties {
+- String client
+- String ie
+- String oe
+- String sl
+- String tl
+- String hl
+- int otf
+- int ssel
+- int tsel
+- List<String> dt
+}
+class ru.dankoy.korvotoanki.core.exceptions.IoException {
+}
+class ru.dankoy.korvotoanki.core.exceptions.KorvoRootException {
+}
+class ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperServiceImpl {
+- ObjectMapper objectMapper
++ String convertToString(Object)
+}
+class ru.dankoy.korvotoanki.core.dto.AnkiDataDTO {
+- String word
+- String book
+- String myExample
+- List<String> translations
+- String transcription
+- String meanings
++ {static} AnkiDataDTO toDTO(AnkiData)
+}
+note top of ru.dankoy.korvotoanki.core.dto.AnkiDataDTO
+
+ * Used in freemarker template builder
+ 
+end note
+note left of ru.dankoy.korvotoanki.core.dto.AnkiDataDTO::translations
+ from google translate
+end note
+note right of ru.dankoy.korvotoanki.core.dto.AnkiDataDTO::transcription
+ from dictionaryapi, if not found then from Google Translate or null
+end note
+
+interface ru.dankoy.korvotoanki.core.dao.vocabulary.VocabularyDao {
+~ List<Vocabulary> getAll()
+~ List<Vocabulary> getByTitle(Title)
+~ long count()
+}
+class ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterServiceImpl {
+- DateTimeProvider dateTimeProvider
++ String format(String)
+}
+interface ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService {
+~ Path provide(String)
+}
+class ru.dankoy.korvotoanki.KorvoToAnkiApplication {
++ {static} void main(String[])
+}
+class ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderServiceImpl {
++ Path provide(String)
+}
+class ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProviderImpl {
++ String now()
+}
+interface ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService {
+~ String create(List<AnkiData>)
+}
+class ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp {
+- OkHttpClient okHttpClient
+- DictionaryApiProperties dictionaryApiProperties
+- ObjectMapper mapper
++ List<Word> define(String)
+- String receiveBody(Response)
+- void checkStatus(Response,String)
+}
+class ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc {
+- VocabularyDao vocabularyDao
++ List<Vocabulary> getAll()
++ List<Vocabulary> getByTitle(Title)
++ long count()
+}
+class ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation {
+- List<String> translations
+- String transcription
+- List<Definition> definitions
+}
+class ru.dankoy.korvotoanki.core.domain.anki.Definition {
+- String info
+- String example
++ String example()
++ String info()
+}
+note top of ru.dankoy.korvotoanki.core.domain.anki.Definition
+
+ * @param info the actual definition
+ 
+end note
+
+class ru.dankoy.korvotoanki.core.service.title.TitleServiceJdbc {
+- TitleDao titleDao
++ List<Title> getAll()
++ Title getById(long)
++ Title getByName(String)
++ long insert(String)
++ void deleteById(long)
++ void update(Title)
++ long count()
+}
+class ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilderImpl {
+- Configuration configuration
++ String writeTemplate(Map<String,Object>,String)
++ String loadTemplateFromString(String,String,Map<String,Object>)
+}
+note left of ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilderImpl::writeTemplate(Map<String,Object>,String)
+
+   * Заполнение шаблона данными
+   *
+   * @param templateData данные для заполнения шаблона в формате {@code Map<String, Object>}
+   * @param templateName имя шаблона
+   * @return заполненный шаблон в виде строки
+   
+end note
+note right of ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilderImpl::loadTemplateFromString(String,String,Map<String,Object>)
+
+   * Позволяет сделать шаблон из строки, а не из файла
+   *
+   * @param templateName   имя шаблона для добавления в конфигурацию шаблонизатора
+   * @param templateString строка шаблона
+   * @param templateData   данные загружаемые в шаблон
+   * @return отформатированный шаблон
+   
+end note
+
+
+
+ru.dankoy.korvotoanki.core.exceptions.KorvoRootException <|-- ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException
+ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParser <|.. ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParserImpl
+ru.dankoy.korvotoanki.core.exceptions.KorvoRootException <|-- ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException
+org.springframework.jdbc.core.ResultSetExtractor <|.. ru.dankoy.korvotoanki.core.dao.vocabulary.BookResultSetExtractor
+ru.dankoy.korvotoanki.core.service.exporter.ExporterService <|.. ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiAsync
+ru.dankoy.korvotoanki.core.dao.vocabulary.VocabularyDao <|.. ru.dankoy.korvotoanki.core.dao.vocabulary.VocabularyDaoJdbc
+ru.dankoy.korvotoanki.core.service.io.IOService <|.. ru.dankoy.korvotoanki.core.service.io.IOServiceFile
+ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService <|.. ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceImpl
+ru.dankoy.korvotoanki.config.appprops.ExternalApiProperties <|.. ru.dankoy.korvotoanki.config.appprops.ExternalApiParams
+ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator <|.. ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp
+ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties <|.. ru.dankoy.korvotoanki.config.appprops.AppProperties
+ru.dankoy.korvotoanki.config.appprops.DebugProperties <|.. ru.dankoy.korvotoanki.config.appprops.AppProperties
+ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties <|.. ru.dankoy.korvotoanki.config.appprops.AppProperties
+ru.dankoy.korvotoanki.config.OkHttpConfig +.. ru.dankoy.korvotoanki.config.OkHttpConfig$UserAgentInterceptor
+ru.dankoy.korvotoanki.config.Interceptor <|.. ru.dankoy.korvotoanki.config.OkHttpConfig$UserAgentInterceptor
+ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabric <|.. ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabricImpl
+ru.dankoy.korvotoanki.core.exceptions.RuntimeException <|-- ru.dankoy.korvotoanki.core.exceptions.TooManyRequestsException
+ru.dankoy.korvotoanki.core.service.state.StateService <|.. ru.dankoy.korvotoanki.core.service.state.StateServiceImpl
+ru.dankoy.korvotoanki.core.exceptions.KorvoRootException <|-- ru.dankoy.korvotoanki.core.exceptions.TitleDaoException
+ru.dankoy.korvotoanki.config.appprops.FilesProperties <|.. ru.dankoy.korvotoanki.config.appprops.FilesParams
+ru.dankoy.korvotoanki.core.dao.title.TitleDao <|.. ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc
+ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc +.. ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc$TitleMapper
+ru.dankoy.korvotoanki.core.dao.title.RowMapper <|.. ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc$TitleMapper
+ru.dankoy.korvotoanki.core.exceptions.KorvoRootException <|-- ru.dankoy.korvotoanki.core.exceptions.ObjectMapperException
+ru.dankoy.korvotoanki.core.service.exporter.ExporterService <|.. ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki
+ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService <|.. ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorServiceImpl
+ru.dankoy.korvotoanki.core.exceptions.KorvoRootException <|-- ru.dankoy.korvotoanki.core.exceptions.IoException
+ru.dankoy.korvotoanki.core.exceptions.RuntimeException <|-- ru.dankoy.korvotoanki.core.exceptions.KorvoRootException
+ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService <|.. ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperServiceImpl
+ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService <|.. ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterServiceImpl
+ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService <|.. ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderServiceImpl
+ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProvider <|.. ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProviderImpl
+ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryService <|.. ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp
+ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService <|.. ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc
+ru.dankoy.korvotoanki.core.service.title.TitleService <|.. ru.dankoy.korvotoanki.core.service.title.TitleServiceJdbc
+ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder <|.. ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilderImpl
+@enduml
