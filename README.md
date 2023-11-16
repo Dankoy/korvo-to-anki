@@ -150,3 +150,8 @@ Dictionary api works only with english source language. Any other languages won'
 ![img.png](screenshots/img2.png)   
 ![img.png](screenshots/img3.png)    
 ![img.png](screenshots/img4.png)
+
+
+#### UML
+
+![uml](korvo-to-anki.svg)
