@@ -30,8 +30,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter'
 
-    implementation 'ch.qos.logback:logback-classic:1.4.14'
-    implementation 'ch.qos.logback:logback-core:1.4.14'
+    implementation 'ch.qos.logback:logback-classic'
+    implementation 'ch.qos.logback:logback-core'
 
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
