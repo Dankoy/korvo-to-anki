@@ -8,8 +8,6 @@
 name: Gradle CI clean build
 
 on:
-  push:
-    branches: [ "dependencies" ]
   pull_request:
     branches: [ "dependencies" ]
 
