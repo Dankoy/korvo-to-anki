@@ -25,7 +25,7 @@ repositories {
 
 // Moved to bom to let dependabot check versions
 ext {
-    springShellVersion = '3.2.0'
+    springShellVersion = '3.2.1'
 }
 
 dependencyManagement {
