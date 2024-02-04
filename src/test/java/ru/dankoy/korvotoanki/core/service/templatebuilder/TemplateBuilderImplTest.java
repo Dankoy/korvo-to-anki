@@ -25,8 +25,8 @@ import ru.dankoy.korvotoanki.core.dto.AnkiDataDTO;
 import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 
 
-@SpringBootTest
-@Import(value = TemplateBuilderConfig.class)
+@SpringBootTest(classes = {TemplateBuilder.class, TemplateBuilderConfig.class})
+//@Import(value = TemplateBuilderConfig.class)
 @DisplayName("Test TemplateBuilderImpl ")
 class TemplateBuilderImplTest {
 
@@ -68,7 +68,7 @@ class TemplateBuilderImplTest {
 
     var path = Paths.get(
         getClass().getResource("/templates/correct/correct-meaning.ftl").toURI());
-    var correct = String.join("\n", Files.readAllLines(path));
+    var correct = String.join(System.lineSeparator(), Files.readAllLines(path));
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("ankiData", ankiData);
@@ -93,7 +93,7 @@ class TemplateBuilderImplTest {
 
     var path = Paths.get(
         getClass().getResource("/templates/correct/correct-korvo-to-anki-correct.ftl").toURI());
-    var correct = String.join("\n", Files.readAllLines(path));
+    var correct = String.join(System.lineSeparator(), Files.readAllLines(path));
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("ankiDataList", Collections.singletonList(ankiData));
