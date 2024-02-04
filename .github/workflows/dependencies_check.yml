@@ -9,7 +9,7 @@ name: Gradle CI clean build
 
 on:
   pull_request:
-    branches: [ "dependencies" ]
+    branches: [ "dependencies", "main", "dev" ]
 
 permissions:
   contents: read
