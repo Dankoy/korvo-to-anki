@@ -32,7 +32,7 @@ jobs:
         arguments: clean test bootJar
 
     - name: Save result jar for further use
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
        name: app.jar
        path: build/libs/*
