@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      minor-patch-updates:
+      minor-patch-group:
         update-types:
         - "minor"
         - "patch"
@@ -22,7 +22,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      minor-patch-updates:
+      minor-patch-group:
         update-types:
         - "minor"
         - "patch"
