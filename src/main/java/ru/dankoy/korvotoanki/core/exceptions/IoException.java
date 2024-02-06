@@ -5,5 +5,4 @@ public class IoException extends KorvoRootException {
   public IoException(Exception e) {
     super(e);
   }
-
 }

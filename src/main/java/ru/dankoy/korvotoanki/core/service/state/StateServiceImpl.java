@@ -17,7 +17,6 @@ import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -28,10 +27,13 @@ public class StateServiceImpl implements StateService {
   private final ObjectMapperService mapperService;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
-  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject
+  // beans
   @Lookup
-  public IOService getIoService(FileProviderService fileProviderService,
-      FileNameFormatterService fileNameFormatterService, String fileName) {
+  public IOService getIoService(
+      FileProviderService fileProviderService,
+      FileNameFormatterService fileNameFormatterService,
+      String fileName) {
     return null;
   }
 
@@ -48,17 +50,17 @@ public class StateServiceImpl implements StateService {
   @Override
   public List<State> checkState() {
 
-    var ioServiceState = getIoService(
-        getFileProviderService(),
-        getFileNameFormatterService(),
-        filesProperties.getStateFileName());
+    var ioServiceState =
+        getIoService(
+            getFileProviderService(),
+            getFileNameFormatterService(),
+            filesProperties.getStateFileName());
 
     List<State> stateList = new ArrayList<>();
 
     try {
       var state = ioServiceState.readAllLines();
-      stateList = mapper.readValue(state, new TypeReference<List<State>>() {
-      });
+      stateList = mapper.readValue(state, new TypeReference<List<State>>() {});
     } catch (IOException e) {
       log.warn("Unable to read state from file");
     }
@@ -72,9 +74,7 @@ public class StateServiceImpl implements StateService {
     final List<State> finalStateList = checkState();
     if (!finalStateList.isEmpty()) {
       return vocabularies.stream()
-          .filter(v -> finalStateList.stream()
-              .noneMatch(s -> s.getWord().equals(v.word()))
-          )
+          .filter(v -> finalStateList.stream().noneMatch(s -> s.getWord().equals(v.word())))
           .toList();
     }
     return vocabularies;
@@ -85,24 +85,20 @@ public class StateServiceImpl implements StateService {
 
     // add new exported data to existing state
 
-    var ioServiceState = getIoService(
-        getFileProviderService(),
-        getFileNameFormatterService(),
-        filesProperties.getStateFileName());
+    var ioServiceState =
+        getIoService(
+            getFileProviderService(),
+            getFileNameFormatterService(),
+            filesProperties.getStateFileName());
 
     final List<State> currentState = checkState();
 
-    List<State> states = vocabularies.stream()
-        .map(v -> new State(v.word()))
-        .toList();
+    List<State> states = vocabularies.stream().map(v -> new State(v.word())).toList();
 
     currentState.addAll(states);
 
     var string = mapperService.convertToString(currentState);
 
     ioServiceState.print(string);
-
   }
-
-
 }

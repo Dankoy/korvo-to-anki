@@ -11,16 +11,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProvider;
 import ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProviderImpl;
 
-
 @SpringBootTest(classes = {FileNameFormatterServiceImpl.class, DateTimeProviderImpl.class})
 @DisplayName("Test FileNameFormatterServiceImpl ")
 class FileNameFormatterServiceImplTest {
 
-  @MockBean
-  private DateTimeProvider dateTimeProvider;
+  @MockBean private DateTimeProvider dateTimeProvider;
 
-  @Autowired
-  private FileNameFormatterServiceImpl fileNameFormatterService;
+  @Autowired private FileNameFormatterServiceImpl fileNameFormatterService;
 
   @Test
   void format() {
@@ -33,6 +30,5 @@ class FileNameFormatterServiceImplTest {
     var actual = fileNameFormatterService.format(fileName);
 
     assertThat(actual).isEqualTo(correct);
-
   }
 }

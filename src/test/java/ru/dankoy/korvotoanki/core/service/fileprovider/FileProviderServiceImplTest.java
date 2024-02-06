@@ -9,13 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
 @SpringBootTest(classes = {FileProviderServiceImpl.class})
 @DisplayName("Test FileProviderServiceImpl ")
 class FileProviderServiceImplTest {
 
-  @Autowired
-  private FileProviderService fileProviderService;
+  @Autowired private FileProviderService fileProviderService;
 
   @Test
   void provide() {
@@ -28,6 +26,5 @@ class FileProviderServiceImplTest {
     var actual = fileProviderService.provide(fileName);
 
     assertThat(actual).isEqualTo(path);
-
   }
 }

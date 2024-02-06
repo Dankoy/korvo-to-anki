@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
-
 @RequiredArgsConstructor
 @Component
 public class TitleDaoJdbc implements TitleDao {
@@ -25,8 +24,8 @@ public class TitleDaoJdbc implements TitleDao {
 
   @Override
   public List<Title> getAll() {
-    return namedParameterJdbcOperations.query("select id, name, filter from title",
-        new TitleMapper());
+    return namedParameterJdbcOperations.query(
+        "select id, name, filter from title", new TitleMapper());
   }
 
   @Override
@@ -34,12 +33,10 @@ public class TitleDaoJdbc implements TitleDao {
     Map<String, Object> params = Collections.singletonMap("id", id);
     try {
       return namedParameterJdbcOperations.queryForObject(
-          "select id, name, filter from title where id = :id", params, new TitleMapper()
-      );
+          "select id, name, filter from title where id = :id", params, new TitleMapper());
     } catch (Exception e) {
       throw new TitleDaoException(e);
     }
-
   }
 
   @Override
@@ -47,21 +44,18 @@ public class TitleDaoJdbc implements TitleDao {
     Map<String, Object> params = Collections.singletonMap("name", name);
     try {
       return namedParameterJdbcOperations.queryForObject(
-          "select id, name, filter from title where name = :name", params, new TitleMapper()
-      );
+          "select id, name, filter from title where name = :name", params, new TitleMapper());
     } catch (Exception e) {
       throw new TitleDaoException(e);
     }
-
   }
 
   @Override
   public long insert(String titleName) {
-    MapSqlParameterSource parameters = new MapSqlParameterSource()
-        .addValue("name", titleName);
+    MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("name", titleName);
     KeyHolder keyHolder = new GeneratedKeyHolder();
-    namedParameterJdbcOperations
-        .update("insert into title (name) values (:name)", parameters, keyHolder);
+    namedParameterJdbcOperations.update(
+        "insert into title (name) values (:name)", parameters, keyHolder);
 
     try {
       return Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -73,23 +67,22 @@ public class TitleDaoJdbc implements TitleDao {
   @Override
   public void deleteById(long id) {
     Map<String, Object> params = Collections.singletonMap("id", id);
-    namedParameterJdbcOperations.update(
-        "delete from title where id = :id", params
-    );
+    namedParameterJdbcOperations.update("delete from title where id = :id", params);
   }
 
   @Override
   public void update(Title title) {
     namedParameterJdbcOperations.update(
         "update title set name = :name where id = :id",
-        Map.of("id", title.id(), "name", title.name())
-    );
+        Map.of("id", title.id(), "name", title.name()));
   }
 
   @Override
   public long count() {
-    Long count = namedParameterJdbcOperations.getJdbcOperations()
-        .queryForObject("select count(*) from title", Long.class);
+    Long count =
+        namedParameterJdbcOperations
+            .getJdbcOperations()
+            .queryForObject("select count(*) from title", Long.class);
     return count == null ? 0 : count;
   }
 
@@ -103,5 +96,4 @@ public class TitleDaoJdbc implements TitleDao {
       return new Title(id, name, filter);
     }
   }
-
 }

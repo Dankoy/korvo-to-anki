@@ -8,7 +8,6 @@ import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 
 public interface AnkiDataFabric {
 
-  AnkiData createAnkiData(Vocabulary vocabulary, GoogleTranslation googleTranslation,
-      List<Word> word);
-
+  AnkiData createAnkiData(
+      Vocabulary vocabulary, GoogleTranslation googleTranslation, List<Word> word);
 }

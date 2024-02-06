@@ -17,7 +17,6 @@ import ru.dankoy.korvotoanki.core.dto.AnkiDataDTO;
 import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,6 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
     return templateBuilder.writeTemplate(templateDataFull, "korvo-to-anki.ftl");
   }
 
-
   private List<List<AnkiData>> splitToPartitions(List<AnkiData> list, int cores) {
 
     if (list.size() < cores) {
@@ -73,7 +71,6 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
     return IntStream.range(0, NG)
         .mapToObj(i -> list.subList(G * i, Math.min(G * i + G, list.size())))
         .toList();
-
   }
 
   private void convertToDto(List<AnkiDataDTO> dtos, List<AnkiData> ankiDataList) {
@@ -93,11 +90,8 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
       dto.setMeanings(meaningString.replace("\n", ""));
 
       dtos.add(dto);
-
     }
 
     latch.countDown();
-
   }
-
 }

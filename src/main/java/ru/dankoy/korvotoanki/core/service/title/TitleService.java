@@ -18,5 +18,4 @@ public interface TitleService {
   void update(Title title);
 
   long count();
-
 }

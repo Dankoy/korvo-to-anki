@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.dao.title.TitleDao;
 import ru.dankoy.korvotoanki.core.domain.Title;
 
-
 @Service
 @RequiredArgsConstructor
 public class TitleServiceJdbc implements TitleService {

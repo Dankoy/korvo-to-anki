@@ -5,5 +5,4 @@ public class TitleDaoException extends KorvoRootException {
   public TitleDaoException(Exception e) {
     super(e);
   }
-
 }

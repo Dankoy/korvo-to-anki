@@ -5,5 +5,4 @@ import java.util.List;
 public interface ExporterService {
 
   void export(String sourceLanguage, String targetLanguage, List<String> options);
-
 }

@@ -7,7 +7,6 @@ import ru.dankoy.korvotoanki.core.dao.vocabulary.VocabularyDao;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 
-
 @Service
 @RequiredArgsConstructor
 public class VocabularyServiceJdbc implements VocabularyService {
@@ -23,7 +22,6 @@ public class VocabularyServiceJdbc implements VocabularyService {
   public List<Vocabulary> getByTitle(Title title) {
     return vocabularyDao.getByTitle(title);
   }
-
 
   @Override
   public long count() {

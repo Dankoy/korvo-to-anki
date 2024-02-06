@@ -18,8 +18,8 @@ import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 public class AnkiDataFabricImpl implements AnkiDataFabric {
 
   @Override
-  public AnkiData createAnkiData(Vocabulary vocabulary,
-      GoogleTranslation googleTranslation, List<Word> words) {
+  public AnkiData createAnkiData(
+      Vocabulary vocabulary, GoogleTranslation googleTranslation, List<Word> words) {
 
     return AnkiData.builder()
         .word(vocabulary.word())
@@ -38,36 +38,30 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     } else {
       return null;
     }
-
   }
 
   private String chooseTranscription(GoogleTranslation googleTranslation, List<Word> words) {
 
-    var dictionaryApiTranscription = words
-        .stream()
-        .map(Word::getPhonetic)
-        .filter(Objects::nonNull)
-        .findFirst();
+    var dictionaryApiTranscription =
+        words.stream().map(Word::getPhonetic).filter(Objects::nonNull).findFirst();
 
     if (dictionaryApiTranscription.isEmpty()) {
 
       // get first non-empty or null transcription
-      var dictionaryApiTranscriptionOptional = words
-          .stream()
-          .flatMap(w -> Stream.of(w.getPhonetics()))
-          .flatMap(List::stream)
-          .map(Phonetics::getText)
-          .filter(Objects::nonNull)
-          .findFirst();
+      var dictionaryApiTranscriptionOptional =
+          words.stream()
+              .flatMap(w -> Stream.of(w.getPhonetics()))
+              .flatMap(List::stream)
+              .map(Phonetics::getText)
+              .filter(Objects::nonNull)
+              .findFirst();
 
       // either dictionaryapi transcription or Google Translate transcription
-      return dictionaryApiTranscriptionOptional
-          .orElse(googleTranslation.getTranscription());
+      return dictionaryApiTranscriptionOptional.orElse(googleTranslation.getTranscription());
 
     } else {
       return dictionaryApiTranscription.get();
     }
-
   }
 
   private List<Meaning> chooseDefinitions(GoogleTranslation googleTranslation, List<Word> words) {
@@ -77,39 +71,37 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     // convert to anki definition
     for (Word daWord : words) {
 
-      for (ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning daMeaning : daWord.getMeanings()) {
+      for (ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning daMeaning :
+          daWord.getMeanings()) {
 
         var partOfSpeech = daMeaning.getPartOfSpeech();
         List<String> daSynonyms = daMeaning.getSynonyms();
         List<String> daAntonyms = daMeaning.getAntonyms();
 
-        var ankiDefs = daMeaning.getDefinitions()
-            .stream()
-            .map(d -> new Definition(d.getInfo(), d.getExample()))
-            .toList();
+        var ankiDefs =
+            daMeaning.getDefinitions().stream()
+                .map(d -> new Definition(d.getInfo(), d.getExample()))
+                .toList();
 
         result.add(new Meaning(partOfSpeech, ankiDefs, daSynonyms, daAntonyms));
-
       }
-
     }
 
     // if data from dictionaryapi is empty then take from Google translation
     if (result.isEmpty()) {
 
-      googleTranslation.getDefinitions()
-          .forEach(gtd -> result.add(
-              new Meaning(gtd.type(),
-                  Collections.singletonList(new Definition(gtd.info(), null)),
-                  new ArrayList<>(),
-                  new ArrayList<>()
-              )
-          ));
+      googleTranslation
+          .getDefinitions()
+          .forEach(
+              gtd ->
+                  result.add(
+                      new Meaning(
+                          gtd.type(),
+                          Collections.singletonList(new Definition(gtd.info(), null)),
+                          new ArrayList<>(),
+                          new ArrayList<>())));
     }
 
     return result;
-
   }
-
-
 }

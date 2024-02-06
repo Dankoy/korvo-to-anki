@@ -39,40 +39,35 @@ import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 
-
 @DisplayName("Test ExporterServiceAnkiAsync ")
-@SpringBootTest(classes = {VocabularyServiceJdbc.class,
-    AnkiConverterServiceImpl.class,
-    TemplateCreatorServiceImpl.class,
-    FilesParams.class,
-    StateServiceImpl.class,
-    IOServiceFile.class,
-    ExporterServiceAnkiAsync.class,
-    FileProviderServiceImpl.class,
-    FileNameFormatterServiceImpl.class,
-    DateTimeProviderImpl.class})
+@SpringBootTest(
+    classes = {
+      VocabularyServiceJdbc.class,
+      AnkiConverterServiceImpl.class,
+      TemplateCreatorServiceImpl.class,
+      FilesParams.class,
+      StateServiceImpl.class,
+      IOServiceFile.class,
+      ExporterServiceAnkiAsync.class,
+      FileProviderServiceImpl.class,
+      FileNameFormatterServiceImpl.class,
+      DateTimeProviderImpl.class
+    })
 class ExporterServiceAnkiAsyncTest {
 
-  @MockBean
-  private VocabularyService vocabularyService;
+  @MockBean private VocabularyService vocabularyService;
 
-  @MockBean
-  private AnkiConverterService ankiConverterService;
+  @MockBean private AnkiConverterService ankiConverterService;
 
-  @MockBean
-  private TemplateCreatorService templateCreatorService;
+  @MockBean private TemplateCreatorService templateCreatorService;
 
-  @MockBean
-  private FilesProperties filesProperties;
+  @MockBean private FilesProperties filesProperties;
 
-  @MockBean
-  private IOService ioService;
+  @MockBean private IOService ioService;
 
-  @MockBean
-  private StateService stateService;
+  @MockBean private StateService stateService;
 
-  @Autowired
-  private ExporterServiceAnkiAsync exporterServiceAnkiAsync;
+  @Autowired private ExporterServiceAnkiAsync exporterServiceAnkiAsync;
 
   @DisplayName("export one word without state")
   @Test
@@ -101,7 +96,6 @@ class ExporterServiceAnkiAsyncTest {
     Mockito.verify(stateService, times(1)).saveState(vocabularies);
     Mockito.verify(templateCreatorService, times(1)).create(any());
     Mockito.verify(ioService, times(1)).print(any());
-
   }
 
   @DisplayName("export one word with state")
@@ -131,7 +125,6 @@ class ExporterServiceAnkiAsyncTest {
     Mockito.verify(stateService, times(0)).saveState(vocabularies);
     Mockito.verify(templateCreatorService, times(0)).create(any());
     Mockito.verify(ioService, times(0)).print(any());
-
   }
 
   @DisplayName("export many words with state.")
@@ -139,10 +132,8 @@ class ExporterServiceAnkiAsyncTest {
   void exportManyWordsWithState() {
 
     var templ = "templ";
-    List<Vocabulary> vocabularies = Stream.generate(this::correctVocabularies)
-        .limit(10)
-        .flatMap(Collection::stream)
-        .toList();
+    List<Vocabulary> vocabularies =
+        Stream.generate(this::correctVocabularies).limit(10).flatMap(Collection::stream).toList();
     var sourceLanguage = "en";
     var targetLanguage = "ru";
     List<String> options = Stream.of("t").toList();
@@ -164,7 +155,6 @@ class ExporterServiceAnkiAsyncTest {
     Mockito.verify(stateService, times(0)).saveState(vocabularies);
     Mockito.verify(templateCreatorService, times(0)).create(any());
     Mockito.verify(ioService, times(0)).print(any());
-
   }
 
   @DisplayName("export many words without state. Should split list in two halves.")
@@ -172,10 +162,8 @@ class ExporterServiceAnkiAsyncTest {
   void exportManyWordsWithoutState() {
 
     var templ = "templ";
-    List<Vocabulary> vocabularies = Stream.generate(this::correctVocabularies)
-        .limit(10)
-        .flatMap(Collection::stream)
-        .toList();
+    List<Vocabulary> vocabularies =
+        Stream.generate(this::correctVocabularies).limit(10).flatMap(Collection::stream).toList();
     var sourceLanguage = "en";
     var targetLanguage = "ru";
     List<String> options = Stream.of("t").toList();
@@ -197,21 +185,15 @@ class ExporterServiceAnkiAsyncTest {
     Mockito.verify(stateService, times(1)).saveState(vocabularies);
     Mockito.verify(templateCreatorService, times(1)).create(any());
     Mockito.verify(ioService, times(1)).print(any());
-
   }
-
 
   private List<Vocabulary> correctVocabularies() {
 
     var title = new Title(1L, "Title1", 1L);
 
     return Stream.of(
-        new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0,
-            null,
-            null,
-            0)
-    ).toList();
-
+            new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0, null, null, 0))
+        .toList();
   }
 
   private AnkiData getOneFromGoogleTranslate(Vocabulary vocabulary, GoogleTranslation gtResult) {
@@ -219,30 +201,29 @@ class ExporterServiceAnkiAsyncTest {
     return AnkiData.builder()
         .book(vocabulary.title().name())
         .translations(gtResult.getTranslations())
-        .meanings(gtResult.getDefinitions().stream()
-            .map(gtd ->
-                new Meaning(gtd.type(),
-                    Collections.singletonList(
-                        new ru.dankoy.korvotoanki.core.domain.anki.Definition(gtd.info(), null)),
-                    new ArrayList<>(),
-                    new ArrayList<>()
-                )
-            ).toList())
+        .meanings(
+            gtResult.getDefinitions().stream()
+                .map(
+                    gtd ->
+                        new Meaning(
+                            gtd.type(),
+                            Collections.singletonList(
+                                new ru.dankoy.korvotoanki.core.domain.anki.Definition(
+                                    gtd.info(), null)),
+                            new ArrayList<>(),
+                            new ArrayList<>()))
+                .toList())
         .myExample(vocabulary.prevContext() + vocabulary.word() + vocabulary.nextContext())
         .transcription(gtResult.getTranscription())
         .build();
-
   }
 
   private GoogleTranslation getOneGt() {
 
-    var gtResult = new GoogleTranslation(
-        "transcription"
-    );
+    var gtResult = new GoogleTranslation("transcription");
     gtResult.getDefinitions().add(new Definition("type", "info"));
     gtResult.getTranslations().add("tr1");
 
     return gtResult;
-
   }
 }

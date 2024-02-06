@@ -15,24 +15,24 @@ public class GoogleTranslateCommand {
   private final GoogleTranslator googleTranslator;
   private final ObjectMapperService objectMapperService;
 
-
   // gt --text hello --options t,at,md,bd
-  @Command(command = "google-translate",
+  @Command(
+      command = "google-translate",
       alias = "gt",
       description = "Translate text using google translate")
   public String translate(
       @Option(required = true, description = "text to translate") String text,
-      @Option(required = false, defaultValue = "en", description = "source language") String sourceLanguage,
-      @Option(required = false, defaultValue = "ru", description = "target language") String targetLanguage,
-      @Option(required = false, defaultValue = "t,at,md,rm", description = "options") String[] options
-  ) {
+      @Option(required = false, defaultValue = "en", description = "source language")
+          String sourceLanguage,
+      @Option(required = false, defaultValue = "ru", description = "target language")
+          String targetLanguage,
+      @Option(required = false, defaultValue = "t,at,md,rm", description = "options")
+          String[] options) {
 
     List<String> optionsList = Arrays.asList(options);
 
-    var translatedString = googleTranslator.translate(text, targetLanguage, sourceLanguage,
-        optionsList);
+    var translatedString =
+        googleTranslator.translate(text, targetLanguage, sourceLanguage, optionsList);
     return objectMapperService.convertToString(translatedString);
   }
-
-
 }

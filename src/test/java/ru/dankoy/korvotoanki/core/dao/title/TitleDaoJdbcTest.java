@@ -15,16 +15,14 @@ import org.springframework.context.annotation.Import;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
-
 @DisplayName("Test TitleDaoJdbc ")
 @JdbcTest
 @Import(TitleDaoJdbc.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
+@AutoConfigureTestDatabase(
+    replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
 class TitleDaoJdbcTest {
 
-  @Autowired
-  private TitleDaoJdbc titleDaoJdbc;
-
+  @Autowired private TitleDaoJdbc titleDaoJdbc;
 
   @DisplayName("getAll")
   @Test
@@ -35,7 +33,6 @@ class TitleDaoJdbcTest {
     List<Title> titles = titleDaoJdbc.getAll();
 
     assertThat(titles).isNotEmpty().isEqualTo(correct);
-
   }
 
   @DisplayName("getById existing")
@@ -47,22 +44,17 @@ class TitleDaoJdbcTest {
 
     var expected = titleDaoJdbc.getById(id);
 
-    assertThatCode(() -> titleDaoJdbc.getById(id))
-        .doesNotThrowAnyException();
+    assertThatCode(() -> titleDaoJdbc.getById(id)).doesNotThrowAnyException();
 
     assertThat(expected).isEqualTo(correct.get(0));
-
   }
 
   @DisplayName("getById non existing")
   @Test
   void getByIdNonExistent() {
 
-    assertThatThrownBy(() -> titleDaoJdbc.getById(2L))
-        .isInstanceOf(TitleDaoException.class);
-
+    assertThatThrownBy(() -> titleDaoJdbc.getById(2L)).isInstanceOf(TitleDaoException.class);
   }
-
 
   @DisplayName("getByName existing")
   @Test
@@ -73,11 +65,9 @@ class TitleDaoJdbcTest {
 
     var expected = titleDaoJdbc.getByName(name);
 
-    assertThatCode(() -> titleDaoJdbc.getByName(name))
-        .doesNotThrowAnyException();
+    assertThatCode(() -> titleDaoJdbc.getByName(name)).doesNotThrowAnyException();
 
     assertThat(expected).isEqualTo(correct.get(0));
-
   }
 
   @DisplayName("getByName non existing")
@@ -86,11 +76,8 @@ class TitleDaoJdbcTest {
 
     var name = "Title2";
 
-    assertThatThrownBy(() -> titleDaoJdbc.getByName(name))
-        .isInstanceOf(TitleDaoException.class);
-
+    assertThatThrownBy(() -> titleDaoJdbc.getByName(name)).isInstanceOf(TitleDaoException.class);
   }
-
 
   @DisplayName("insert")
   @Test
@@ -105,7 +92,6 @@ class TitleDaoJdbcTest {
     var actual = titleDaoJdbc.getById(id);
 
     assertThat(actual).isEqualTo(title);
-
   }
 
   @DisplayName("deleteById existing")
@@ -114,14 +100,11 @@ class TitleDaoJdbcTest {
 
     var id = 1L;
 
-    assertThatCode(() -> titleDaoJdbc.getById(id))
-        .doesNotThrowAnyException();
+    assertThatCode(() -> titleDaoJdbc.getById(id)).doesNotThrowAnyException();
 
     titleDaoJdbc.deleteById(id);
 
-    assertThatThrownBy(() -> titleDaoJdbc.getById(id))
-        .isInstanceOf(TitleDaoException.class);
-
+    assertThatThrownBy(() -> titleDaoJdbc.getById(id)).isInstanceOf(TitleDaoException.class);
   }
 
   @DisplayName("deleteById non existing")
@@ -130,9 +113,7 @@ class TitleDaoJdbcTest {
 
     var id = 2L;
 
-    assertThatCode(() -> titleDaoJdbc.deleteById(id))
-        .doesNotThrowAnyException();
-
+    assertThatCode(() -> titleDaoJdbc.deleteById(id)).doesNotThrowAnyException();
   }
 
   @DisplayName("update existing")
@@ -148,7 +129,6 @@ class TitleDaoJdbcTest {
     var actual = titleDaoJdbc.getById(id);
 
     assertThat(actual).isEqualTo(toUpdate);
-
   }
 
   @DisplayName("update non existing")
@@ -159,9 +139,7 @@ class TitleDaoJdbcTest {
 
     var toUpdate = new Title(id, "updated", 1L);
 
-    assertThatCode(() -> titleDaoJdbc.update(toUpdate))
-        .doesNotThrowAnyException();
-
+    assertThatCode(() -> titleDaoJdbc.update(toUpdate)).doesNotThrowAnyException();
   }
 
   @Test
@@ -172,13 +150,10 @@ class TitleDaoJdbcTest {
     var actual = titleDaoJdbc.count();
 
     assertThat(actual).isEqualTo(correct);
-
   }
 
   private List<Title> correctTitles() {
 
     return Collections.singletonList(new Title(1L, "Title1", 1));
-
   }
-
 }

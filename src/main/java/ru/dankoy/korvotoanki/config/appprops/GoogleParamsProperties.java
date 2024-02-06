@@ -1,11 +1,9 @@
 package ru.dankoy.korvotoanki.config.appprops;
 
-
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
 
 @Getter
 @RequiredArgsConstructor
@@ -22,5 +20,4 @@ public class GoogleParamsProperties {
   private final int ssel;
   private final int tsel;
   private final List<String> dt;
-
 }

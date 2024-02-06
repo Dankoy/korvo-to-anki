@@ -6,5 +6,4 @@ import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 public interface DictionaryService {
 
   List<Word> define(String word);
-
 }

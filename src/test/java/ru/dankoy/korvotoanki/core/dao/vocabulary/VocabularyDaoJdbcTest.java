@@ -14,18 +14,16 @@ import org.springframework.jdbc.core.JdbcOperations;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 
-
 @DisplayName("Test VocabularyDaoJdbc ")
 @JdbcTest
 @Import(VocabularyDaoJdbc.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
+@AutoConfigureTestDatabase(
+    replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
 class VocabularyDaoJdbcTest {
 
-  @Autowired
-  private VocabularyDaoJdbc vocabularyDaoJdbc;
+  @Autowired private VocabularyDaoJdbc vocabularyDaoJdbc;
 
-  @Autowired
-  private JdbcOperations jdbcOperations;
+  @Autowired private JdbcOperations jdbcOperations;
 
   @DisplayName("getAll return non empty")
   @Test
@@ -36,7 +34,6 @@ class VocabularyDaoJdbcTest {
     List<Vocabulary> actual = vocabularyDaoJdbc.getAll();
 
     assertThat(actual).isNotEmpty().isEqualTo(correct);
-
   }
 
   @DisplayName("getAll return empty list")
@@ -47,7 +44,6 @@ class VocabularyDaoJdbcTest {
     List<Vocabulary> actual = vocabularyDaoJdbc.getAll();
 
     assertThat(actual).isEmpty();
-
   }
 
   @DisplayName("getByTitle return found")
@@ -61,7 +57,6 @@ class VocabularyDaoJdbcTest {
     List<Vocabulary> actual = vocabularyDaoJdbc.getByTitle(title);
 
     assertThat(actual).isNotEmpty().isEqualTo(correct);
-
   }
 
   @DisplayName("getByTitle return empty list")
@@ -73,7 +68,6 @@ class VocabularyDaoJdbcTest {
     List<Vocabulary> actual = vocabularyDaoJdbc.getByTitle(title);
 
     assertThat(actual).isEmpty();
-
   }
 
   @DisplayName("count return non empty")
@@ -85,7 +79,6 @@ class VocabularyDaoJdbcTest {
     var actual = vocabularyDaoJdbc.count();
 
     assertThat(actual).isEqualTo(correct);
-
   }
 
   @DisplayName("count return 0")
@@ -96,7 +89,6 @@ class VocabularyDaoJdbcTest {
     var actual = vocabularyDaoJdbc.count();
 
     assertThat(actual).isZero();
-
   }
 
   private List<Vocabulary> correctVocabularies() {
@@ -104,17 +96,19 @@ class VocabularyDaoJdbcTest {
     var title = new Title(1L, "Title1", 1L);
 
     return Stream.of(
-        new Vocabulary("contemplating", title, 1695239837, 1695239837, 1695240137, 0,
-            "combined forces.” He hoped to the gods it didn’t come to that.\n"
-                + "She fell silent, ",
-            " a gratifying slaughter. Maybe even the final battle that would confirm her mastery. Most of all",
-            0),
-        new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0,
-            null,
-            null,
-            0)
-    ).toList();
-
+            new Vocabulary(
+                "contemplating",
+                title,
+                1695239837,
+                1695239837,
+                1695240137,
+                0,
+                "combined forces.” He hoped to the gods it didn’t come to that.\n"
+                    + "She fell silent, ",
+                " a gratifying slaughter. Maybe even the final battle that would confirm her"
+                    + " mastery. Most of all",
+                0),
+            new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0, null, null, 0))
+        .toList();
   }
-
 }

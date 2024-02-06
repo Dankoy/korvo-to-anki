@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki.config;
 
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -32,19 +31,15 @@ public class OkHttpConfig {
     if (debugProperties.isDebug()) {
       var interceptor = new HttpLoggingInterceptor();
       interceptor.setLevel(Level.BODY);
-      httpClient.interceptors().add(
-          interceptor
-      );
+      httpClient.interceptors().add(interceptor);
     }
 
-    httpClient.interceptors().add(
-        new UserAgentInterceptor("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-    );
+    httpClient
+        .interceptors()
+        .add(new UserAgentInterceptor("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"));
 
     return httpClient.build();
-
   }
-
 
   static class UserAgentInterceptor implements Interceptor {
 
@@ -57,13 +52,13 @@ public class OkHttpConfig {
     @Override
     public Response intercept(Chain chain) throws IOException {
       Request originalRequest = chain.request();
-      Request requestWithUserAgent = originalRequest.newBuilder()
-          .removeHeader("User-Agent")
-          .addHeader("User-Agent", userAgent)
-          .build();
+      Request requestWithUserAgent =
+          originalRequest
+              .newBuilder()
+              .removeHeader("User-Agent")
+              .addHeader("User-Agent", userAgent)
+              .build();
       return chain.proceed(requestWithUserAgent);
     }
-
   }
-
 }

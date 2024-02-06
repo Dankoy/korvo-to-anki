@@ -31,26 +31,26 @@ import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
 
-
 @DisplayName("Test AnkiConverterServiceImpl ")
-@SpringBootTest(classes = {AnkiConverterServiceImpl.class, DictionaryServiceOkHttp.class,
-    GoogleTranslatorOkHttp.class, AnkiDataFabricImpl.class, ExternalApiParams.class})
+@SpringBootTest(
+    classes = {
+      AnkiConverterServiceImpl.class,
+      DictionaryServiceOkHttp.class,
+      GoogleTranslatorOkHttp.class,
+      AnkiDataFabricImpl.class,
+      ExternalApiParams.class
+    })
 class AnkiConverterServiceImplTest {
 
-  @MockBean
-  private DictionaryService dictionaryService;
+  @MockBean private DictionaryService dictionaryService;
 
-  @MockBean
-  private GoogleTranslator googleTranslator;
+  @MockBean private GoogleTranslator googleTranslator;
 
-  @MockBean
-  private AnkiDataFabric ankiDataFabric;
+  @MockBean private AnkiDataFabric ankiDataFabric;
 
-  @MockBean
-  private ExternalApiProperties externalApiProperties;
+  @MockBean private ExternalApiProperties externalApiProperties;
 
-  @Autowired
-  private AnkiConverterService ankiConverterService;
+  @Autowired private AnkiConverterService ankiConverterService;
 
   @DisplayName("convert with non english source and dictionary api enabled")
   @Test
@@ -67,8 +67,8 @@ class AnkiConverterServiceImplTest {
 
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(true);
 
-    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage,
-        options)).willReturn(gtResult);
+    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
+        .willReturn(gtResult);
 
     given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
 
@@ -78,13 +78,10 @@ class AnkiConverterServiceImplTest {
 
     Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
     Mockito.verify(googleTranslator, times(1))
-        .translate(vocabulary.word(), targetLanguage, sourceLanguage,
-            options);
+        .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(0)).define(vocabulary.word());
     Mockito.verify(externalApiProperties, times(1)).isDictionaryApiEnabled();
-
   }
-
 
   @DisplayName("convert with non english source and dictionary api disabled")
   @Test
@@ -100,8 +97,8 @@ class AnkiConverterServiceImplTest {
     var ankiData = getOneFromGoogleTranslate(vocabulary, gtResult);
 
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(false);
-    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage,
-        options)).willReturn(gtResult);
+    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
+        .willReturn(gtResult);
     given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
@@ -110,11 +107,9 @@ class AnkiConverterServiceImplTest {
 
     Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
     Mockito.verify(googleTranslator, times(1))
-        .translate(vocabulary.word(), targetLanguage, sourceLanguage,
-            options);
+        .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(0)).define(vocabulary.word());
     Mockito.verify(externalApiProperties, times(1)).isDictionaryApiEnabled();
-
   }
 
   @DisplayName("convert with english source and dictionary api disabled")
@@ -131,8 +126,8 @@ class AnkiConverterServiceImplTest {
     var ankiData = getOneFromGoogleTranslate(vocabulary, gtResult);
 
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(false);
-    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage,
-        options)).willReturn(gtResult);
+    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
+        .willReturn(gtResult);
     given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
@@ -141,13 +136,10 @@ class AnkiConverterServiceImplTest {
 
     Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
     Mockito.verify(googleTranslator, times(1))
-        .translate(vocabulary.word(), targetLanguage, sourceLanguage,
-            options);
+        .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(0)).define(vocabulary.word());
     Mockito.verify(externalApiProperties, times(1)).isDictionaryApiEnabled();
-
   }
-
 
   @DisplayName("convert with english source and dictionary api enabled")
   @Test
@@ -163,8 +155,8 @@ class AnkiConverterServiceImplTest {
     var ankiData = getOneFromGoogleTranslate(vocabulary, gtResult);
 
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(true);
-    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage,
-        options)).willReturn(gtResult);
+    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
+        .willReturn(gtResult);
     given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
     given(dictionaryService.define(vocabulary.word())).willReturn(daResult);
 
@@ -174,58 +166,46 @@ class AnkiConverterServiceImplTest {
 
     Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
     Mockito.verify(googleTranslator, times(1))
-        .translate(vocabulary.word(), targetLanguage, sourceLanguage,
-            options);
+        .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(1)).define(vocabulary.word());
     Mockito.verify(externalApiProperties, times(1)).isDictionaryApiEnabled();
-
   }
-
 
   private AnkiData getOneFromGoogleTranslate(Vocabulary vocabulary, GoogleTranslation gtResult) {
 
     return AnkiData.builder()
         .book(vocabulary.title().name())
         .translations(gtResult.getTranslations())
-        .meanings(gtResult.getDefinitions().stream()
-            .map(gtd ->
-                new Meaning(gtd.type(),
-                    Collections.singletonList(
-                        new ru.dankoy.korvotoanki.core.domain.anki.Definition(gtd.info(), null)),
-                    new ArrayList<>(),
-                    new ArrayList<>()
-                )
-            ).toList())
+        .meanings(
+            gtResult.getDefinitions().stream()
+                .map(
+                    gtd ->
+                        new Meaning(
+                            gtd.type(),
+                            Collections.singletonList(
+                                new ru.dankoy.korvotoanki.core.domain.anki.Definition(
+                                    gtd.info(), null)),
+                            new ArrayList<>(),
+                            new ArrayList<>()))
+                .toList())
         .myExample(vocabulary.prevContext() + vocabulary.word() + vocabulary.nextContext())
         .transcription(gtResult.getTranscription())
         .build();
-
   }
 
   private GoogleTranslation getOneGt() {
 
-    var gtResult = new GoogleTranslation(
-        "transcription"
-    );
+    var gtResult = new GoogleTranslation("transcription");
     gtResult.getDefinitions().add(new Definition("type", "info"));
     gtResult.getTranslations().add("tr1");
 
     return gtResult;
-
   }
 
   private Vocabulary getOneVocab() {
 
-    return new Vocabulary("word",
-        new Title(1L, "title1", 1L),
-        1L,
-        1L,
-        1L,
-        1L,
-        "prev_context",
-        "next_context",
-        0L);
-
+    return new Vocabulary(
+        "word", new Title(1L, "title1", 1L), 1L, 1L, 1L, 1L, "prev_context", "next_context", 0L);
   }
 
   private List<Word> getWords(boolean isEmpty) {
@@ -235,24 +215,25 @@ class AnkiConverterServiceImplTest {
     } else {
 
       return Stream.of(
-          new Word(
-              "data",
-              "phonetic",
-              Stream.of(new Phonetics("text", "audio", "source")).toList(),
-              Stream.of(new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
-                  "ps",
-                  Stream.of(new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
-                      "info",
-                      Stream.of("synonym1").toList(),
-                      Stream.of("antonym1").toList(),
-                      "example"
-                  )).toList(),
-                  Stream.of("synonym1").toList(),
-                  Stream.of("antonym1").toList()
-              )).toList()
-          )
-      ).toList();
+              new Word(
+                  "data",
+                  "phonetic",
+                  Stream.of(new Phonetics("text", "audio", "source")).toList(),
+                  Stream.of(
+                          new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                              "ps",
+                              Stream.of(
+                                      new ru.dankoy.korvotoanki.core.domain.dictionaryapi
+                                          .Definition(
+                                          "info",
+                                          Stream.of("synonym1").toList(),
+                                          Stream.of("antonym1").toList(),
+                                          "example"))
+                                  .toList(),
+                              Stream.of("synonym1").toList(),
+                              Stream.of("antonym1").toList()))
+                      .toList()))
+          .toList();
     }
-
   }
 }

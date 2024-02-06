@@ -9,5 +9,4 @@ public class GoogleTranslatorException extends KorvoRootException {
   public GoogleTranslatorException(String message, Exception e) {
     super(message, e);
   }
-
 }

@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import ru.dankoy.korvotoanki.config.TemplateBuilderConfig;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 import ru.dankoy.korvotoanki.core.domain.anki.Definition;
@@ -24,15 +23,12 @@ import ru.dankoy.korvotoanki.core.domain.anki.Meaning;
 import ru.dankoy.korvotoanki.core.dto.AnkiDataDTO;
 import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 
-
 @SpringBootTest(classes = {TemplateBuilder.class, TemplateBuilderConfig.class})
-//@Import(value = TemplateBuilderConfig.class)
+// @Import(value = TemplateBuilderConfig.class)
 @DisplayName("Test TemplateBuilderImpl ")
 class TemplateBuilderImplTest {
 
-
-  @Autowired
-  private TemplateBuilder templateBuilder;
+  @Autowired private TemplateBuilder templateBuilder;
 
   @DisplayName("writeTemplate meaning export throws exception")
   @Test
@@ -42,7 +38,6 @@ class TemplateBuilderImplTest {
 
     assertThatThrownBy(() -> templateBuilder.writeTemplate(templateData, "meaning.ftl"))
         .isInstanceOf(KorvoRootException.class);
-
   }
 
   @DisplayName("writeTemplate anki export")
@@ -51,23 +46,24 @@ class TemplateBuilderImplTest {
 
     List<AnkiData> list = new ArrayList<>();
 
-    var meaning = new Meaning("type",
-        Collections.singletonList(new Definition("info", "example")),
-        Collections.singletonList("synonym1"),
-        Collections.singletonList("antonym1")
-    );
+    var meaning =
+        new Meaning(
+            "type",
+            Collections.singletonList(new Definition("info", "example")),
+            Collections.singletonList("synonym1"),
+            Collections.singletonList("antonym1"));
 
-    var ankiData = AnkiData.builder()
-        .word("word")
-        .book("book")
-        .transcription("transcription")
-        .myExample("my_example")
-        .translations(Collections.singletonList("translation1"))
-        .meanings(Collections.singletonList(meaning))
-        .build();
+    var ankiData =
+        AnkiData.builder()
+            .word("word")
+            .book("book")
+            .transcription("transcription")
+            .myExample("my_example")
+            .translations(Collections.singletonList("translation1"))
+            .meanings(Collections.singletonList(meaning))
+            .build();
 
-    var path = Paths.get(
-        getClass().getResource("/templates/correct/correct-meaning.ftl").toURI());
+    var path = Paths.get(getClass().getResource("/templates/correct/correct-meaning.ftl").toURI());
     var correct = String.join(System.lineSeparator(), Files.readAllLines(path));
 
     Map<String, Object> templateData = new HashMap<>();
@@ -75,24 +71,25 @@ class TemplateBuilderImplTest {
     var t = templateBuilder.writeTemplate(templateData, "meaning.ftl");
 
     assertThat(t).isEqualTo(correct);
-
   }
 
   @DisplayName("writeTemplate meaning export")
   @Test
   void writeTemplateAnkiExport() throws IOException, URISyntaxException {
 
-    var ankiData = AnkiDataDTO.builder()
-        .word("word")
-        .book("book")
-        .transcription("transcription")
-        .myExample("my_example")
-        .translations(Collections.singletonList("translation1"))
-        .meanings("meanings")
-        .build();
+    var ankiData =
+        AnkiDataDTO.builder()
+            .word("word")
+            .book("book")
+            .transcription("transcription")
+            .myExample("my_example")
+            .translations(Collections.singletonList("translation1"))
+            .meanings("meanings")
+            .build();
 
-    var path = Paths.get(
-        getClass().getResource("/templates/correct/correct-korvo-to-anki-correct.ftl").toURI());
+    var path =
+        Paths.get(
+            getClass().getResource("/templates/correct/correct-korvo-to-anki-correct.ftl").toURI());
     var correct = String.join(System.lineSeparator(), Files.readAllLines(path));
 
     Map<String, Object> templateData = new HashMap<>();
@@ -100,7 +97,5 @@ class TemplateBuilderImplTest {
     var t = templateBuilder.writeTemplate(templateData, "korvo-to-anki.ftl");
 
     assertThat(t).isEqualTo(correct);
-
   }
-
 }

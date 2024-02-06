@@ -13,13 +13,11 @@ import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
 @SpringBootTest(classes = {DateTimeProviderImpl.class})
 @DisplayName("Test DateTimeProviderImpl ")
 class DateTimeProviderImplTest {
 
-  @Autowired
-  private DateTimeProviderImpl dateTimeProvider;
+  @Autowired private DateTimeProviderImpl dateTimeProvider;
 
   @Test
   void now() {
@@ -37,10 +35,6 @@ class DateTimeProviderImplTest {
       var actual = dateTimeProvider.now();
 
       assertThat(actual).isEqualTo(correct);
-
     }
-
   }
-
-
 }

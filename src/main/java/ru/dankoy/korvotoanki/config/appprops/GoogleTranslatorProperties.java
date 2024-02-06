@@ -5,5 +5,4 @@ public interface GoogleTranslatorProperties {
   String getGoogleTranslatorUrl();
 
   GoogleParamsProperties getGoogleParamsProperties();
-
 }

@@ -23,7 +23,6 @@ import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
-
 @ConditionalOnProperty(prefix = "korvo-to-anki", value = "async", havingValue = "true")
 @Slf4j
 @Service
@@ -41,10 +40,13 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   private CountDownLatch latch;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
-  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject
+  // beans
   @Lookup
-  public IOService getIoService(FileProviderService fileProviderService,
-      FileNameFormatterService fileNameFormatterService, String fileName) {
+  public IOService getIoService(
+      FileProviderService fileProviderService,
+      FileNameFormatterService fileNameFormatterService,
+      String fileName) {
     return null;
   }
 
@@ -85,7 +87,6 @@ public class ExporterServiceAnkiAsync implements ExporterService {
             () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
         executorService.execute(
             () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
-
       }
 
       try {
@@ -99,10 +100,11 @@ public class ExporterServiceAnkiAsync implements ExporterService {
 
       var template = templateCreatorService.create(ankiDataList);
 
-      var ioService = getIoService(
-          getFileProviderService(),
-          getFileNameFormatterService(),
-          filesProperties.getExportFileName());
+      var ioService =
+          getIoService(
+              getFileProviderService(),
+              getFileNameFormatterService(),
+              filesProperties.getExportFileName());
       ioService.print(template);
 
       stateService.saveState(filtered);
@@ -110,11 +112,14 @@ public class ExporterServiceAnkiAsync implements ExporterService {
     } else {
       log.info("State is the same as database. Export is not necessary.");
     }
-
   }
 
-  private void asyncFunc(List<AnkiData> ankiDataList, List<Vocabulary> vocabularies,
-      String sourceLanguage, String targetLanguage, List<String> options) {
+  private void asyncFunc(
+      List<AnkiData> ankiDataList,
+      List<Vocabulary> vocabularies,
+      String sourceLanguage,
+      String targetLanguage,
+      List<String> options) {
     for (Vocabulary v : vocabularies) {
       var i = atomicInteger.getAndIncrement();
       if (i != 0 && i % STEP_SIZE == 0) {
@@ -123,7 +128,9 @@ public class ExporterServiceAnkiAsync implements ExporterService {
         sleep(10000);
       }
       var ankiData = ankiConverterService.convert(v, sourceLanguage, targetLanguage, options);
-      log.info("Thread {} obtained new anki for word {}", Thread.currentThread().getName(),
+      log.info(
+          "Thread {} obtained new anki for word {}",
+          Thread.currentThread().getName(),
           ankiData.getWord());
       ankiDataList.add(ankiData);
     }
@@ -138,8 +145,5 @@ public class ExporterServiceAnkiAsync implements ExporterService {
       Thread.currentThread().interrupt();
       throw new KorvoRootException("Interrupted while trying to get data", e);
     }
-
   }
-
-
 }

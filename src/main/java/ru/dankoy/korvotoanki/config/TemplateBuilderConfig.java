@@ -9,11 +9,9 @@ import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilderImpl;
 @Configuration
 public class TemplateBuilderConfig {
 
-
   @Bean
   TemplateBuilder templateBuilder(
       @Value("${spring.freemarker.template-loader-path}") String templatesDir) {
     return new TemplateBuilderImpl(templatesDir);
   }
-
 }

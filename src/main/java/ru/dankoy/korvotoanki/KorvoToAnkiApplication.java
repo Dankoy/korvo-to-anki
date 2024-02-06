@@ -9,5 +9,4 @@ public class KorvoToAnkiApplication {
   public static void main(String[] args) {
     SpringApplication.run(KorvoToAnkiApplication.class, args);
   }
-
 }
