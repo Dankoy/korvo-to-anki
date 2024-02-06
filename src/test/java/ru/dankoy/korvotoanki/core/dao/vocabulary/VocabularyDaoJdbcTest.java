@@ -105,7 +105,8 @@ class VocabularyDaoJdbcTest {
                 0,
                 "combined forces.” He hoped to the gods it didn’t come to that.\n"
                     + "She fell silent, ",
-                " a gratifying slaughter. Maybe even the final battle that would confirm her mastery. Most of all",
+                " a gratifying slaughter. Maybe even the final battle that would confirm her"
+                    + " mastery. Most of all",
                 0),
             new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0, null, null, 0))
         .toList();

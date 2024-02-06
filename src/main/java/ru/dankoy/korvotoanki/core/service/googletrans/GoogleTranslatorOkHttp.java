@@ -30,7 +30,8 @@ public class GoogleTranslatorOkHttp implements GoogleTranslator {
       cacheManager = "cacheManager",
       value = "googleTranslations",
       key =
-          "#text + #targetLanguage + #sourceLanguage + T(java.lang.Integer).toString(#dtOptions.hashCode())")
+          "#text + #targetLanguage + #sourceLanguage +"
+              + " T(java.lang.Integer).toString(#dtOptions.hashCode())")
   @Override
   public GoogleTranslation translate(
       String text, String targetLanguage, String sourceLanguage, List<String> dtOptions) {
