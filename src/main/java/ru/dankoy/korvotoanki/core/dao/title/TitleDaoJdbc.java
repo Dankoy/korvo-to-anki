@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
-
 @RequiredArgsConstructor
 @Component
 public class TitleDaoJdbc implements TitleDao {

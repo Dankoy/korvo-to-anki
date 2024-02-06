@@ -35,7 +35,6 @@ public class IOServiceFile implements IOService {
     } else {
       this.file = fileProviderService.provide(fileName);
     }
-
   }
 
   @Override
@@ -47,7 +46,6 @@ public class IOServiceFile implements IOService {
       throw new IoException(e);
     }
   }
-
 
   @Override
   public String readAllLines() throws IOException {
@@ -75,5 +73,4 @@ public class IOServiceFile implements IOService {
   public long readLong() {
     throw new UnsupportedOperationException();
   }
-
 }

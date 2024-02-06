@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Import;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
-
 @DisplayName("Test TitleDaoJdbc ")
 @JdbcTest
 @Import(TitleDaoJdbc.class)

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.exceptions.ObjectMapperException;
 
-
 @Service
 @RequiredArgsConstructor
 public class ObjectMapperServiceImpl implements ObjectMapperService {
@@ -21,5 +20,4 @@ public class ObjectMapperServiceImpl implements ObjectMapperService {
           String.format("Couldn't convert object of type '%s' to string", object.getClass()), e);
     }
   }
-
 }

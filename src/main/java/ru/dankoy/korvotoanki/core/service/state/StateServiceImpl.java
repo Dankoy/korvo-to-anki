@@ -17,7 +17,6 @@ import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor

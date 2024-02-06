@@ -6,7 +6,6 @@ public interface TemplateBuilder {
 
   String writeTemplate(Map<String, Object> templateData, String templateName);
 
-  String loadTemplateFromString(String templateName, String templateString, Map<String,
-      Object> templateData);
-
+  String loadTemplateFromString(
+      String templateName, String templateString, Map<String, Object> templateData);
 }

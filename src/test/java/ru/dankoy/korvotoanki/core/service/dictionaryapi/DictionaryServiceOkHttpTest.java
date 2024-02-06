@@ -28,29 +28,27 @@ import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
 
-
 @DisplayName("Test DictionaryServiceOkHttp ")
-@SpringBootTest(classes = {OkHttpClient.class, AppProperties.class, ObjectMapper.class,
-    DictionaryServiceOkHttp.class})
+@SpringBootTest(
+    classes = {
+      OkHttpClient.class,
+      AppProperties.class,
+      ObjectMapper.class,
+      DictionaryServiceOkHttp.class
+    })
 class DictionaryServiceOkHttpTest {
 
-  @MockBean
-  private OkHttpClient okHttpClient;
+  @MockBean private OkHttpClient okHttpClient;
 
-  @Mock
-  private Call call;
+  @Mock private Call call;
 
-  @Mock
-  private Response response;
+  @Mock private Response response;
 
-  @Mock
-  private ResponseBody responseBody;
+  @Mock private ResponseBody responseBody;
 
-  @MockBean
-  private DictionaryApiProperties dictionaryApiProperties;
+  @MockBean private DictionaryApiProperties dictionaryApiProperties;
 
-  @Autowired
-  private DictionaryService dictionaryService;
+  @Autowired private DictionaryService dictionaryService;
 
   @DisplayName("correct translation")
   @Test
@@ -70,7 +68,6 @@ class DictionaryServiceOkHttpTest {
     assertThat(actual).isEqualTo(getWords(false));
 
     Mockito.verify(dictionaryApiProperties, times(1)).getDictionaryApiUrl();
-
   }
 
   @DisplayName("definition throws exception")
@@ -87,11 +84,10 @@ class DictionaryServiceOkHttpTest {
     given(response.code()).willReturn(404);
     given(responseBody.string()).willReturn(getBody(false));
 
-    assertThatThrownBy(() -> dictionaryService.define(word)).isInstanceOf(
-        DictionaryApiException.class);
+    assertThatThrownBy(() -> dictionaryService.define(word))
+        .isInstanceOf(DictionaryApiException.class);
 
     Mockito.verify(dictionaryApiProperties, times(1)).getDictionaryApiUrl();
-
   }
 
   @DisplayName("definition response body is null")
@@ -113,9 +109,7 @@ class DictionaryServiceOkHttpTest {
     assertThat(actual).isEqualTo(getWords(true));
 
     Mockito.verify(dictionaryApiProperties, times(1)).getDictionaryApiUrl();
-
   }
-
 
   private List<Word> getWords(boolean isEmpty) {
 
@@ -124,25 +118,26 @@ class DictionaryServiceOkHttpTest {
     } else {
 
       return Stream.of(
-          new Word(
-              "data",
-              "phonetic",
-              Stream.of(new Phonetics("text", "audio", "source")).toList(),
-              Stream.of(new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
-                  "ps",
-                  Stream.of(new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
-                      "info",
-                      Stream.of("synonym1").toList(),
-                      Stream.of("antonym1").toList(),
-                      "example"
-                  )).toList(),
-                  Stream.of("synonym1").toList(),
-                  Stream.of("antonym1").toList()
-              )).toList()
-          )
-      ).toList();
+              new Word(
+                  "data",
+                  "phonetic",
+                  Stream.of(new Phonetics("text", "audio", "source")).toList(),
+                  Stream.of(
+                          new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                              "ps",
+                              Stream.of(
+                                      new ru.dankoy.korvotoanki.core.domain.dictionaryapi
+                                          .Definition(
+                                          "info",
+                                          Stream.of("synonym1").toList(),
+                                          Stream.of("antonym1").toList(),
+                                          "example"))
+                                  .toList(),
+                              Stream.of("synonym1").toList(),
+                              Stream.of("antonym1").toList()))
+                      .toList()))
+          .toList();
     }
-
   }
 
   private String getBody(boolean isCorrect) {
@@ -152,6 +147,5 @@ class DictionaryServiceOkHttpTest {
     } else {
       return "{\"title\":\"No Definitions Found\",\"message\":\"Sorry pal, we couldn't find definitions for the word you were looking for.\",\"resolution\":\"You can try the search again at later time or head to the web instead.\"}";
     }
-
   }
 }

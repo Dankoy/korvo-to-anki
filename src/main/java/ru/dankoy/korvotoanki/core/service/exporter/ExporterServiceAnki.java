@@ -19,7 +19,6 @@ import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
-
 @Slf4j
 @ConditionalOnProperty(prefix = "korvo-to-anki", value = "async", havingValue = "false")
 @Service

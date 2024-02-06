@@ -1,10 +1,8 @@
 package ru.dankoy.korvotoanki.config.appprops;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
 
 @Getter
 @RequiredArgsConstructor
@@ -12,5 +10,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ExternalApiParams implements ExternalApiProperties {
 
   private final boolean dictionaryApiEnabled;
-
 }

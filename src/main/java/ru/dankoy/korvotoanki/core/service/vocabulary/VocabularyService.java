@@ -11,5 +11,4 @@ public interface VocabularyService {
   List<Vocabulary> getByTitle(Title title);
 
   long count();
-
 }

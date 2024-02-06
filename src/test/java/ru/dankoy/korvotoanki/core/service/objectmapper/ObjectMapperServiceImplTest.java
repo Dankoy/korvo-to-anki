@@ -16,15 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.dankoy.korvotoanki.core.exceptions.ObjectMapperException;
 
-
 @DisplayName("Test ObjectMapperService ")
 @SpringBootTest(classes = {ObjectMapper.class, ObjectMapperServiceImpl.class})
 class ObjectMapperServiceImplTest {
 
-  @MockBean
-  private ObjectMapper mapper;
-  @Autowired
-  private ObjectMapperServiceImpl objectMapperService;
+  @MockBean private ObjectMapper mapper;
+  @Autowired private ObjectMapperServiceImpl objectMapperService;
 
   @DisplayName("should correctly convert object to json")
   @Test
@@ -38,7 +35,6 @@ class ObjectMapperServiceImplTest {
 
     assertThat(actual).isEqualTo(correctMappedObj);
     Mockito.verify(mapper, times(1)).writeValueAsString(any());
-
   }
 
   @DisplayName("should throw ObjectMapperException")
@@ -47,8 +43,8 @@ class ObjectMapperServiceImplTest {
 
     var objectToMap = new Object();
 
-    var exceptionMessage = String.format("Couldn't convert object of type '%s' to string",
-        objectToMap.getClass());
+    var exceptionMessage =
+        String.format("Couldn't convert object of type '%s' to string", objectToMap.getClass());
 
     Mockito.doThrow(new RuntimeException("msg")).when(mapper).writeValueAsString(any());
 
@@ -58,6 +54,5 @@ class ObjectMapperServiceImplTest {
         .hasMessage(exceptionMessage);
 
     Mockito.verify(mapper, times(1)).writeValueAsString(any());
-
   }
 }

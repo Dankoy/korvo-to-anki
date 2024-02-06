@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @NoArgsConstructor
 public class FileProviderServiceImpl implements FileProviderService {

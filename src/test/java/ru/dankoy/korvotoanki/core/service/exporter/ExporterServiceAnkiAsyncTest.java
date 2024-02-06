@@ -39,7 +39,6 @@ import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 
-
 @DisplayName("Test ExporterServiceAnkiAsync ")
 @SpringBootTest(classes = {VocabularyServiceJdbc.class,
     AnkiConverterServiceImpl.class,

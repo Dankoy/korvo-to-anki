@@ -17,7 +17,6 @@ import ru.dankoy.korvotoanki.core.dao.vocabulary.VocabularyDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 
-
 @DisplayName("Test TitleServiceJdbc ")
 @SpringBootTest(classes = {VocabularyServiceJdbc.class, VocabularyDaoJdbc.class})
 class VocabularyServiceJdbcTest {

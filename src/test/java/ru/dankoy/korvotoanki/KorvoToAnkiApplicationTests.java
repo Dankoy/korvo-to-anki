@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki;
 
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,8 +42,7 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 @SpringBootTest
 class KorvoToAnkiApplicationTests {
 
-  @Autowired
-  ApplicationContext context;
+  @Autowired ApplicationContext context;
 
   @DisplayName("all default necessary beans should be created")
   @Test
@@ -71,7 +69,7 @@ class KorvoToAnkiApplicationTests {
     var ankiConverterService = context.getBean(AnkiConverterServiceImpl.class);
     var dictionaryServiceOkHttp = context.getBean(DictionaryServiceOkHttp.class);
     var exporterServiceAnkiAsync = context.getBean(ExporterServiceAnkiAsync.class);
-//    var exporterServiceAnki = context.getBean(ExporterServiceAnki.class);
+    //    var exporterServiceAnki = context.getBean(ExporterServiceAnki.class);
     var fileNameFormatterService = context.getBean(FileNameFormatterServiceImpl.class);
     var fileProviderService = context.getBean(FileProviderServiceImpl.class);
     var googleTranslatorOkHttp = context.getBean(GoogleTranslatorOkHttp.class);
@@ -112,7 +110,5 @@ class KorvoToAnkiApplicationTests {
     assertNotNull(templateCreatorService);
     assertNotNull(titleServiceJdbc);
     assertNotNull(vocabularyServiceJdbc);
-
   }
-
 }

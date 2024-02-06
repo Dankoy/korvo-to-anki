@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-
 @RequiredArgsConstructor
 @Data
 public class GoogleTranslation {
@@ -15,5 +14,4 @@ public class GoogleTranslation {
   private final String transcription;
 
   private final List<Definition> definitions = new ArrayList<>();
-
 }

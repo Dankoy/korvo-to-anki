@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 
-
 public class BookResultSetExtractor implements ResultSetExtractor<Map<String, Vocabulary>> {
 
   @Override

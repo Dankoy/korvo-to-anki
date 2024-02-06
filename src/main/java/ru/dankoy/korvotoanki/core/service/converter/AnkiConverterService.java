@@ -6,7 +6,6 @@ import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 
 public interface AnkiConverterService {
 
-  AnkiData convert(Vocabulary vocabulary, String sourceLanguage, String targetLanguage,
-      List<String> options);
-
+  AnkiData convert(
+      Vocabulary vocabulary, String sourceLanguage, String targetLanguage, List<String> options);
 }

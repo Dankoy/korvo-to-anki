@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.googletrans.parser;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -46,23 +45,26 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
     // obtain list of translations
     if (Objects.nonNull(multipleTranslations) && !multipleTranslations.isNull()) {
       ArrayNode mts = (ArrayNode) multipleTranslations.get(0).get(2);
-      translationsStrings = IntStream.range(0, mts.size())
-          .mapToObj(mts::get)
-          .map(c -> (ArrayNode) c)
-          .map(n -> n.get(0).asText())
-          .toList();
+      translationsStrings =
+          IntStream.range(0, mts.size())
+              .mapToObj(mts::get)
+              .map(c -> (ArrayNode) c)
+              .map(n -> n.get(0).asText())
+              .toList();
     }
 
     // obtain definitions
     if (Objects.nonNull(definitions)) {
-      defs = IntStream.range(0, definitions.size())
-          .mapToObj(definitions::get)
-          .map(d -> {
-            var type = d.get(0).asText();
-            var def = d.get(1).get(0).get(0).asText();
-            return new Definition(type, def);
-          })
-          .toList();
+      defs =
+          IntStream.range(0, definitions.size())
+              .mapToObj(definitions::get)
+              .map(
+                  d -> {
+                    var type = d.get(0).asText();
+                    var def = d.get(1).get(0).get(0).asText();
+                    return new Definition(type, def);
+                  })
+              .toList();
     }
 
     var googleTranslation = new GoogleTranslation(transcriptionString);
@@ -70,7 +72,6 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
     googleTranslation.getDefinitions().addAll(defs);
 
     return googleTranslation;
-
   }
 
   private JsonNode toJsonNode(String json) {
@@ -78,11 +79,7 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
     try {
       return mapper.readTree(json);
     } catch (Exception e) {
-      throw new GoogleTranslatorException(
-          String.format("Couldn't read json tree '%s'", json), e);
+      throw new GoogleTranslatorException(String.format("Couldn't read json tree '%s'", json), e);
     }
-
   }
-
-
 }

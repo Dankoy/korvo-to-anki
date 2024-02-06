@@ -31,7 +31,6 @@ import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
 
-
 @DisplayName("Test AnkiConverterServiceImpl ")
 @SpringBootTest(classes = {AnkiConverterServiceImpl.class, DictionaryServiceOkHttp.class,
     GoogleTranslatorOkHttp.class, AnkiDataFabricImpl.class, ExternalApiParams.class})

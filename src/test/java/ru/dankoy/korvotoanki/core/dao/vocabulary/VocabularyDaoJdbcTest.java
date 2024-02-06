@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 
-
 @DisplayName("Test VocabularyDaoJdbc ")
 @JdbcTest
 @Import(VocabularyDaoJdbc.class)

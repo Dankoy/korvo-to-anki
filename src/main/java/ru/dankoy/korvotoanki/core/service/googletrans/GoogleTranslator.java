@@ -12,6 +12,6 @@ import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 
 public interface GoogleTranslator {
 
-  GoogleTranslation translate(String text, String targetLanguage, String sourceLanguage,
-      List<String> dtOptions);
+  GoogleTranslation translate(
+      String text, String targetLanguage, String sourceLanguage, List<String> dtOptions);
 }

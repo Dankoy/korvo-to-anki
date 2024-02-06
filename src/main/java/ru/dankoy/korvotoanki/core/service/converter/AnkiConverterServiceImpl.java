@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.converter;
 
-
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +27,15 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
   private final AnkiDataFabric ankiDataFabric;
   private final ExternalApiProperties externalApiProperties;
 
-  public AnkiData convert(Vocabulary vocabulary, String sourceLanguage, String targetLanguage,
-      List<String> options) {
+  public AnkiData convert(
+      Vocabulary vocabulary, String sourceLanguage, String targetLanguage, List<String> options) {
 
     List<Word> daResult = Collections.singletonList(Word.emptyWord());
 
     var isDictionaryApiEnabled = externalApiProperties.isDictionaryApiEnabled();
 
-    // ignore auto source language because won't know the defined language. Look up for Tika Language Detection
+    // ignore auto source language because won't know the defined language. Look up for Tika
+    // Language Detection
     if (isDictionaryApiEnabled && sourceLanguage.equals(Languages.EN.name().toLowerCase())) {
 
       try {
@@ -43,7 +43,7 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
       } catch (TooManyRequestsException e) {
         log.warn("Hit rate limiter - {}. Going to sleep for 5 minutes and retry", e.getMessage());
         sleep(310000);
-        //todo: make advanced retry when too many requests
+        // todo: make advanced retry when too many requests
         try {
           daResult = dictionaryService.define(vocabulary.word());
         } catch (DictionaryApiException e2) {
@@ -54,11 +54,10 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
       }
     }
 
-    var gtResult = googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage,
-        options);
+    var gtResult =
+        googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
 
     return ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult);
-
   }
 
   private void sleep(long ms) {
@@ -69,7 +68,5 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
       Thread.currentThread().interrupt();
       throw new KorvoRootException("Interrupted while trying to get data", e);
     }
-
   }
-
 }

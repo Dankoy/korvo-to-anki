@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki;
 
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +17,7 @@ import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki;
 @TestPropertySource(properties = "korvo-to-anki.async=false")
 class KorvoToAnkiApplicationExporterSyncTests {
 
-  @Autowired
-  ApplicationContext context;
+  @Autowired ApplicationContext context;
 
   @DisplayName("all sync exporter bean")
   @Test
@@ -28,8 +26,5 @@ class KorvoToAnkiApplicationExporterSyncTests {
     var exporterServiceAnki = context.getBean(ExporterServiceAnki.class);
 
     assertNotNull(exporterServiceAnki);
-
-
   }
-
 }

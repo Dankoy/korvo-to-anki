@@ -17,34 +17,26 @@ public class AnkiConverterCommand {
   private final AnkiConverterService ankiConverterService;
   private final ObjectMapperService objectMapperService;
 
-
   // ac --word hello
-  @Command(command = "anki-converter",
+  @Command(
+      command = "anki-converter",
       alias = "ac",
       description = "Translate and define text using google translator and dictionaryapi.dev")
   public String translateAndConvert(
       @Option(required = true, description = "text to translate") String text,
-      @Option(required = false, defaultValue = "en", description = "source language") String sourceLanguage,
-      @Option(required = false, defaultValue = "ru", description = "target language") String targetLanguage,
-      @Option(required = false, defaultValue = "t,at,md,rm", description = "options") String[] options
-  ) {
+      @Option(required = false, defaultValue = "en", description = "source language")
+          String sourceLanguage,
+      @Option(required = false, defaultValue = "ru", description = "target language")
+          String targetLanguage,
+      @Option(required = false, defaultValue = "t,at,md,rm", description = "options")
+          String[] options) {
 
-    var vocabulary = new Vocabulary(text,
-        new Title(0, null, 0L),
-        0L,
-        0L,
-        0L,
-        0L,
-        null,
-        null,
-        0L);
+    var vocabulary = new Vocabulary(text, new Title(0, null, 0L), 0L, 0L, 0L, 0L, null, null, 0L);
 
     List<String> optionsList = Arrays.asList(options);
-    var ankiData = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage,
-        optionsList);
+    var ankiData =
+        ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, optionsList);
 
     return objectMapperService.convertToString(ankiData);
   }
-
-
 }

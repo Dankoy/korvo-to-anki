@@ -48,35 +48,33 @@ public class TemplateBuilderImpl implements TemplateBuilder {
 
     } catch (Exception e) {
 
-      throw new KorvoRootException(String.format("Couldn't process template '%s'", templateName),
-          e);
+      throw new KorvoRootException(
+          String.format("Couldn't process template '%s'", templateName), e);
     }
   }
 
   /**
    * Позволяет сделать шаблон из строки, а не из файла
    *
-   * @param templateName   имя шаблона для добавления в конфигурацию шаблонизатора
+   * @param templateName имя шаблона для добавления в конфигурацию шаблонизатора
    * @param templateString строка шаблона
-   * @param templateData   данные загружаемые в шаблон
+   * @param templateData данные загружаемые в шаблон
    * @return отформатированный шаблон
    */
   @Override
-  public String loadTemplateFromString(String templateName, String templateString, Map<String,
-      Object> templateData) {
+  public String loadTemplateFromString(
+      String templateName, String templateString, Map<String, Object> templateData) {
 
     try (Writer stream = new StringWriter()) {
-      Template template = new Template(templateName, new StringReader(templateString),
-          configuration);
+      Template template =
+          new Template(templateName, new StringReader(templateString), configuration);
       template.process(templateData, stream);
       return stream.toString();
 
     } catch (Exception e) {
 
-      throw new KorvoRootException(String.format("Couldn't process template '%s'", templateName),
-          e);
+      throw new KorvoRootException(
+          String.format("Couldn't process template '%s'", templateName), e);
     }
-
   }
-
 }

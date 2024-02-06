@@ -18,14 +18,17 @@ public class VocabularyCommand {
   private final TitleService titleService;
   private final ObjectMapperService objectMapperService;
 
-
-  @ShellMethod(key = {"vocabulary-count", "vc"}, value = "Count all vocabulary")
+  @ShellMethod(
+      key = {"vocabulary-count", "vc"},
+      value = "Count all vocabulary")
   public String count() {
     Long count = vocabularyService.count();
     return objectMapperService.convertToString(count);
   }
 
-  @ShellMethod(key = {"vocabulary-get-by-title", "vgbt"}, value = "Get vocabulary by title")
+  @ShellMethod(
+      key = {"vocabulary-get-by-title", "vgbt"},
+      value = "Get vocabulary by title")
   public String getByTitle(@ShellOption String titleName) {
 
     var title = titleService.getByName(titleName);
@@ -33,11 +36,11 @@ public class VocabularyCommand {
     return objectMapperService.convertToString(vocabulary);
   }
 
-
-  @ShellMethod(key = {"vocabulary-get-all", "vga"}, value = "Get all vocabulary")
+  @ShellMethod(
+      key = {"vocabulary-get-all", "vga"},
+      value = "Get all vocabulary")
   public String getAll() {
     List<Vocabulary> vocabulary = vocabularyService.getAll();
     return objectMapperService.convertToString(vocabulary);
   }
-
 }

@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
 
-
 @DisplayName("Test TitleServiceJdbc ")
 @SpringBootTest(classes = {TitleServiceJdbc.class, TitleDaoJdbc.class})
 class TitleServiceJdbcTest {

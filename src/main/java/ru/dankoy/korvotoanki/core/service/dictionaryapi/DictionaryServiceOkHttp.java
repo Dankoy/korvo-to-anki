@@ -19,7 +19,6 @@ import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
 import ru.dankoy.korvotoanki.core.exceptions.TooManyRequestsException;
 
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
