@@ -30,24 +30,17 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
   private final ObjectMapper mapper;
 
-  @Cacheable(cacheManager = "cacheManager",
-      value = "dictionaryApi",
-      key = "#word"
-  )
+  @Cacheable(cacheManager = "cacheManager", value = "dictionaryApi", key = "#word")
   @Override
   public List<Word> define(String word) {
 
-    var url = Objects.requireNonNull(
-            HttpUrl.parse(
-                dictionaryApiProperties.getDictionaryApiUrl() + word
-            )
-        ).newBuilder()
-        .build()
-        .toString();
+    var url =
+        Objects.requireNonNull(HttpUrl.parse(dictionaryApiProperties.getDictionaryApiUrl() + word))
+            .newBuilder()
+            .build()
+            .toString();
 
-    var request = new Request.Builder()
-        .url(url)
-        .build();
+    var request = new Request.Builder().url(url).build();
 
     var call = okHttpClient.newCall(request);
 
@@ -59,8 +52,7 @@ public class DictionaryServiceOkHttp implements DictionaryService {
       if (body == null) {
         return Stream.of(Word.emptyWord()).toList();
       }
-      return mapper.readValue(body, new TypeReference<List<Word>>() {
-      });
+      return mapper.readValue(body, new TypeReference<List<Word>>() {});
 
     } catch (IOException e) {
       throw new DictionaryApiException(e);
@@ -88,7 +80,5 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
       throw new DictionaryApiException(body);
     }
-
   }
-
 }

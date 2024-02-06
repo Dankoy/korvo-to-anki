@@ -20,14 +20,12 @@ import ru.dankoy.korvotoanki.core.domain.Title;
 @SpringBootTest(classes = {TitleServiceJdbc.class, TitleDaoJdbc.class})
 class TitleServiceJdbcTest {
 
-  private final static long id = 1L;
-  private final static String name = "title1";
+  private static final long id = 1L;
+  private static final String name = "title1";
 
-  @MockBean
-  private TitleDaoJdbc titleDaoJdbc;
+  @MockBean private TitleDaoJdbc titleDaoJdbc;
 
-  @Autowired
-  private TitleServiceJdbc titleServiceJdbc;
+  @Autowired private TitleServiceJdbc titleServiceJdbc;
 
   @Test
   void getAll() {
@@ -41,7 +39,6 @@ class TitleServiceJdbcTest {
     assertThat(actual).isNotEmpty().isEqualTo(correct);
 
     Mockito.verify(titleDaoJdbc, times(1)).getAll();
-
   }
 
   @Test
@@ -56,7 +53,6 @@ class TitleServiceJdbcTest {
     assertThat(actual).isEqualTo(correct.get(0));
 
     Mockito.verify(titleDaoJdbc, times(1)).getById(id);
-
   }
 
   @Test
@@ -71,7 +67,6 @@ class TitleServiceJdbcTest {
     assertThat(actual).isEqualTo(correct.get(0));
 
     Mockito.verify(titleDaoJdbc, times(1)).getByName(name);
-
   }
 
   @Test
@@ -84,7 +79,6 @@ class TitleServiceJdbcTest {
     assertThat(insertedId).isEqualTo(id);
 
     Mockito.verify(titleDaoJdbc, times(1)).insert(name);
-
   }
 
   @Test
@@ -95,7 +89,6 @@ class TitleServiceJdbcTest {
     titleServiceJdbc.deleteById(id);
 
     Mockito.verify(titleDaoJdbc, times(1)).deleteById(id);
-
   }
 
   @Test
@@ -108,7 +101,6 @@ class TitleServiceJdbcTest {
     titleServiceJdbc.update(title);
 
     Mockito.verify(titleDaoJdbc, times(1)).update(title);
-
   }
 
   @Test
@@ -121,14 +113,10 @@ class TitleServiceJdbcTest {
     assertThat(actual).isEqualTo(correctTitles().size());
 
     Mockito.verify(titleDaoJdbc, times(1)).count();
-
-
   }
 
   private List<Title> correctTitles() {
 
     return Collections.singletonList(new Title(1L, "Title1", 1));
-
   }
-
 }

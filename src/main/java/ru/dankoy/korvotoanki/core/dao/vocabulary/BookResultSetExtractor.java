@@ -23,12 +23,7 @@ public class BookResultSetExtractor implements ResultSetExtractor<Map<String, Vo
       long titleId = rs.getLong("t_id");
       var titleName = rs.getString("t_name");
       var titleFilter = rs.getLong("t_filter");
-      titles.computeIfAbsent(titleId, k -> new Title(
-              titleId,
-              titleName,
-              titleFilter
-          )
-      );
+      titles.computeIfAbsent(titleId, k -> new Title(titleId, titleName, titleFilter));
 
       String word = rs.getString("v_word");
       var vocabulary = words.get(word);
@@ -45,14 +40,20 @@ public class BookResultSetExtractor implements ResultSetExtractor<Map<String, Vo
 
         var t = titles.get(wordTitleId);
 
-        vocabulary = new Vocabulary(word, t, createTime, reviewTime, dueTime, reviewCount,
-            prevContext, nextContext, streakCount);
+        vocabulary =
+            new Vocabulary(
+                word,
+                t,
+                createTime,
+                reviewTime,
+                dueTime,
+                reviewCount,
+                prevContext,
+                nextContext,
+                streakCount);
         words.put(vocabulary.word(), vocabulary);
-
       }
-
     }
     return words;
   }
-
 }

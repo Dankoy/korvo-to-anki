@@ -21,12 +21,9 @@ import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 @SpringBootTest(classes = {VocabularyServiceJdbc.class, VocabularyDaoJdbc.class})
 class VocabularyServiceJdbcTest {
 
-  @MockBean
-  private VocabularyDao vocabularyDao;
+  @MockBean private VocabularyDao vocabularyDao;
 
-  @Autowired
-  private VocabularyService vocabularyService;
-
+  @Autowired private VocabularyService vocabularyService;
 
   @DisplayName("getAll not empty")
   @Test
@@ -41,9 +38,7 @@ class VocabularyServiceJdbcTest {
     assertThat(actual).isNotEmpty().hasSize(correct.size()).isEqualTo(correct);
 
     Mockito.verify(vocabularyDao, times(1)).getAll();
-
   }
-
 
   @DisplayName("getByTitle not empty")
   @Test
@@ -60,9 +55,7 @@ class VocabularyServiceJdbcTest {
     assertThat(actual).isNotEmpty().hasSize(correct.size()).isEqualTo(correct);
 
     Mockito.verify(vocabularyDao, times(1)).getByTitle(title);
-
   }
-
 
   @DisplayName("count non zero")
   @Test
@@ -77,26 +70,25 @@ class VocabularyServiceJdbcTest {
     assertThat(actual).isEqualTo(correct.size());
 
     Mockito.verify(vocabularyDao, times(1)).count();
-
-
   }
-
 
   private List<Vocabulary> correctVocabularies() {
 
     var title = new Title(1L, "Title1", 1L);
 
     return Stream.of(
-        new Vocabulary("contemplating", title, 1695239837, 1695239837, 1695240137, 0,
-            "combined forces.” He hoped to the gods it didn’t come to that.\n"
-                + "She fell silent, ",
-            " a gratifying slaughter. Maybe even the final battle that would confirm her mastery. Most of all",
-            0),
-        new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0,
-            null,
-            null,
-            0)
-    ).toList();
-
+            new Vocabulary(
+                "contemplating",
+                title,
+                1695239837,
+                1695239837,
+                1695240137,
+                0,
+                "combined forces.” He hoped to the gods it didn’t come to that.\n"
+                    + "She fell silent, ",
+                " a gratifying slaughter. Maybe even the final battle that would confirm her mastery. Most of all",
+                0),
+            new Vocabulary("word", title, 1695239837, 1695239837, 1695240137, 0, null, null, 0))
+        .toList();
   }
 }

@@ -34,10 +34,13 @@ public class ExporterServiceAnki implements ExporterService {
   private int counter = 0;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
-  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject beans
+  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject
+  // beans
   @Lookup
-  public IOService getIoService(FileProviderService fileProviderService,
-      FileNameFormatterService fileNameFormatterService, String fileName) {
+  public IOService getIoService(
+      FileProviderService fileProviderService,
+      FileNameFormatterService fileNameFormatterService,
+      String fileName) {
     return null;
   }
 
@@ -71,15 +74,15 @@ public class ExporterServiceAnki implements ExporterService {
         ankiDataList.add(ankiData);
 
         counter++;
-
       }
 
       var template = templateCreatorService.create(ankiDataList);
 
-      var ioService = getIoService(
-          getFileProviderService(),
-          getFileNameFormatterService(),
-          filesProperties.getExportFileName());
+      var ioService =
+          getIoService(
+              getFileProviderService(),
+              getFileNameFormatterService(),
+              filesProperties.getExportFileName());
 
       ioService.print(template);
       stateService.saveState(vocabulariesFull);
@@ -87,7 +90,6 @@ public class ExporterServiceAnki implements ExporterService {
     } else {
       log.info("State is the same as database. Export is not necessary.");
     }
-
   }
 
   private void sleep(long ms) {
@@ -98,6 +100,5 @@ public class ExporterServiceAnki implements ExporterService {
       Thread.currentThread().interrupt();
       throw new KorvoRootException("Interrupted while trying to get data", e);
     }
-
   }
 }

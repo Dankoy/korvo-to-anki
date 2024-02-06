@@ -17,8 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @DisplayName("Test DateTimeProviderImpl ")
 class DateTimeProviderImplTest {
 
-  @Autowired
-  private DateTimeProviderImpl dateTimeProvider;
+  @Autowired private DateTimeProviderImpl dateTimeProvider;
 
   @Test
   void now() {
@@ -36,10 +35,6 @@ class DateTimeProviderImplTest {
       var actual = dateTimeProvider.now();
 
       assertThat(actual).isEqualTo(correct);
-
     }
-
   }
-
-
 }
