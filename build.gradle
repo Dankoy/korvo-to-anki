@@ -24,7 +24,7 @@ repositories {
 }
 
 ext {
-    springShellVersion = '3.2.3'
+    springShellVersion = '3.2.4'
 }
 
 dependencyManagement {
