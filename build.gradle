@@ -10,7 +10,7 @@ group = 'ru.dankoy'
 version = '0.1.7-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '21'
 }
 
 configurations {
