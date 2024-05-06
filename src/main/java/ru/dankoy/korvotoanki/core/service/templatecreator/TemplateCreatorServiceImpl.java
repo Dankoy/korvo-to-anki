@@ -48,7 +48,6 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
         Thread.currentThread().interrupt();
         throw new KorvoRootException("Interrupted while waiting for task completion", e);
       }
-
     }
 
     // create full template

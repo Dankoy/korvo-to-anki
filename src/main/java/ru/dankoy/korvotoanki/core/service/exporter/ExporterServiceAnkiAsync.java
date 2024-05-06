@@ -111,7 +111,6 @@ public class ExporterServiceAnkiAsync implements ExporterService {
         log.info("State is the same as database. Export is not necessary.");
       }
     }
-
   }
 
   private void asyncFunc(
