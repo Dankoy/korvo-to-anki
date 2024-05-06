@@ -64,53 +64,52 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {
 
     List<AnkiData> ankiDataList = new CopyOnWriteArrayList<>();
-    ExecutorService executorService = Executors.newFixedThreadPool(THREADS);
 
-    List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
-    List<Vocabulary> filtered = stateService.filterState(vocabulariesFull);
+    try (ExecutorService executorService = Executors.newFixedThreadPool(THREADS)) {
+      List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
+      List<Vocabulary> filtered = stateService.filterState(vocabulariesFull);
 
-    if (!filtered.isEmpty()) {
+      if (!filtered.isEmpty()) {
 
-      if (filtered.size() < THREADS) {
+        if (filtered.size() < THREADS) {
 
-        latch = new CountDownLatch(filtered.size());
-        executorService.execute(
-            () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
+          latch = new CountDownLatch(filtered.size());
+          executorService.execute(
+              () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
+
+        } else {
+
+          latch = new CountDownLatch(THREADS);
+          List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
+          List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
+
+          executorService.execute(
+              () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
+          executorService.execute(
+              () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+        }
+
+        try {
+          latch.await();
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new KorvoRootException("Interrupted while waiting for task completion", e);
+        }
+
+        var template = templateCreatorService.create(ankiDataList);
+
+        var ioService =
+            getIoService(
+                getFileProviderService(),
+                getFileNameFormatterService(),
+                filesProperties.getExportFileName());
+        ioService.print(template);
+
+        stateService.saveState(filtered);
 
       } else {
-
-        latch = new CountDownLatch(THREADS);
-        List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
-        List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
-
-        executorService.execute(
-            () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
-        executorService.execute(
-            () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+        log.info("State is the same as database. Export is not necessary.");
       }
-
-      try {
-        latch.await();
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        throw new KorvoRootException("Interrupted while waiting for task completion", e);
-      }
-
-      executorService.shutdown();
-
-      var template = templateCreatorService.create(ankiDataList);
-
-      var ioService =
-          getIoService(
-              getFileProviderService(),
-              getFileNameFormatterService(),
-              filesProperties.getExportFileName());
-      ioService.print(template);
-
-      stateService.saveState(filtered);
-
-    } else {
-      log.info("State is the same as database. Export is not necessary.");
     }
   }
 

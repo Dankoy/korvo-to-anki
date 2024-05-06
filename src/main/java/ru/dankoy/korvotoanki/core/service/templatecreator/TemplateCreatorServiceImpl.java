@@ -34,22 +34,21 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
     // async with splitting list into chunks
     int cores = Runtime.getRuntime().availableProcessors();
     List<List<AnkiData>> splitted = splitToPartitions(ankiDataList, cores);
-    ExecutorService executorService = Executors.newFixedThreadPool(cores);
 
-    latch = new CountDownLatch(splitted.size());
+    try (ExecutorService executorService = Executors.newFixedThreadPool(cores)) {
+      latch = new CountDownLatch(splitted.size());
 
-    for (List<AnkiData> sp : splitted) {
-      executorService.execute(() -> convertToDto(dtos, sp));
+      for (List<AnkiData> sp : splitted) {
+        executorService.execute(() -> convertToDto(dtos, sp));
+      }
+
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new KorvoRootException("Interrupted while waiting for task completion", e);
+      }
     }
-
-    try {
-      latch.await();
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new KorvoRootException("Interrupted while waiting for task completion", e);
-    }
-
-    executorService.shutdown();
 
     // create full template
     templateDataFull.put("ankiDataList", dtos);

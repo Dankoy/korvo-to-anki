@@ -20,8 +20,8 @@ imported to anki
 
 ### Stack
 
-* Java 17
-* Spring boot 3.2.2
+* Java 21
+* Spring boot 3.2.5
 * Spring shell
 * Spring boot jdbc
 * Caffeine cache

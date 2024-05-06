@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.5'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 apply plugin: "io.spring.dependency-management"
@@ -10,7 +11,7 @@ group = 'ru.dankoy'
 version = '0.1.7-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '21'
 }
 
 configurations {
@@ -60,6 +61,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.liquibase:liquibase-core'
+
+    // spotless
+    implementation 'com.diffplug.spotless:spotless-lib:2.45.0'
 }
 
 test {
@@ -67,5 +71,23 @@ test {
     testLogging.showStandardStreams = true
     afterTest { desc, result ->
         logger.quiet "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat('1.19.2')
+                .reflowLongStrings()
+                .formatJavadoc(true)
+                .reorderImports(false)
+                .groupArtifact('com.google.googlejavaformat:google-java-format')
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
