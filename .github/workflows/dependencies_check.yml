@@ -32,5 +32,4 @@ jobs:
 
     - name: Run the tests
       uses: gradle/actions/setup-gradle@v3
-      with:
-        arguments: 'test'
+      run: ./gradlew test

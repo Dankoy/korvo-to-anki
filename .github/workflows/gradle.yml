@@ -31,15 +31,14 @@ jobs:
     - name: gradle validation
       uses: gradle/actions/wrapper-validation@v3
 
-    - name: Run the tests
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
-      with:
-        arguments: 'test'
 
-    - name: Run build in a subdirectory
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        arguments: 'bootJar'
+    - name: Run the tests
+      run: ./gradlew test
+
+    - name: Run build
+      run: ./gradlew bootJar
 
     - name: Save result jar for further use
       uses: actions/upload-artifact@v4
