@@ -96,8 +96,6 @@ public class ExporterServiceAnkiAsync implements ExporterService {
           throw new KorvoRootException("Interrupted while waiting for task completion", e);
         }
 
-        executorService.shutdown();
-
         var template = templateCreatorService.create(ankiDataList);
 
         var ioService =
