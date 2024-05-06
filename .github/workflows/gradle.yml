@@ -20,16 +20,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - uses: actions/checkout@v4
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@v3
+
+    - name: gradle validation
+      uses: gradle/actions/wrapper-validation@v3
+
+    - name: Run the tests
+      uses: gradle/actions/setup-gradle@v3
       with:
-        arguments: clean test bootJar
+        arguments: 'test'
+
+    - name: Run build in a subdirectory
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        arguments: 'bootJar'
 
     - name: Save result jar for further use
       uses: actions/upload-artifact@v4

@@ -26,8 +26,11 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@v3
+
+    - name: gradle validation
+      uses: gradle/actions/wrapper-validation@v3
+
+    - name: Run the tests
+      uses: gradle/actions/setup-gradle@v3
       with:
-        arguments: clean test
-        
+        arguments: 'test'
