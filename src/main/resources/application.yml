@@ -5,9 +5,20 @@ spring:
     enabled: true
     template-loader-path: /templates/
 
+
   datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite:vocabulary_builder.sqlite3
+    hikari:
+      jdbc-url: ${spring.datasource.url}
+    state:
+      driver-class-name: org.sqlite.JDBC
+      url: jdbc:sqlite:vocabulary_builder_state.sqlite3
+      hikari:
+        jdbc-url: ${spring.datasource.state.url}
+      liquibase:
+        change-log: classpath:/db/changelog/db.state.changelog-master.yml
+
 
 logging:
   level:

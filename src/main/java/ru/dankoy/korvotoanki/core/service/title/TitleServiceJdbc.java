@@ -3,7 +3,7 @@ package ru.dankoy.korvotoanki.core.service.title;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.korvotoanki.core.dao.title.TitleDao;
+import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDao;
 import ru.dankoy.korvotoanki.core.domain.Title;
 
 @Service

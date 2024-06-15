@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
@@ -20,7 +21,7 @@ import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 @Import(TitleDaoJdbc.class)
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
-class TitleDaoJdbcTest {
+class StateDaoJdbcTest {
 
   @Autowired private TitleDaoJdbc titleDaoJdbc;
 

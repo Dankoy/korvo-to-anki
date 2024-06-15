@@ -1,0 +1,31 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: state-init-1
+      author: dankoy
+      changes:
+        - createTable:
+            tableName: state
+            remarks: Exported words
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: article_pk
+                    nullable: false
+              - column:
+                  name: word
+                  type: varchar(50)
+                  remarks: Word
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false

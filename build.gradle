@@ -37,6 +37,7 @@ dependencyManagement {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter'
 
     implementation 'ch.qos.logback:logback-classic'
@@ -52,6 +53,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    // liquibase
+    implementation 'org.liquibase:liquibase-core'
+//    implementation 'org.jooq:jooq'
 
     // freemarker
     implementation 'org.freemarker:freemarker'
