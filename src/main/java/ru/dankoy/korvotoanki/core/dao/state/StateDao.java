@@ -9,5 +9,7 @@ public interface StateDao {
 
   long insert(String word);
 
+  long batchInsert(List<State> state);
+
   long count();
 }

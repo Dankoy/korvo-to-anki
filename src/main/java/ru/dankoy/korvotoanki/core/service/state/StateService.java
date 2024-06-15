@@ -2,7 +2,7 @@ package ru.dankoy.korvotoanki.core.service.state;
 
 import java.util.List;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
-import ru.dankoy.korvotoanki.core.dto.State;
+import ru.dankoy.korvotoanki.core.domain.state.State;
 
 public interface StateService {
 

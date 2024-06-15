@@ -16,9 +16,9 @@ spring:
       url: jdbc:sqlite:vocabulary_builder_state.sqlite3
       hikari:
         jdbc-url: ${spring.datasource.state.url}
-      liquibase:
-        change-log: classpath:/db/changelog/db.state.changelog-master.yml
-
+      flyway:
+        locations: classpath:db/migration
+        enabled: true
 
 logging:
   level:

@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -35,6 +37,22 @@ public class StateDaoJdbc implements StateDao {
     KeyHolder keyHolder = new GeneratedKeyHolder();
     stateJdbcOperations.update(
         "insert into state (word, created) values (:word, :created)", parameters, keyHolder);
+
+    try {
+      return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    } catch (Exception e) {
+      throw new StateDaoException(e);
+    }
+  }
+
+  @Override
+  public long batchInsert(List<State> state) {
+
+    SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(state.toArray());
+
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    stateJdbcOperations.batchUpdate(
+        "insert into state (word, created) values (:word, :created)", batch, keyHolder);
 
     try {
       return Objects.requireNonNull(keyHolder.getKey()).longValue();

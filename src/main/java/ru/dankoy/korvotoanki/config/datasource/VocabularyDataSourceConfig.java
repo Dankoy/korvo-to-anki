@@ -5,9 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 //    transactionManagerRef = "vocabularyTransactionManager",
 //    jdbcOperationsRef = "vocabularyJdbcOperations")
 @EnableAutoConfiguration(
-    exclude = {DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class})
+    exclude = {DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
 public class VocabularyDataSourceConfig {
 
   @Bean
