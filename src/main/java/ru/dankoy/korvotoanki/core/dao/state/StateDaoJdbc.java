@@ -46,18 +46,21 @@ public class StateDaoJdbc implements StateDao {
   }
 
   @Override
-  public long batchInsert(List<State> state) {
+  public int[] batchInsert(List<State> state) {
 
     SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(state.toArray());
 
     KeyHolder keyHolder = new GeneratedKeyHolder();
-    stateJdbcOperations.batchUpdate(
-        "insert into state (word, created) values (:word, :created)", batch, keyHolder);
+    var rowsUpdated =
+        stateJdbcOperations.batchUpdate(
+            "insert into state (word, created) values (:word, :created)", batch, keyHolder);
 
-    try {
-      return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    } catch (Exception e) {
-      throw new StateDaoException(e);
+    var eq = Objects.equals(batch.length, rowsUpdated.length);
+
+    if (eq) {
+      return rowsUpdated;
+    } else {
+      throw new StateDaoException("Batch insert error");
     }
   }
 

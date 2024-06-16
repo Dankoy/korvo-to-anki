@@ -34,7 +34,7 @@ public class StateServiceSqlite implements StateService {
     return vocabularies;
   }
 
-  @Transactional
+  @Transactional("stateTransactionManager")
   @Override
   public void saveState(List<Vocabulary> vocabularies) {
 

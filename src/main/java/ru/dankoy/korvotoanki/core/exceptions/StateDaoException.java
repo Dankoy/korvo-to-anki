@@ -5,4 +5,8 @@ public class StateDaoException extends KorvoRootException {
   public StateDaoException(Exception e) {
     super(e);
   }
+
+  public StateDaoException(String message) {
+    super(message);
+  }
 }
