@@ -18,7 +18,10 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @Configuration
@@ -45,22 +48,25 @@ public class StateDataSourceConfig {
     return new HikariConfig();
   }
 
-  //  @Primary
-  //  @FlywayDataSource
-  //  @Bean
-  private DataSource stateFLywayDataSource(DataSourceProperties stateDataSourceProperties) {
-    return DataSourceBuilder.create()
-        .driverClassName(stateDataSourceProperties.getDriverClassName())
-        .url(stateDataSourceProperties.getUrl())
-        .build();
-  }
-
-  @Primary
   @Bean
   public DataSource stateDataSource() throws SQLException {
     migrateFlyway(stateFlywayProperties());
     return new HikariDataSource(stateHikariConfig());
   }
+
+  @Bean(name = "stateTransactionManager")
+  public PlatformTransactionManager stateTransactionManager(
+      @Qualifier("stateDataSource") DataSource vocabularyDataSource) {
+    return new JdbcTransactionManager(vocabularyDataSource);
+  }
+
+  @Bean(name = "stateJdbcOperations")
+  public NamedParameterJdbcOperations stateJdbcOperations(
+      @Qualifier("stateDataSource") DataSource dataSource) {
+    return new NamedParameterJdbcTemplate(dataSource);
+  }
+
+  // flyway
 
   @Bean
   @ConfigurationProperties(prefix = "spring.datasource.state.flyway")
@@ -71,24 +77,31 @@ public class StateDataSourceConfig {
   private void migrateFlyway(@Qualifier("stateFlywayProperties") FlywayProperties flywayProperties)
       throws SQLException {
 
-    var ds = stateFLywayDataSource(stateDataSourceProperties());
+    var ds = stateFlywayDataSource(stateDataSourceProperties());
 
-    var f =
-        Flyway.configure()
-            .dataSource(ds)
-            .schemas(flywayProperties.getSchemas().toArray(new String[0]))
-            .locations(flywayProperties.getLocations().toArray(new String[0]))
-            .javaMigrations(
-                applicationContext
-                    .getBeansOfType(JavaMigration.class)
-                    .values()
-                    .toArray(new JavaMigration[0]))
-            .load()
-            .migrate();
+    Flyway.configure()
+        .dataSource(ds)
+        .schemas(flywayProperties.getSchemas().toArray(new String[0]))
+        .locations(flywayProperties.getLocations().toArray(new String[0]))
+        .javaMigrations(
+            applicationContext
+                .getBeansOfType(JavaMigration.class)
+                .values()
+                .toArray(new JavaMigration[0]))
+        .load()
+        .migrate();
 
-    if (f.success) {
-      ds.getConnection().close();
+    if (ds instanceof HikariDataSource hikariDataSource) {
+      hikariDataSource.getConnection().close();
+      hikariDataSource.close();
       log.info("Closed flyway connection");
     }
+  }
+
+  private DataSource stateFlywayDataSource(DataSourceProperties stateDataSourceProperties) {
+    return DataSourceBuilder.create()
+        .driverClassName(stateDataSourceProperties.getDriverClassName())
+        .url(stateDataSourceProperties.getUrl())
+        .build();
   }
 }
