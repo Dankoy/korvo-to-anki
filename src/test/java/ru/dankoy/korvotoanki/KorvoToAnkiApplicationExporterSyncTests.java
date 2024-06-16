@@ -13,6 +13,10 @@ import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki;
 
 @DisplayName("Test sync bean context ")
 @SpringBootTest
+@TestPropertySource(
+    properties = {
+      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
+    })
 @Import(ExporterServiceAnki.class)
 @TestPropertySource(properties = "korvo-to-anki.async=false")
 class KorvoToAnkiApplicationExporterSyncTests {

@@ -13,6 +13,13 @@ spring:
   datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite:file::memory:?cache=shared
+    hikari:
+      jdbc-url: ${spring.datasource.url}
+    state:
+      driver-class-name: org.sqlite.JDBC
+      url: jdbc:sqlite:vocabulary_builder_state.sqlite3
+      hikari:
+        jdbc-url: ${spring.datasource.state.url}
   liquibase:
     enabled: true
 

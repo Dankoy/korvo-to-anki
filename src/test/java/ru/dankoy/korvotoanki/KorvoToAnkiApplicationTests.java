@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.TestPropertySource;
 import ru.dankoy.korvotoanki.config.appprops.DebugProperties;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.config.appprops.ExternalApiProperties;
@@ -39,6 +40,10 @@ import ru.dankoy.korvotoanki.core.service.title.TitleServiceJdbc;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 
 @DisplayName("Test default context ")
+@TestPropertySource(
+    properties = {
+      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
+    })
 @SpringBootTest
 class KorvoToAnkiApplicationTests {
 
