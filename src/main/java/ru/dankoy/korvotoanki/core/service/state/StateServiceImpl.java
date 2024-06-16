@@ -17,6 +17,11 @@ import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
+/**
+ * @deprecated support for file based state. New state is collected in sqlite {@link
+ *     StateServiceSqlite}
+ */
+@Deprecated(since = "2024-06-16")
 @Slf4j
 @RequiredArgsConstructor
 @Service("fileStateService")
