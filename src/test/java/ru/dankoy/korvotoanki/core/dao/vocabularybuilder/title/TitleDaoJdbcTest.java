@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
-import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
