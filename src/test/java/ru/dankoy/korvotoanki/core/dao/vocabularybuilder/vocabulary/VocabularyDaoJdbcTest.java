@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.core.dao.vocabulary;
+package ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
