@@ -25,7 +25,7 @@ public class StateDaoJdbc implements StateDao {
 
   @Override
   public List<State> getAll() {
-    return stateJdbcOperations.query("select id, word, createdAt from state", new StateMapper());
+    return stateJdbcOperations.query("select id, word, created from state", new StateMapper());
   }
 
   @Override

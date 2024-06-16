@@ -36,7 +36,7 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   private final AnkiConverterService ankiConverterService;
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
-  private final StateService stateService;
+  private final StateService sqliteStateService;
   private CountDownLatch latch;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
@@ -67,7 +67,7 @@ public class ExporterServiceAnkiAsync implements ExporterService {
 
     try (ExecutorService executorService = Executors.newFixedThreadPool(THREADS)) {
       List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
-      List<Vocabulary> filtered = stateService.filterState(vocabulariesFull);
+      List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
       if (!filtered.isEmpty()) {
 
@@ -105,7 +105,7 @@ public class ExporterServiceAnkiAsync implements ExporterService {
                 filesProperties.getExportFileName());
         ioService.print(template);
 
-        stateService.saveState(filtered);
+        sqliteStateService.saveState(filtered);
 
       } else {
         log.info("State is the same as database. Export is not necessary.");

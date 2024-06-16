@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 import ru.dankoy.korvotoanki.core.domain.state.State;
@@ -18,8 +18,8 @@ import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
+@Service("fileStateService")
 public class StateServiceImpl implements StateService {
 
   private final FilesProperties filesProperties;
