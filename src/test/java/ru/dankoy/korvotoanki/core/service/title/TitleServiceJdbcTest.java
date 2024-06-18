@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import ru.dankoy.korvotoanki.core.dao.title.TitleDaoJdbc;
+import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
 
 @DisplayName("Test TitleServiceJdbc ")

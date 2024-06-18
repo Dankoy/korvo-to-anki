@@ -8,7 +8,7 @@ plugins {
 apply plugin: "io.spring.dependency-management"
 
 group = 'ru.dankoy'
-version = '0.1.8-SNAPSHOT'
+version = '0.2.0-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -37,6 +37,7 @@ dependencyManagement {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter'
 
     implementation 'ch.qos.logback:logback-classic'
@@ -52,6 +53,9 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    implementation 'org.flywaydb:flyway-core'
+//    implementation 'org.jooq:jooq'
 
     // freemarker
     implementation 'org.freemarker:freemarker'
@@ -75,6 +79,14 @@ test {
 }
 
 spotless {
+    sql {
+        target 'src/main/resources/**/*.sql' // have to set manually
+        target 'src/test/resources/**/*.sql' // have to set manually
+
+        dbeaver()  // has its own section below
+//        prettier(['prettier': '3.0.3', 'prettier-plugin-sql': '0.18.0'])
+        // has its own section below
+    }
     java {
         target fileTree('.') {
             include '**/*.java'

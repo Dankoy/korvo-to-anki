@@ -1,17 +1,17 @@
 ## korvo-to-anki
 
-[![GitHub Release](https://img.shields.io/github/v/release/dankoy/korvo-to-anki)](https://github.com/Dankoy/korvo-to-anki/releases/latest) 
-![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/korvo-to-anki) 
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dankoy/korvo-to-anki/total) 
+[![GitHub Release](https://img.shields.io/github/v/release/dankoy/korvo-to-anki)](https://github.com/Dankoy/korvo-to-anki/releases/latest)
+![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/korvo-to-anki)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dankoy/korvo-to-anki/total)
 
-[![Java CI with Gradle](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml) 
+[![Java CI with Gradle](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml)
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDankoy%2Fkorvo-to-anki&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) 
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDankoy%2Fkorvo-to-anki&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/korvo-to-anki) 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/anki) 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/koreader) 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/vocabulary) 
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/korvo-to-anki)
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/anki)
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/koreader)
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/korvo-to-anki/vocabulary)
 
 Convert sqlite created
 by [vocabulary_builder plugin](https://github.com/koreader/koreader/wiki/Vocabulary-builder)
@@ -27,6 +27,8 @@ imported to anki
 * Caffeine cache
 * OkHttp
 * Freemarker
+* Liquibase 
+* Flyway
 
 ### Integrations
 
@@ -89,9 +91,9 @@ options.
 #### Run result
 
 The result of run is going to be stored in the same folder as jar with name -
-**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki.state** file with the json of already
-exported
-words. On new run will check for state file and filter already exported words from new run.
+**korvo-to-anki-TIMESTAMP.txt**. Also creates **korvo-to-anki-state.sqlite3** sqlite db file with
+the words of already exported words. On new run will check for state in state database and filter
+already exported words from new run.
 
 #### Show definitions in cards
 

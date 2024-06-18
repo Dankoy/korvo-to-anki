@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.core.dao.vocabulary;
+package ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +17,7 @@ public class VocabularyDaoJdbc implements VocabularyDao {
 
   private static final String COLUMN_TITLE_ID = "title_id";
 
-  private final NamedParameterJdbcOperations namedParameterJdbcOperations;
+  private final NamedParameterJdbcOperations vocabularyJdbcOperations;
 
   @Override
   public List<Vocabulary> getAll() {
@@ -39,7 +39,7 @@ public class VocabularyDaoJdbc implements VocabularyDao {
             + "where v_title_id = t_id";
 
     Map<String, Vocabulary> books =
-        namedParameterJdbcOperations.query(query, new BookResultSetExtractor());
+        vocabularyJdbcOperations.query(query, new BookResultSetExtractor());
 
     return new ArrayList<>(Objects.requireNonNull(books).values());
   }
@@ -66,7 +66,7 @@ public class VocabularyDaoJdbc implements VocabularyDao {
             + "where v_title_id = :title_id";
 
     Map<String, Vocabulary> books =
-        namedParameterJdbcOperations.query(query, params, new BookResultSetExtractor());
+        vocabularyJdbcOperations.query(query, params, new BookResultSetExtractor());
 
     return new ArrayList<>(Objects.requireNonNull(books).values());
   }
@@ -74,7 +74,7 @@ public class VocabularyDaoJdbc implements VocabularyDao {
   @Override
   public long count() {
     Long count =
-        namedParameterJdbcOperations
+        vocabularyJdbcOperations
             .getJdbcOperations()
             .queryForObject("select count(*) from vocabulary", Long.class);
     return count == null ? 0 : count;

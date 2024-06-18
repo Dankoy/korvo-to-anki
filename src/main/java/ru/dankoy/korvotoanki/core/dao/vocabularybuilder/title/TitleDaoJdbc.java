@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.core.dao.title;
+package ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,19 +20,18 @@ import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 @Component
 public class TitleDaoJdbc implements TitleDao {
 
-  private final NamedParameterJdbcOperations namedParameterJdbcOperations;
+  private final NamedParameterJdbcOperations vocabularyJdbcOperations;
 
   @Override
   public List<Title> getAll() {
-    return namedParameterJdbcOperations.query(
-        "select id, name, filter from title", new TitleMapper());
+    return vocabularyJdbcOperations.query("select id, name, filter from title", new TitleMapper());
   }
 
   @Override
   public Title getById(long id) {
     Map<String, Object> params = Collections.singletonMap("id", id);
     try {
-      return namedParameterJdbcOperations.queryForObject(
+      return vocabularyJdbcOperations.queryForObject(
           "select id, name, filter from title where id = :id", params, new TitleMapper());
     } catch (Exception e) {
       throw new TitleDaoException(e);
@@ -43,7 +42,7 @@ public class TitleDaoJdbc implements TitleDao {
   public Title getByName(String name) {
     Map<String, Object> params = Collections.singletonMap("name", name);
     try {
-      return namedParameterJdbcOperations.queryForObject(
+      return vocabularyJdbcOperations.queryForObject(
           "select id, name, filter from title where name = :name", params, new TitleMapper());
     } catch (Exception e) {
       throw new TitleDaoException(e);
@@ -54,7 +53,7 @@ public class TitleDaoJdbc implements TitleDao {
   public long insert(String titleName) {
     MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("name", titleName);
     KeyHolder keyHolder = new GeneratedKeyHolder();
-    namedParameterJdbcOperations.update(
+    vocabularyJdbcOperations.update(
         "insert into title (name) values (:name)", parameters, keyHolder);
 
     try {
@@ -67,12 +66,12 @@ public class TitleDaoJdbc implements TitleDao {
   @Override
   public void deleteById(long id) {
     Map<String, Object> params = Collections.singletonMap("id", id);
-    namedParameterJdbcOperations.update("delete from title where id = :id", params);
+    vocabularyJdbcOperations.update("delete from title where id = :id", params);
   }
 
   @Override
   public void update(Title title) {
-    namedParameterJdbcOperations.update(
+    vocabularyJdbcOperations.update(
         "update title set name = :name where id = :id",
         Map.of("id", title.id(), "name", title.name()));
   }
@@ -80,7 +79,7 @@ public class TitleDaoJdbc implements TitleDao {
   @Override
   public long count() {
     Long count =
-        namedParameterJdbcOperations
+        vocabularyJdbcOperations
             .getJdbcOperations()
             .queryForObject("select count(*) from title", Long.class);
     return count == null ? 0 : count;

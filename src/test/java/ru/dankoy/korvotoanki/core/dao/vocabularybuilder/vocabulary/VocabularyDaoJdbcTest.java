@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.core.dao.vocabulary;
+package ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,10 +11,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.test.context.TestPropertySource;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 
 @DisplayName("Test VocabularyDaoJdbc ")
+@TestPropertySource(
+    properties = {
+      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"
+    })
 @JdbcTest
 @Import(VocabularyDaoJdbc.class)
 @AutoConfigureTestDatabase(

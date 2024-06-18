@@ -47,10 +47,16 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
         try {
           daResult = dictionaryService.define(vocabulary.word());
         } catch (DictionaryApiException e2) {
-          log.warn(String.format("Couldn't get definition from dictionaryapi.dev - %s", e2));
+          log.warn(
+              String.format(
+                  "Couldn't get definition from dictionaryapi.dev for '%s' - %s",
+                  vocabulary.word(), e2));
         }
       } catch (DictionaryApiException e) {
-        log.warn(String.format("Couldn't get definition from dictionaryapi.dev - %s", e));
+        log.warn(
+            String.format(
+                "Couldn't get definition from dictionaryapi.dev for '%s' - %s",
+                vocabulary.word(), e));
       }
     }
 

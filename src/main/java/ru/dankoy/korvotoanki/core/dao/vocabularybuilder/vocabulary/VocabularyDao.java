@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.core.dao.vocabulary;
+package ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary;
 
 import java.util.List;
 import ru.dankoy.korvotoanki.core.domain.Title;

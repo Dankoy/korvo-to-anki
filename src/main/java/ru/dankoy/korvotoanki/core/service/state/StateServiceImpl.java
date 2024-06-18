@@ -8,18 +8,23 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
-import ru.dankoy.korvotoanki.core.dto.State;
+import ru.dankoy.korvotoanki.core.domain.state.State;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
+/**
+ * @deprecated support for file based state. New state is collected in sqlite {@link
+ *     StateServiceSqlite}
+ */
+@Deprecated(since = "2024-06-16")
 @Slf4j
-@Component
 @RequiredArgsConstructor
+@Service("fileStateService")
 public class StateServiceImpl implements StateService {
 
   private final FilesProperties filesProperties;
@@ -74,7 +79,7 @@ public class StateServiceImpl implements StateService {
     final List<State> finalStateList = checkState();
     if (!finalStateList.isEmpty()) {
       return vocabularies.stream()
-          .filter(v -> finalStateList.stream().noneMatch(s -> s.getWord().equals(v.word())))
+          .filter(v -> finalStateList.stream().noneMatch(s -> s.word().equals(v.word())))
           .toList();
     }
     return vocabularies;
@@ -93,7 +98,7 @@ public class StateServiceImpl implements StateService {
 
     final List<State> currentState = checkState();
 
-    List<State> states = vocabularies.stream().map(v -> new State(v.word())).toList();
+    List<State> states = vocabularies.stream().map(v -> new State(0L, v.word(), null)).toList();
 
     currentState.addAll(states);
 

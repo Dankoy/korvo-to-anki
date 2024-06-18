@@ -5,9 +5,20 @@ spring:
     enabled: true
     template-loader-path: /templates/
 
+
   datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite:vocabulary_builder.sqlite3
+    hikari:
+      jdbc-url: ${spring.datasource.url}
+    state:
+      driver-class-name: org.sqlite.JDBC
+      url: jdbc:sqlite:korvo-to-anki-state.sqlite3
+      hikari:
+        jdbc-url: ${spring.datasource.state.url}
+      flyway:
+        locations: classpath:db/migration
+        enabled: true
 
 logging:
   level:

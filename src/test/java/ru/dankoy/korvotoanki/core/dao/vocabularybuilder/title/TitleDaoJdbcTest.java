@@ -1,4 +1,4 @@
-package ru.dankoy.korvotoanki.core.dao.title;
+package ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -12,10 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
 @DisplayName("Test TitleDaoJdbc ")
+@TestPropertySource(
+    properties = {
+      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"
+    })
 @JdbcTest
 @Import(TitleDaoJdbc.class)
 @AutoConfigureTestDatabase(
