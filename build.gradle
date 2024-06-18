@@ -79,6 +79,14 @@ test {
 }
 
 spotless {
+    sql {
+        target 'src/main/resources/**/*.sql' // have to set manually
+        target 'src/test/resources/**/*.sql' // have to set manually
+
+        dbeaver()  // has its own section below
+//        prettier(['prettier': '3.0.3', 'prettier-plugin-sql': '0.18.0'])
+        // has its own section below
+    }
     java {
         target fileTree('.') {
             include '**/*.java'
