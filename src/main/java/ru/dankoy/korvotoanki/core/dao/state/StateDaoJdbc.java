@@ -51,9 +51,17 @@ public class StateDaoJdbc implements StateDao {
     SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(state.toArray());
 
     KeyHolder keyHolder = new GeneratedKeyHolder();
-    var rowsUpdated =
-        stateJdbcOperations.batchUpdate(
-            "insert into state (word, created) values (:word, :created)", batch, keyHolder);
+
+    int[] rowsUpdated;
+
+    try {
+      rowsUpdated =
+          stateJdbcOperations.batchUpdate(
+              "insert into state (word, created) values (:word, :created)", batch, keyHolder);
+
+    } catch (Exception ex) {
+      throw new StateDaoException(ex);
+    }
 
     var eq = Objects.equals(batch.length, rowsUpdated.length);
 

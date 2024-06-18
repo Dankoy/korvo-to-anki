@@ -50,8 +50,15 @@ public class StateDataSourceConfig {
 
   @Bean
   public DataSource stateDataSource() throws SQLException {
-    migrateFlyway(stateFlywayProperties());
-    return new HikariDataSource(stateHikariConfig());
+
+    /*
+     * Flyway connection to database should be separate data source connection but in the same
+     * hikari pool if it is used. This configuration will work good in tests
+     */
+    var hikariDataSource = new HikariDataSource(stateHikariConfig());
+
+    migrateFlyway(hikariDataSource, stateFlywayProperties());
+    return hikariDataSource;
   }
 
   @Bean(name = "stateTransactionManager")
@@ -74,13 +81,13 @@ public class StateDataSourceConfig {
     return new FlywayProperties();
   }
 
-  private void migrateFlyway(@Qualifier("stateFlywayProperties") FlywayProperties flywayProperties)
+  private void migrateFlyway(
+      HikariDataSource hikariDataSource,
+      @Qualifier("stateFlywayProperties") FlywayProperties flywayProperties)
       throws SQLException {
 
-    var ds = stateFlywayDataSource(stateDataSourceProperties());
-
     Flyway.configure()
-        .dataSource(ds)
+        .dataSource(hikariDataSource)
         .schemas(flywayProperties.getSchemas().toArray(new String[0]))
         .locations(flywayProperties.getLocations().toArray(new String[0]))
         .javaMigrations(
@@ -91,17 +98,9 @@ public class StateDataSourceConfig {
         .load()
         .migrate();
 
-    if (ds instanceof HikariDataSource hikariDataSource) {
+    if (hikariDataSource != null) {
       hikariDataSource.getConnection().close();
-      hikariDataSource.close();
       log.info("Closed flyway connection");
     }
-  }
-
-  private DataSource stateFlywayDataSource(DataSourceProperties stateDataSourceProperties) {
-    return DataSourceBuilder.create()
-        .driverClassName(stateDataSourceProperties.getDriverClassName())
-        .url(stateDataSourceProperties.getUrl())
-        .build();
   }
 }
