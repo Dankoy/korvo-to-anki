@@ -42,5 +42,7 @@ public class StateServiceSqlite implements StateService {
         vocabularies.stream().map(v -> new State(0L, v.word(), LocalDateTime.now())).toList();
 
     stateDao.batchInsert(states);
+
+    log.info("Saved state");
   }
 }
