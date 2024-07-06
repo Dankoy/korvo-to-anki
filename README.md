@@ -18,6 +18,8 @@ by [vocabulary_builder plugin](https://github.com/koreader/koreader/wiki/Vocabul
 of [KOReader](https://github.com/koreader/koreader) into text file that can be easily
 imported to anki
 
+If you want to lemmatize all your words then check another utility - [korvo-to-anki-lemmatizer](https://github.com/Dankoy/korvo-to-anki-lemmatizer)
+
 ### Stack
 
 * Java 21
