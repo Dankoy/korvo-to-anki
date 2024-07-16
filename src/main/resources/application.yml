@@ -5,6 +5,9 @@ spring:
     enabled: true
     template-loader-path: /templates/
 
+  shell:
+    interactive:
+      enabled: true
 
   datasource:
     driver-class-name: org.sqlite.JDBC
