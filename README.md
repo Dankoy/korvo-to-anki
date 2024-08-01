@@ -23,7 +23,7 @@ If you want to lemmatize all your words then check another utility - [korvo-to-a
 ### Stack
 
 * Java 21
-* Spring boot 3.2.5
+* Spring boot 3.3.2
 * Spring shell
 * Spring boot jdbc
 * Caffeine cache
