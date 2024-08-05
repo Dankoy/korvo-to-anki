@@ -121,10 +121,9 @@ public class ExporterServiceAnkiAsync implements ExporterService {
       List<String> options) {
     for (Vocabulary v : vocabularies) {
       var i = atomicInteger.getAndIncrement();
+      // sleep is not necessary anymore since rate limiter for dictionary api is implemented
       if (i != 0 && i % STEP_SIZE == 0) {
         log.info("processed - {}", i);
-        log.debug("Sleep {}", Thread.currentThread().getName());
-        sleep(10000);
       }
       var ankiData = ankiConverterService.convert(v, sourceLanguage, targetLanguage, options);
       log.info(
@@ -134,15 +133,5 @@ public class ExporterServiceAnkiAsync implements ExporterService {
       ankiDataList.add(ankiData);
     }
     latch.countDown();
-  }
-
-  private void sleep(long ms) {
-
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new KorvoRootException("Interrupted while trying to get data", e);
-    }
   }
 }

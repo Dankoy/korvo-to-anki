@@ -2,6 +2,7 @@ package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
   private final ObjectMapper mapper;
 
+  @RateLimiter(name = "dictionary-api")
   @Cacheable(cacheManager = "cacheManager", value = "dictionaryApi", key = "#word")
   @Override
   public List<Word> define(String word) {
