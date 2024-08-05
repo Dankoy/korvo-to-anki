@@ -62,3 +62,11 @@ korvo-to-anki:
 #      - "rw"        # "see also" list
 #      - "ss"        # synonyms of source text, if it's one word
 debug: false
+
+
+resilience4j.ratelimiter:
+  instances:
+    dictionary-api:
+      limitForPeriod: 1
+      limitRefreshPeriod: 1s
+      timeoutDuration: 10s
