@@ -67,6 +67,6 @@ debug: false
 resilience4j.ratelimiter:
   instances:
     dictionary-api:
-      limitForPeriod: 1
-      limitRefreshPeriod: 1s
+      limitForPeriod: 15
+      limitRefreshPeriod: 10s
       timeoutDuration: 10s
