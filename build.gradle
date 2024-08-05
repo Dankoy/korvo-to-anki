@@ -8,7 +8,7 @@ plugins {
 apply plugin: "io.spring.dependency-management"
 
 group = 'ru.dankoy'
-version = '0.2.3-SNAPSHOT'
+version = '0.2.4-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -26,11 +26,13 @@ repositories {
 
 ext {
     springShellVersion = '3.3.1'
+    resilience4jBomVersion = '2.2.0'
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.shell:spring-shell-dependencies:${springShellVersion}"
+        mavenBom "io.github.resilience4j:resilience4j-bom:${resilience4jBomVersion}"
     }
 }
 
@@ -68,6 +70,13 @@ dependencies {
 
     // spotless
     implementation 'com.diffplug.spotless:spotless-lib:2.45.0'
+
+    // resilence4j
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3'
+ //   implementation 'io.github.resilience4j:resilience4j-ratelimiter'
+    //implementation 'io.github.resilience4j:resilience4j-reactor'
+    implementation 'org.springframework.boot:spring-boot-starter-aop' // necessary for annotations
+    //implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 test {
