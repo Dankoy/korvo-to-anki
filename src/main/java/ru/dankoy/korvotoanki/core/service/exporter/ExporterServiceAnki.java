@@ -22,7 +22,6 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 /**
  * @deprecated in favor of {@link ExporterServiceAnkiAsync}
  */
-
 @Deprecated(since = "2024-08-05", forRemoval = true)
 @Slf4j
 @ConditionalOnProperty(prefix = "korvo-to-anki", value = "async", havingValue = "false")
