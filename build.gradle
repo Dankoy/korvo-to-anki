@@ -111,4 +111,10 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
+
+    yaml {
+        target '.github/**/*.yaml', '.github/**/*.yml'
+        jackson()
+        prettier()
+    }
 }
