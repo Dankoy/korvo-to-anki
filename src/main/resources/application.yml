@@ -4,6 +4,8 @@ spring:
   freemarker:
     enabled: true
     template-loader-path: /templates/
+  main:
+    web-application-type: none
 
   shell:
     interactive:
