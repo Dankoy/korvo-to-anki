@@ -4,6 +4,8 @@ spring:
   freemarker:
     enabled: true
     template-loader-path: /templates/
+  main:
+    web-application-type: none
 
   shell:
     interactive:
@@ -35,6 +37,7 @@ korvo-to-anki:
     export-file-name: export-${spring.application.name}
     state-file-name: ${spring.application.name}.state
   async: true
+  http-client: "web-client"
   api:
     dictionaryApiEnabled: true
   dictionary-api-url: "https://api.dictionaryapi.dev/api/v2/entries/en/"

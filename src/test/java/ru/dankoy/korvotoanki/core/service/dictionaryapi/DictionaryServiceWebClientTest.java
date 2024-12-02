@@ -2,7 +2,6 @@ package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 
@@ -11,59 +10,74 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.reactive.function.client.WebClient;
+import ru.dankoy.korvotoanki.config.WebClientConfig;
 import ru.dankoy.korvotoanki.config.appprops.AppProperties;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
 
-@DisplayName("Test DictionaryServiceOkHttp ")
+@DisplayName("Test DictionaryServiceWebClient ")
 @SpringBootTest(
     classes = {
-      OkHttpClient.class,
+      WebClient.class,
+      WebClientConfig.class,
       AppProperties.class,
       ObjectMapper.class,
-      DictionaryServiceOkHttp.class
+      DictionaryServiceWebClient.class
     })
-@TestPropertySource(properties = "korvo-to-anki.http-client=ok-http")
-class DictionaryServiceOkHttpTest {
+@TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
+class DictionaryServiceWebClientTest {
 
-  @MockBean private OkHttpClient okHttpClient;
+  private static MockWebServer server;
+  private String mockUrl = "";
 
-  @Mock private Call call;
+  @BeforeAll
+  static void setUp() throws IOException {
+    server = new MockWebServer();
+    server.start();
+  }
 
-  @Mock private Response response;
+  @AfterAll
+  static void tearDown() throws IOException {
+    server.shutdown();
+  }
 
-  @Mock private ResponseBody responseBody;
+  @MockitoBean private DictionaryApiProperties dictionaryApiProperties;
 
-  @MockBean private DictionaryApiProperties dictionaryApiProperties;
+  @Autowired private DictionaryServiceWebClient dictionaryService;
 
-  @Autowired private DictionaryService dictionaryService;
+  @Autowired private ObjectMapper mapper;
+
+  @BeforeEach
+  void initialize() {
+    mockUrl = String.format("http://localhost:%s/", server.getPort());
+  }
 
   @DisplayName("correct translation")
   @Test
   void defineCorrectWord() throws IOException {
 
-    given(dictionaryApiProperties.getDictionaryApiUrl()).willReturn("https://whatever.com/");
     var word = "word";
+    given(dictionaryApiProperties.getDictionaryApiUrl()).willReturn(mockUrl);
 
-    given(okHttpClient.newCall(any())).willReturn(call);
-    given(call.execute()).willReturn(response);
-    given(response.body()).willReturn(responseBody);
-    given(response.isSuccessful()).willReturn(true);
-    given(responseBody.string()).willReturn(getBody(true));
+    server.enqueue(
+        new MockResponse()
+            .setBody(mapper.writeValueAsString(getWords(false)))
+            .addHeader("Content-Type", "application/json"));
 
     List<Word> actual = dictionaryService.define(word);
 
@@ -76,15 +90,14 @@ class DictionaryServiceOkHttpTest {
   @Test
   void defineNonCorrectWordThrowsException() throws IOException {
 
-    given(dictionaryApiProperties.getDictionaryApiUrl()).willReturn("https://whatever.com/");
     var word = "exception_word";
+    given(dictionaryApiProperties.getDictionaryApiUrl()).willReturn(mockUrl);
 
-    given(okHttpClient.newCall(any())).willReturn(call);
-    given(call.execute()).willReturn(response);
-    given(response.body()).willReturn(responseBody);
-    given(response.isSuccessful()).willReturn(false);
-    given(response.code()).willReturn(404);
-    given(responseBody.string()).willReturn(getBody(false));
+    server.enqueue(
+        new MockResponse()
+            .setBody(mapper.writeValueAsString(getBody(false)))
+            .setResponseCode(404)
+            .addHeader("Content-Type", "application/json"));
 
     assertThatThrownBy(() -> dictionaryService.define(word))
         .isInstanceOf(DictionaryApiException.class);
@@ -94,17 +107,12 @@ class DictionaryServiceOkHttpTest {
 
   @DisplayName("definition response body is null")
   @Test
-  void defineResponseBodyNull() throws IOException {
+  void defineResponseBodyNull() {
 
-    given(dictionaryApiProperties.getDictionaryApiUrl()).willReturn("https://whatever.com/");
+    given(dictionaryApiProperties.getDictionaryApiUrl()).willReturn(mockUrl);
     var word = "exception_word";
 
-    given(okHttpClient.newCall(any())).willReturn(call);
-    given(call.execute()).willReturn(response);
-    given(response.body()).willReturn(null);
-    given(response.isSuccessful()).willReturn(true);
-    given(response.code()).willReturn(200);
-    given(responseBody.string()).willReturn(null);
+    server.enqueue(new MockResponse().setBody("").addHeader("Content-Type", "application/json"));
 
     List<Word> actual = dictionaryService.define(word);
 
