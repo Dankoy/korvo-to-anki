@@ -10,10 +10,16 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.dankoy.korvotoanki.config.appprops.DebugProperties;
 
+/**
+ * @deprecated in favor for {@link WebClientConfig}
+ */
+@ConditionalOnProperty(prefix = "korvo-to-anki", value = "http-client", havingValue = "ok-http")
+@Deprecated(since = "2024-12-02", forRemoval = false)
 @RequiredArgsConstructor
 @Configuration
 public class OkHttpConfig {
