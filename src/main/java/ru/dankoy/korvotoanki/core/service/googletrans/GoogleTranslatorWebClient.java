@@ -5,28 +5,24 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException;
 import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParser;
 
-/**
- * @deprecated in favor for {@link GoogleTranslatorWebClient}
- */
-@Deprecated(since = "2024-12-02", forRemoval = false)
-@ConditionalOnProperty(prefix = "korvo-to-anki", value = "http-client", havingValue = "ok-http")
+@ConditionalOnProperty(prefix = "korvo-to-anki", value = "http-client", havingValue = "web-client")
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class GoogleTranslatorOkHttp implements GoogleTranslator {
+public class GoogleTranslatorWebClient implements GoogleTranslator {
 
-  private final OkHttpClient okHttpClient;
+  private final WebClient webClient;
 
   private final GoogleTranslatorProperties googleTranslatorProperties;
 
@@ -69,28 +65,22 @@ public class GoogleTranslatorOkHttp implements GoogleTranslator {
 
     var url = urlBuilder.build().toString();
 
-    var request = new Request.Builder().url(url).build();
-
-    var call = okHttpClient.newCall(request);
-
-    try (var response = call.execute()) {
-
-      checkStatus(response);
-      var body = response.body() != null ? response.body().string() : "";
-
-      return googleTranslatorParser.parse(body);
-
-    } catch (Exception e) {
-      throw new GoogleTranslatorException(e);
-    }
-  }
-
-  private void checkStatus(Response response) {
-
-    if (!response.isSuccessful()) {
-      log.error("Something went wrong");
-      throw new GoogleTranslatorException(
-          "Response is not successfull", new RuntimeException(String.valueOf(response.body())));
-    }
+    return webClient
+        .get()
+        .uri(url)
+        .retrieve()
+        .onStatus(
+            HttpStatusCode::isError,
+            error ->
+                error
+                    .bodyToMono(String.class)
+                    .flatMap(
+                        body ->
+                            Mono.error(
+                                new GoogleTranslatorException(
+                                    "Response is not successful", new RuntimeException(body)))))
+        .bodyToMono(String.class)
+        .map(googleTranslatorParser::parse)
+        .block();
   }
 }

@@ -3,7 +3,6 @@ package ru.dankoy.korvotoanki;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,15 @@ import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary.VocabularyDaoJdbc;
 import ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabricImpl;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceImpl;
-import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp;
+import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceWebClient;
 import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiAsync;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterServiceImpl;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderServiceImpl;
-import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
+import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorWebClient;
 import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParserImpl;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperServiceImpl;
 import ru.dankoy.korvotoanki.core.service.state.StateServiceImpl;
+import ru.dankoy.korvotoanki.core.service.state.StateServiceSqlite;
 import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorServiceImpl;
 import ru.dankoy.korvotoanki.core.service.title.TitleServiceJdbc;
@@ -53,7 +53,6 @@ class KorvoToAnkiApplicationTests {
   @Test
   void contextLoads() {
 
-    var okHttpClient = context.getBean(OkHttpClient.class);
     var debugProperties = context.getBean(DebugProperties.class);
     var templateBuilder = context.getBean(TemplateBuilder.class);
     var cacheManager = context.getBean(CacheManager.class);
@@ -72,20 +71,20 @@ class KorvoToAnkiApplicationTests {
     var vocabularyDaoJdbc = context.getBean(VocabularyDaoJdbc.class);
     var ankiDataFabric = context.getBean(AnkiDataFabricImpl.class);
     var ankiConverterService = context.getBean(AnkiConverterServiceImpl.class);
-    var dictionaryServiceOkHttp = context.getBean(DictionaryServiceOkHttp.class);
+    var dictionaryServiceWebClient = context.getBean(DictionaryServiceWebClient.class);
     var exporterServiceAnkiAsync = context.getBean(ExporterServiceAnkiAsync.class);
     //    var exporterServiceAnki = context.getBean(ExporterServiceAnki.class);
     var fileNameFormatterService = context.getBean(FileNameFormatterServiceImpl.class);
     var fileProviderService = context.getBean(FileProviderServiceImpl.class);
-    var googleTranslatorOkHttp = context.getBean(GoogleTranslatorOkHttp.class);
+    var googleTranslatorWebClient = context.getBean(GoogleTranslatorWebClient.class);
     var googleTranslatorParser = context.getBean(GoogleTranslatorParserImpl.class);
     var objectMapperService = context.getBean(ObjectMapperServiceImpl.class);
     var stateService = context.getBean(StateServiceImpl.class);
+    var stateServiceSqlite = context.getBean(StateServiceSqlite.class);
     var templateCreatorService = context.getBean(TemplateCreatorServiceImpl.class);
     var titleServiceJdbc = context.getBean(TitleServiceJdbc.class);
     var vocabularyServiceJdbc = context.getBean(VocabularyServiceJdbc.class);
 
-    assertNotNull(okHttpClient);
     assertNotNull(debugProperties);
     assertNotNull(templateBuilder);
     assertNotNull(cacheManager);
@@ -105,13 +104,14 @@ class KorvoToAnkiApplicationTests {
     assertNotNull(vocabularyDaoJdbc);
     assertNotNull(ankiDataFabric);
     assertNotNull(ankiConverterService);
-    assertNotNull(dictionaryServiceOkHttp);
+    assertNotNull(dictionaryServiceWebClient);
     assertNotNull(exporterServiceAnkiAsync);
     assertNotNull(fileNameFormatterService);
     assertNotNull(fileProviderService);
-    assertNotNull(googleTranslatorOkHttp);
+    assertNotNull(googleTranslatorWebClient);
     assertNotNull(googleTranslatorParser);
     assertNotNull(stateService);
+    assertNotNull(stateServiceSqlite);
     assertNotNull(templateCreatorService);
     assertNotNull(titleServiceJdbc);
     assertNotNull(vocabularyServiceJdbc);
