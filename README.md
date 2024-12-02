@@ -27,7 +27,8 @@ If you want to lemmatize all your words then check another utility - [korvo-to-a
 * Spring shell
 * Spring boot jdbc
 * Caffeine cache
-* OkHttp
+* ~~OkHttp~~
+* WebClient (since spring boot 3.4.0)
 * Freemarker
 * Liquibase 
 * Flyway
