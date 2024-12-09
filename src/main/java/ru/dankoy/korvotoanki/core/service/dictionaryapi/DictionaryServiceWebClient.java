@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.util.List;
 import java.util.Objects;
