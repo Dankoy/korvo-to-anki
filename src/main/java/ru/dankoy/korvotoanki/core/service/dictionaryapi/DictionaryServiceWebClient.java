@@ -1,6 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
@@ -28,8 +28,6 @@ public class DictionaryServiceWebClient implements DictionaryService {
 
   private final DictionaryApiProperties dictionaryApiProperties;
 
-  private final ObjectMapper mapper;
-
   @RateLimiter(name = "dictionary-api")
   @Cacheable(cacheManager = "cacheManager", value = "dictionaryApi", key = "#word")
   @Override
@@ -45,18 +43,21 @@ public class DictionaryServiceWebClient implements DictionaryService {
         .get()
         .uri(url)
         .retrieve()
-        .onRawStatus(
-            status -> status == 429,
-            error -> Mono.error(new TooManyRequestsException("Too many requests to dictionaryapi")))
-        .onStatus(
-            HttpStatusCode::isError,
-            error ->
-                error
-                    .bodyToMono(String.class)
-                    .flatMap(body -> Mono.error(new DictionaryApiException(body))))
+        .onRawStatus(status -> status == 429, this::handleTooManyRequestsError)
+        .onStatus(HttpStatusCode::isError, this::handleAnyResponseError)
         .bodyToFlux(Word.class)
         .defaultIfEmpty(Word.emptyWord())
         .collectList()
         .block();
+  }
+
+  private Mono<? extends Throwable> handleTooManyRequestsError(ClientResponse clientResponse) {
+    return Mono.error(new TooManyRequestsException("Too many requests to dictionaryapi"));
+  }
+
+  private Mono<? extends Throwable> handleAnyResponseError(ClientResponse clientResponse) {
+    return clientResponse
+        .bodyToMono(String.class)
+        .flatMap(body -> Mono.error(new DictionaryApiException(body)));
   }
 }

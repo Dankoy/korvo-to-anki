@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties;
@@ -69,18 +70,19 @@ public class GoogleTranslatorWebClient implements GoogleTranslator {
         .get()
         .uri(url)
         .retrieve()
-        .onStatus(
-            HttpStatusCode::isError,
-            error ->
-                error
-                    .bodyToMono(String.class)
-                    .flatMap(
-                        body ->
-                            Mono.error(
-                                new GoogleTranslatorException(
-                                    "Response is not successful", new RuntimeException(body)))))
+        .onStatus(HttpStatusCode::isError, this::handleAnyResponseError)
         .bodyToMono(String.class)
         .map(googleTranslatorParser::parse)
         .block();
+  }
+
+  private Mono<? extends Throwable> handleAnyResponseError(ClientResponse clientResponse) {
+    return clientResponse
+        .bodyToMono(String.class)
+        .flatMap(
+            body ->
+                Mono.error(
+                    new GoogleTranslatorException(
+                        "Response is not successful", new RuntimeException(body))));
   }
 }
