@@ -107,7 +107,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         toggleOffOn()
-        googleJavaFormat('1.19.2')
+        googleJavaFormat('1.25.1')
                 .reflowLongStrings()
                 .formatJavadoc(true)
                 .reorderImports(false)
