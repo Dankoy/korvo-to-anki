@@ -57,10 +57,10 @@ class IOServiceFileTest {
     // Arrange
     String content =
         """
-                Line 1
-                Line 2
-                Line 3
-                """;
+        Line 1
+        Line 2
+        Line 3
+        """;
     Files.write(tempDir.resolve(fileName), content.getBytes());
 
     given(fileProviderService.provide(fileName)).willReturn(tempDir.resolve(fileName));
