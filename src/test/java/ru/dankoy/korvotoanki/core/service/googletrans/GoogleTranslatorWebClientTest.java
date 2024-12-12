@@ -6,20 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.dankoy.korvotoanki.config.WebClientConfig;
@@ -33,31 +30,18 @@ import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorPar
 @DisplayName("Test GoogleTranslatorWebClient ")
 @SpringBootTest(
     classes = {
-      WebClient.class,
-      WebClientConfig.class,
-      AppProperties.class,
-      ObjectMapper.class,
       GoogleTranslatorWebClient.class,
-      GoogleTranslatorProperties.class
+      GoogleTranslatorProperties.class,
+      GoogleParamsProperties.class,
+      AppProperties.class,
+      WebClient.class,
+      WebClientConfig.class
     })
-@TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
+// @TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
 class GoogleTranslatorWebClientTest {
 
-  private static MockWebServer server;
-  private static String mockUrl = "";
-
-  @BeforeAll
-  static void setUp() throws IOException {
-    server = new MockWebServer();
-    server.start();
-
-    mockUrl = String.format("http://127.0.0.1:%s/", server.getPort());
-  }
-
-  @AfterAll
-  static void tearDown() throws IOException {
-    server.shutdown();
-  }
+  private MockWebServer server;
+  private String mockUrl = "http://127.0.0.1:%s/";
 
   @MockitoBean private GoogleTranslatorParser googleTranslatorParser;
 
@@ -68,7 +52,12 @@ class GoogleTranslatorWebClientTest {
   @Autowired private GoogleTranslatorWebClient googleTranslatorWebClient;
 
   @BeforeEach
-  void setUpBeans() {
+  void setUpBeans() throws IOException {
+
+    server = new MockWebServer();
+    server.start();
+
+    mockUrl = String.format(mockUrl, server.getPort());
 
     given(googleTranslatorProperties.getGoogleTranslatorUrl()).willReturn(mockUrl);
     given(googleTranslatorProperties.getGoogleParamsProperties()).willReturn(properties);
@@ -81,6 +70,11 @@ class GoogleTranslatorWebClientTest {
     given(properties.getTsel()).willReturn(0);
 
     given(googleTranslatorParser.parse(anyString())).willReturn(createGoogleTranslation());
+  }
+
+  @AfterEach
+  void tearDownMockWebServer() throws IOException {
+    server.shutdown();
   }
 
   @Test
