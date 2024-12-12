@@ -88,14 +88,11 @@ class GoogleTranslatorWebClientTest {
 
     RecordedRequest recordedRequest = server.takeRequest();
 
-    System.out.println(recordedRequest.getRequestUrl().toString());
-    System.out.println(mockUrl
-    + "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text");
-
+    // do not assert hostname and port because localhost changes to 127.0.0.1 and 127.0.0.1 changes
+    // to localhost. Always fails assertion.
     assertEquals(
-        mockUrl
-            + "?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        recordedRequest.getRequestUrl().toString());
+        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
+        recordedRequest.getPath());
 
     assertThat(translation).isEqualTo(createGoogleTranslation());
   }
@@ -109,20 +106,18 @@ class GoogleTranslatorWebClientTest {
             .setBody("Some error")
             .addHeader("Content-Type", "application/json"));
 
-    assertThatThrownBy(
-            () -> googleTranslatorWebClient.translate("text", "en", "ru", List.of("option1")))
+    var list = List.of("option1");
+
+    assertThatThrownBy(() -> googleTranslatorWebClient.translate("text", "en", "ru", list))
         .isInstanceOf(GoogleTranslatorException.class);
 
     RecordedRequest recordedRequest = server.takeRequest();
 
-    System.out.println(recordedRequest.getRequestUrl().toString());
-    System.out.println(mockUrl
-    + "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text");
-
+    // do not assert hostname and port because localhost changes to 127.0.0.1 and 127.0.0.1 changes
+    // to localhost. Always fails assertion.
     assertEquals(
-        mockUrl
-            + "?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        recordedRequest.getRequestUrl().toString());
+        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
+        recordedRequest.getPath());
   }
 
   @Test
@@ -133,20 +128,18 @@ class GoogleTranslatorWebClientTest {
     given(googleTranslatorParser.parse(anyString()))
         .willThrow(new GoogleTranslatorException("some error", new RuntimeException()));
 
-    assertThatThrownBy(
-            () -> googleTranslatorWebClient.translate("text", "en", "ru", List.of("option1")))
+    var list = List.of("option1");
+
+    assertThatThrownBy(() -> googleTranslatorWebClient.translate("text", "en", "ru", list))
         .isInstanceOf(GoogleTranslatorException.class);
 
     RecordedRequest recordedRequest = server.takeRequest();
 
-    System.out.println(recordedRequest.getRequestUrl().toString());
-    System.out.println(mockUrl
-    + "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text");
-
+    // do not assert hostname and port because localhost changes to 127.0.0.1 and 127.0.0.1 changes
+    // to localhost. Always fails assertion.
     assertEquals(
-        mockUrl
-            + "?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        recordedRequest.getRequestUrl().toString());
+        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
+        recordedRequest.getPath());
   }
 
   private GoogleTranslation createGoogleTranslation() {
