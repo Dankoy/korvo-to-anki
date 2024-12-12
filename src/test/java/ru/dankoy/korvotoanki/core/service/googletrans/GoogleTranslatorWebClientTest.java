@@ -88,7 +88,9 @@ class GoogleTranslatorWebClientTest {
 
     RecordedRequest recordedRequest = server.takeRequest();
 
-    System.out.println(recordedRequest.getRequestLine());
+    System.out.println(recordedRequest.getRequestUrl().toString());
+    System.out.println(mockUrl
+    + "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text");
 
     assertEquals(
         mockUrl
@@ -113,7 +115,9 @@ class GoogleTranslatorWebClientTest {
 
     RecordedRequest recordedRequest = server.takeRequest();
 
-    System.out.println(recordedRequest.getRequestLine());
+    System.out.println(recordedRequest.getRequestUrl().toString());
+    System.out.println(mockUrl
+    + "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text");
 
     assertEquals(
         mockUrl
@@ -135,7 +139,9 @@ class GoogleTranslatorWebClientTest {
 
     RecordedRequest recordedRequest = server.takeRequest();
 
-    System.out.println(recordedRequest.getRequestLine());
+    System.out.println(recordedRequest.getRequestUrl().toString());
+    System.out.println(mockUrl
+    + "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text");
 
     assertEquals(
         mockUrl
