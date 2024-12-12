@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.dankoy.korvotoanki.config.WebClientConfig;
@@ -39,11 +38,11 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
       ObjectMapper.class,
       DictionaryServiceWebClient.class
     })
-@TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
+// @TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
 class DictionaryServiceWebClientTest {
 
   private static MockWebServer server;
-  private String mockUrl = "";
+  private String mockUrl = "http://127.0.0.1:%s/";
 
   @BeforeAll
   static void setUp() throws IOException {
@@ -64,7 +63,7 @@ class DictionaryServiceWebClientTest {
 
   @BeforeEach
   void initialize() {
-    mockUrl = String.format("http://localhost:%s/", server.getPort());
+    mockUrl = String.format(mockUrl, server.getPort());
   }
 
   @DisplayName("correct translation")
