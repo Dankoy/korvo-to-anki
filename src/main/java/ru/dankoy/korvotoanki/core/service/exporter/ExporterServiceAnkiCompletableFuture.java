@@ -1,10 +1,8 @@
 package ru.dankoy.korvotoanki.core.service.exporter;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
-import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
@@ -24,11 +21,11 @@ import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @ConditionalOnExpression(
-    "${korvo-to-anki.async} == true && ${korvo-to-anki.async-type} == 'countdownlatch'")
+    "${korvo-to-anki.async} == true && ${korvo-to-anki.async-type} == 'completable-future'")
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ExporterServiceAnkiAsync implements ExporterService {
+public class ExporterServiceAnkiCompletableFuture implements ExporterService {
 
   private static final int STEP_SIZE = 30;
   private static final int THREADS = 2;
@@ -38,10 +35,11 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
   private final StateService sqliteStateService;
-  private CountDownLatch latch;
 
-  // The IoService is provided type, that's why we inject it using @Lookup annotation.
-  // @Lookup annotation doesn't work inside prototype bean, so had to use constructor to inject
+  // The IoService is provided type, that's why we inject it using @Lookup
+  // annotation.
+  // @Lookup annotation doesn't work inside prototype bean, so had to use
+  // constructor to inject
   // beans
   @Lookup
   public IOService getIoService(
@@ -66,51 +64,59 @@ public class ExporterServiceAnkiAsync implements ExporterService {
 
     List<AnkiData> ankiDataList = new CopyOnWriteArrayList<>();
 
-    try (ExecutorService executorService = Executors.newFixedThreadPool(THREADS)) {
-      List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
-      List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
+    List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
+    List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
-      if (!filtered.isEmpty()) {
+    if (!filtered.isEmpty()) {
 
-        if (filtered.size() < THREADS) {
+      CompletableFuture<Void> concurrentExportAllOf = null;
 
-          latch = new CountDownLatch(filtered.size());
-          executorService.execute(
-              () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
+      if (filtered.size() < THREADS) {
 
-        } else {
+        CompletableFuture<Void> future1 =
+            CompletableFuture.runAsync(
+                () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
 
-          latch = new CountDownLatch(THREADS);
-          List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
-          List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
-
-          executorService.execute(
-              () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
-          executorService.execute(
-              () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
-        }
-
-        try {
-          latch.await();
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          throw new KorvoRootException("Interrupted while waiting for task completion", e);
-        }
-
-        var template = templateCreatorService.create(ankiDataList);
-
-        var ioService =
-            getIoService(
-                getFileProviderService(),
-                getFileNameFormatterService(),
-                filesProperties.getExportFileName());
-        ioService.print(template);
-
-        sqliteStateService.saveState(filtered);
+        concurrentExportAllOf = CompletableFuture.allOf(future1);
 
       } else {
-        log.info("State is the same as database. Export is not necessary.");
+
+        List<Vocabulary> oneV = filtered.subList(0, filtered.size() / 2);
+        List<Vocabulary> twoV = filtered.subList((filtered.size() / 2), filtered.size());
+
+        CompletableFuture<Void> future1 =
+            CompletableFuture.runAsync(
+                () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
+        CompletableFuture<Void> future2 =
+            CompletableFuture.runAsync(
+                () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+        concurrentExportAllOf = CompletableFuture.allOf(future1, future2);
       }
+
+      var ioService =
+          getIoService(
+              getFileProviderService(),
+              getFileNameFormatterService(),
+              filesProperties.getExportFileName());
+
+      // prepare cf for printing the template and saving state to sqlite
+      CompletableFuture<String> template =
+          CompletableFuture.supplyAsync(() -> templateCreatorService.create(ankiDataList));
+
+      CompletableFuture<Void> f1 =
+          CompletableFuture.runAsync(() -> ioService.print(template.join()));
+      CompletableFuture<Void> f2 =
+          CompletableFuture.runAsync(() -> sqliteStateService.saveState(filtered));
+
+      // run all of the futures in parallel
+      CompletableFuture<Void> printExportAndSaveState = CompletableFuture.allOf(f1, f2);
+
+      // run print template and save state to sqlite in parallel only after the cf for
+      // exporting is complete
+      concurrentExportAllOf.thenRunAsync(printExportAndSaveState::join);
+
+    } else {
+      log.info("State is the same as database. Export is not necessary.");
     }
   }
 
@@ -122,7 +128,8 @@ public class ExporterServiceAnkiAsync implements ExporterService {
       List<String> options) {
     for (Vocabulary v : vocabularies) {
       var i = atomicInteger.getAndIncrement();
-      // sleep is not necessary anymore since rate limiter for dictionary api is implemented
+      // sleep is not necessary anymore since rate limiter for dictionary api is
+      // implemented
       if (i != 0 && i % STEP_SIZE == 0) {
         log.info("processed - {}", i);
       }
@@ -133,6 +140,6 @@ public class ExporterServiceAnkiAsync implements ExporterService {
           ankiData.getWord());
       ankiDataList.add(ankiData);
     }
-    latch.countDown();
+    // latch.countDown();
   }
 }
