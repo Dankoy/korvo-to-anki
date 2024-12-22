@@ -3,6 +3,7 @@ package ru.dankoy.korvotoanki.core.service.exporter;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @ConditionalOnExpression(
-    "${korvo-to-anki.async} == true && ${korvo-to-anki.async-type} == 'completable-future'")
+    "${korvo-to-anki.async} and '${korvo-to-anki.async-type}'.equals('completable_future')")
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -67,6 +68,8 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
     List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
     List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
+    var executorService = Executors.newFixedThreadPool(THREADS);
+
     if (!filtered.isEmpty()) {
 
       CompletableFuture<Void> concurrentExportAllOf = null;
@@ -75,7 +78,8 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
 
         CompletableFuture<Void> future1 =
             CompletableFuture.runAsync(
-                () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options));
+                () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options),
+                executorService);
 
         concurrentExportAllOf = CompletableFuture.allOf(future1);
 
@@ -86,12 +90,17 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
 
         CompletableFuture<Void> future1 =
             CompletableFuture.runAsync(
-                () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options));
+                () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options),
+                executorService);
         CompletableFuture<Void> future2 =
             CompletableFuture.runAsync(
-                () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options));
+                () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options),
+                executorService);
         concurrentExportAllOf = CompletableFuture.allOf(future1, future2);
       }
+
+      // wait till export is finished
+      concurrentExportAllOf.join();
 
       var ioService =
           getIoService(
@@ -99,21 +108,20 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
               getFileNameFormatterService(),
               filesProperties.getExportFileName());
 
-      // prepare cf for printing the template and saving state to sqlite
+      // prepare cf for printing the template
       CompletableFuture<String> template =
-          CompletableFuture.supplyAsync(() -> templateCreatorService.create(ankiDataList));
-
-      CompletableFuture<Void> f1 =
-          CompletableFuture.runAsync(() -> ioService.print(template.join()));
-      CompletableFuture<Void> f2 =
-          CompletableFuture.runAsync(() -> sqliteStateService.saveState(filtered));
+          CompletableFuture.supplyAsync(
+              () -> templateCreatorService.create(ankiDataList), executorService);
 
       // run all of the futures in parallel
-      CompletableFuture<Void> printExportAndSaveState = CompletableFuture.allOf(f1, f2);
+      CompletableFuture<Void> printExportAndSaveState =
+          CompletableFuture.allOf(
+              CompletableFuture.runAsync(() -> ioService.print(template.join()), executorService),
+              CompletableFuture.runAsync(
+                  () -> sqliteStateService.saveState(filtered), executorService));
 
-      // run print template and save state to sqlite in parallel only after the cf for
-      // exporting is complete
-      concurrentExportAllOf.thenRunAsync(printExportAndSaveState::join);
+      // wait till done
+      printExportAndSaveState.whenComplete((res, ex) -> executorService.shutdownNow()).join();
 
     } else {
       log.info("State is the same as database. Export is not necessary.");
@@ -140,6 +148,5 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
           ankiData.getWord());
       ankiDataList.add(ankiData);
     }
-    // latch.countDown();
   }
 }
