@@ -36,7 +36,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
 
     var isDictionaryApiEnabled = externalApiProperties.isDictionaryApiEnabled();
 
-    var executorService = Executors.newFixedThreadPool(2);
+    var fixedThreadPool = Executors.newFixedThreadPool(2);
 
     log.debug(String.format("Working with word: '%s'", vocabulary.word()));
 
@@ -50,7 +50,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
                     return dictionaryService.define(vocabulary.word());
                   else return Collections.singletonList(Word.emptyWord());
                 },
-                executorService)
+                fixedThreadPool)
             .handle(
                 (result, ex) -> {
                   if (ex != null && ex.getCause() instanceof DictionaryApiException) {
@@ -68,7 +68,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
                 () ->
                     googleTranslator.translate(
                         vocabulary.word(), targetLanguage, sourceLanguage, options),
-                executorService)
+                fixedThreadPool)
             .handle(
                 (result, ex) -> {
                   // it wraps exceptions in CompletionException
@@ -87,7 +87,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
             ignored -> {
               return ankiDataFabric.createAnkiData(vocabulary, cf2.join(), cf1.join());
             })
-        .whenComplete((e, ex) -> executorService.shutdownNow())
+        .whenComplete((e, ex) -> fixedThreadPool.shutdownNow())
         .join();
   }
 }

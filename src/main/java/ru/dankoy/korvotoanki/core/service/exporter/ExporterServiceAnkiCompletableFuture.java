@@ -68,7 +68,7 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
     List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
     List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
-    var executorService = Executors.newFixedThreadPool(THREADS);
+    var fixedThreadPool = Executors.newFixedThreadPool(THREADS);
 
     if (!filtered.isEmpty()) {
 
@@ -79,7 +79,7 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
         CompletableFuture<Void> future1 =
             CompletableFuture.runAsync(
                 () -> asyncFunc(ankiDataList, filtered, sourceLanguage, targetLanguage, options),
-                executorService);
+                fixedThreadPool);
 
         concurrentExportAllOf = CompletableFuture.allOf(future1);
 
@@ -91,11 +91,11 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
         CompletableFuture<Void> future1 =
             CompletableFuture.runAsync(
                 () -> asyncFunc(ankiDataList, oneV, sourceLanguage, targetLanguage, options),
-                executorService);
+                fixedThreadPool);
         CompletableFuture<Void> future2 =
             CompletableFuture.runAsync(
                 () -> asyncFunc(ankiDataList, twoV, sourceLanguage, targetLanguage, options),
-                executorService);
+                fixedThreadPool);
         concurrentExportAllOf = CompletableFuture.allOf(future1, future2);
       }
 
@@ -111,17 +111,17 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
       // prepare cf for printing the template
       CompletableFuture<String> template =
           CompletableFuture.supplyAsync(
-              () -> templateCreatorService.create(ankiDataList), executorService);
+              () -> templateCreatorService.create(ankiDataList), fixedThreadPool);
 
       // run all of the futures in parallel
       CompletableFuture<Void> printExportAndSaveState =
           CompletableFuture.allOf(
-              CompletableFuture.runAsync(() -> ioService.print(template.join()), executorService),
+              CompletableFuture.runAsync(() -> ioService.print(template.join()), fixedThreadPool),
               CompletableFuture.runAsync(
-                  () -> sqliteStateService.saveState(filtered), executorService));
+                  () -> sqliteStateService.saveState(filtered), fixedThreadPool));
 
       // wait till done
-      printExportAndSaveState.whenComplete((res, ex) -> executorService.shutdownNow()).join();
+      printExportAndSaveState.whenComplete((e, ex) -> fixedThreadPool.shutdownNow()).join();
 
     } else {
       log.info("State is the same as database. Export is not necessary.");
