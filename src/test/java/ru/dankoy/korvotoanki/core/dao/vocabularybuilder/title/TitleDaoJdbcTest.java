@@ -12,16 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
 @DisplayName("Test TitleDaoJdbc ")
-@TestPropertySource(
+@JdbcTest(
     properties = {
       "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"
     })
-@JdbcTest
 @Import(TitleDaoJdbc.class)
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database

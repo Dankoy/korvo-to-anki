@@ -15,19 +15,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.test.context.TestPropertySource;
 import ru.dankoy.korvotoanki.config.datasource.StateDataSourceConfig;
 import ru.dankoy.korvotoanki.core.domain.state.State;
 import ru.dankoy.korvotoanki.core.exceptions.StateDaoException;
 
 @DisplayName("Test StateDaoJdbc ")
 @Import({StateDataSourceConfig.class, StateDaoJdbc.class})
-@TestPropertySource(
-    properties = {
-      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,"
-          + " org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
+@JdbcTest(
+    excludeAutoConfiguration = {
+      org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.class,
+      org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class
     })
-@JdbcTest
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
 class StateDaoJdbcTest {
