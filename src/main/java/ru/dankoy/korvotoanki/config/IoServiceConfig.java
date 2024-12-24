@@ -31,5 +31,4 @@ public class IoServiceConfig {
       String name) {
     return new IOServiceFile(fileProviderService, fileNameFormatterService, name);
   }
-
 }
