@@ -5,17 +5,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
-import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
-import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
@@ -36,29 +34,7 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
   private final StateService sqliteStateService;
-
-  // The IoService is provided type, that's why we inject it using @Lookup
-  // annotation.
-  // @Lookup annotation doesn't work inside prototype bean, so had to use
-  // constructor to inject
-  // beans
-  @Lookup
-  public IOService getIoService(
-      FileProviderService fileProviderService,
-      FileNameFormatterService fileNameFormatterService,
-      String fileName) {
-    return null;
-  }
-
-  @Lookup
-  public FileProviderService getFileProviderService() {
-    return null;
-  }
-
-  @Lookup
-  public FileNameFormatterService getFileNameFormatterService() {
-    return null;
-  }
+  private final Function<String, IOService> ioServiceFileFactory;
 
   @Override
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {
@@ -102,11 +78,7 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
       // wait till export is finished
       concurrentExportAllOf.join();
 
-      var ioService =
-          getIoService(
-              getFileProviderService(),
-              getFileNameFormatterService(),
-              filesProperties.getExportFileName());
+      var ioService = ioServiceFileFactory.apply(filesProperties.getExportFileName());
 
       // prepare cf for printing the template
       CompletableFuture<String> template =
