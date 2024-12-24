@@ -13,6 +13,7 @@ import ru.dankoy.korvotoanki.core.exceptions.IoException;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 
+// Injection this bean from configuration class bean #{link IoServiceConfig}
 @Service
 @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
