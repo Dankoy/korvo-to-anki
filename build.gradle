@@ -61,7 +61,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
 
-    implementation 'org.flywaydb:flyway-core'
+    // starting from spring boot 3.4.0 flyway (10.20.1) behavior is ridiculous
+    // it applied migrations from tests on production environment
+    // so I decided to use latest version from maven
+    // 11.1.0, 11.0.1, 10.22.0 works perfect
+    // TODO: use versions from spring dep manager (can it even be trusted after this horrendous upgrade?)
+    implementation 'org.flywaydb:flyway-core:11.1.0'
 //    implementation 'org.jooq:jooq'
 
     // freemarker
