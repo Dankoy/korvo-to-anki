@@ -24,7 +24,7 @@ import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @ConditionalOnExpression(
-    "'${korvo-to-anki.async}' == true && '${korvo-to-anki.async-type}' == 'countdownlatch'")
+    "${korvo-to-anki.async} and '${korvo-to-anki.async-type}' == 'countdownlatch'")
 @Slf4j
 @Service
 @RequiredArgsConstructor
