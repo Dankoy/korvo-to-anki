@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
@@ -23,7 +23,8 @@ import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
-@ConditionalOnProperty(prefix = "korvo-to-anki", value = "async", havingValue = "true")
+@ConditionalOnExpression(
+    "${korvo-to-anki.async} and '${korvo-to-anki.async-type}' == 'countdownlatch'")
 @Slf4j
 @Service
 @RequiredArgsConstructor

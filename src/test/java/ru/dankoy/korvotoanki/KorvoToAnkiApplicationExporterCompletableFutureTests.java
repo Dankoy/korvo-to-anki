@@ -10,44 +10,68 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportL
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.dankoy.korvotoanki.config.IoServiceConfig;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
-import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki;
+import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiCompletableFuture;
+import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
+import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
-@DisplayName("Test sync exporter bean context ")
-class KorvoToAnkiApplicationExporterSyncTests {
+@DisplayName("Test completable future exporter bean context ")
+class KorvoToAnkiApplicationExporterCompletableFutureTests {
 
   private final ApplicationContextRunner contextRunner =
       new ApplicationContextRunner()
           .withInitializer(
               new ConditionEvaluationReportLoggingListener()) // to print out conditional config
           // report to log
-          .withUserConfiguration(TestConfig.class)
-          .withUserConfiguration(ExporterServiceAnki.class);
+          .withUserConfiguration(TestConfig.class, IoServiceConfig.class)
+          .withUserConfiguration(ExporterServiceAnkiCompletableFuture.class);
 
-  @DisplayName("sync exporter bean exists")
+  @DisplayName("completable future exporter bean exists")
   @Test
-  void syncExporterServiceExists() {
+  void asyncExporterServiceExists() {
+
+    contextRunner
+        .withPropertyValues(
+            "korvo-to-anki.async=true", "korvo-to-anki.async-type=completable_future")
+        .run(
+            context ->
+                assertAll(
+                    () ->
+                        assertThat(context)
+                            .hasSingleBean(ExporterServiceAnkiCompletableFuture.class)));
+  }
+
+  @DisplayName("completable future exporter bean not exists")
+  @Test
+  void asyncExporterServiceNotExists() {
 
     contextRunner
         .withPropertyValues("korvo-to-anki.async=false")
         .run(
             context ->
-                assertAll(() -> assertThat(context).hasSingleBean(ExporterServiceAnki.class)));
+                assertAll(
+                    () ->
+                        assertThat(context)
+                            .doesNotHaveBean(ExporterServiceAnkiCompletableFuture.class)));
   }
 
-  @DisplayName("sync exporter bean not exists")
+  @DisplayName("completable future exporter bean not exists")
   @Test
-  void syncExporterServiceNotExists() {
+  void asyncExporterServiceTypeWhateverNotExists() {
 
     contextRunner
-        .withPropertyValues("korvo-to-anki.async=true")
+        .withPropertyValues("korvo-to-anki.async=true", "korvo-to-anki.async-type=whatever")
         .run(
             context ->
-                assertAll(() -> assertThat(context).doesNotHaveBean(ExporterServiceAnki.class)));
+                assertAll(
+                    () ->
+                        assertThat(context)
+                            .doesNotHaveBean(ExporterServiceAnkiCompletableFuture.class)));
   }
 
   @Configuration // this annotation is not required here as the class is explicitly mentioned in
@@ -83,6 +107,19 @@ class KorvoToAnkiApplicationExporterSyncTests {
     public StateService stateService() {
       return Mockito.mock(
           StateService.class); // this bean will be automatically autowired into tested beans
+    }
+
+    @Bean
+    public FileProviderService fileProviderService() {
+      return Mockito.mock(
+          FileProviderService.class); // this bean will be automatically autowired into tested beans
+    }
+
+    @Bean
+    public FileNameFormatterService fileNameFormatterService() {
+      return Mockito.mock(
+          FileNameFormatterService
+              .class); // this bean will be automatically autowired into tested beans
     }
   }
 }

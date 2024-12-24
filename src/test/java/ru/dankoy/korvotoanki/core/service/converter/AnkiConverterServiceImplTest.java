@@ -39,7 +39,8 @@ import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
       GoogleTranslatorOkHttp.class,
       AnkiDataFabricImpl.class,
       ExternalApiParams.class
-    })
+    },
+    properties = {"korvo-to-anki.async=false"})
 class AnkiConverterServiceImplTest {
 
   @MockBean private DictionaryService dictionaryService;
