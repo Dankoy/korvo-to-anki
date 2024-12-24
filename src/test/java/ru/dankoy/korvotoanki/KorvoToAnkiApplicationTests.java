@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
@@ -24,9 +25,9 @@ import ru.dankoy.korvotoanki.core.command.VocabularyCommand;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary.VocabularyDaoJdbc;
 import ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabricImpl;
-import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceImpl;
+import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceCompletableFuture;
 import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceWebClient;
-import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiAsync;
+import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnkiCompletableFuture;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterServiceImpl;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderServiceImpl;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorWebClient;
@@ -45,6 +46,8 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
       "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
     })
 @SpringBootTest
+@AutoConfigureTestDatabase(
+    replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database to run migrations on
 class KorvoToAnkiApplicationTests {
 
   @Autowired ApplicationContext context;
@@ -70,9 +73,9 @@ class KorvoToAnkiApplicationTests {
     var titleDaoJdbc = context.getBean(TitleDaoJdbc.class);
     var vocabularyDaoJdbc = context.getBean(VocabularyDaoJdbc.class);
     var ankiDataFabric = context.getBean(AnkiDataFabricImpl.class);
-    var ankiConverterService = context.getBean(AnkiConverterServiceImpl.class);
+    var ankiConverterService = context.getBean(AnkiConverterServiceCompletableFuture.class);
     var dictionaryServiceWebClient = context.getBean(DictionaryServiceWebClient.class);
-    var exporterServiceAnkiAsync = context.getBean(ExporterServiceAnkiAsync.class);
+    var exporterServiceAnkiAsync = context.getBean(ExporterServiceAnkiCompletableFuture.class);
     //    var exporterServiceAnki = context.getBean(ExporterServiceAnki.class);
     var fileNameFormatterService = context.getBean(FileNameFormatterServiceImpl.class);
     var fileProviderService = context.getBean(FileProviderServiceImpl.class);

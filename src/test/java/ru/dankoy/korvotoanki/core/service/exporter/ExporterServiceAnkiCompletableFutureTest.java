@@ -1,6 +1,7 @@
 package ru.dankoy.korvotoanki.core.service.exporter;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -10,13 +11,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.config.appprops.FilesParams;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Title;
@@ -26,9 +30,11 @@ import ru.dankoy.korvotoanki.core.domain.anki.Meaning;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.Definition;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
-import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceImpl;
+import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterServiceCompletableFuture;
 import ru.dankoy.korvotoanki.core.service.datetimeprovider.DateTimeProviderImpl;
+import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterServiceImpl;
+import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderServiceImpl;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.io.IOServiceFile;
@@ -39,36 +45,42 @@ import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 
-@DisplayName("Test ExporterServiceAnkiAsync ")
+@DisplayName("Test ExporterServiceAnkiCompletableFutureTest ")
 @SpringBootTest(
     classes = {
       VocabularyServiceJdbc.class,
-      AnkiConverterServiceImpl.class,
+      AnkiConverterServiceCompletableFuture.class,
       TemplateCreatorServiceImpl.class,
       FilesParams.class,
       StateServiceImpl.class,
       IOServiceFile.class,
-      ExporterServiceAnkiAsync.class,
+      ExporterServiceAnkiCompletableFuture.class,
       FileProviderServiceImpl.class,
       FileNameFormatterServiceImpl.class,
       DateTimeProviderImpl.class
     },
-    properties = {"korvo-to-anki.async-type=countdownlatch", "korvo-to-anki.async=true"})
-class ExporterServiceAnkiAsyncTest {
+    properties = {"korvo-to-anki.async-type=completable_future", "korvo-to-anki.async=true"})
+class ExporterServiceAnkiCompletableFutureTest {
 
-  @MockBean private VocabularyService vocabularyService;
+  @MockitoBean private VocabularyService vocabularyService;
 
-  @MockBean private AnkiConverterService ankiConverterService;
+  @MockitoBean private AnkiConverterService ankiConverterService;
 
-  @MockBean private TemplateCreatorService templateCreatorService;
+  @MockitoBean private TemplateCreatorService templateCreatorService;
 
-  @MockBean private FilesProperties filesProperties;
+  @MockitoBean private FilesProperties filesProperties;
 
-  @MockBean private IOService ioService;
+  @Mock private IOService ioService; // prototype
 
-  @MockBean private StateService stateService;
+  @MockitoBean private StateService stateService;
 
-  @Autowired private ExporterServiceAnkiAsync exporterServiceAnkiAsync;
+  @MockitoBean private FileProviderService fileProviderService;
+
+  @MockitoBean private FileNameFormatterService fileNameFormatterServiceImpl;
+
+  @InjectMocks @Autowired private ExporterServiceAnkiCompletableFuture exporterServiceAnkiAsync;
+
+  @MockitoBean private Function<String, IOService> ioServiceFileFactory;
 
   @DisplayName("export one word without state")
   @Test
@@ -89,6 +101,8 @@ class ExporterServiceAnkiAsyncTest {
     given(templateCreatorService.create(any())).willReturn(templ);
     doNothing().when(ioService).print(any());
     doNothing().when(stateService).saveState(vocabularies);
+    given(ioServiceFileFactory.apply(anyString())).willReturn(ioService);
+    given(filesProperties.getExportFileName()).willReturn("name");
 
     exporterServiceAnkiAsync.export(sourceLanguage, targetLanguage, options);
 
@@ -178,6 +192,8 @@ class ExporterServiceAnkiAsyncTest {
     given(templateCreatorService.create(any())).willReturn(templ);
     doNothing().when(ioService).print(any());
     doNothing().when(stateService).saveState(vocabularies);
+    given(ioServiceFileFactory.apply(anyString())).willReturn(ioService);
+    given(filesProperties.getExportFileName()).willReturn("name");
 
     exporterServiceAnkiAsync.export(sourceLanguage, targetLanguage, options);
 

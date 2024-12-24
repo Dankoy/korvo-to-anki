@@ -22,9 +22,9 @@ import ru.dankoy.korvotoanki.core.exceptions.StateDaoException;
 @DisplayName("Test StateDaoJdbc ")
 @Import({StateDataSourceConfig.class, StateDaoJdbc.class})
 @JdbcTest(
-    properties = {
-      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,"
-          + " org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
+    excludeAutoConfiguration = {
+      org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.class,
+      org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class
     })
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database

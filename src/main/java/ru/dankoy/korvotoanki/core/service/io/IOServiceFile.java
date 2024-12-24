@@ -7,12 +7,15 @@ import java.nio.file.Path;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.exceptions.IoException;
 import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterService;
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 
+// Injection this bean from configuration class bean #{link IoServiceConfig}
+@Primary
 @Service
 @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j

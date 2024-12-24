@@ -16,11 +16,6 @@ import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.exceptions.TitleDaoException;
 
 @DisplayName("Test TitleDaoJdbc ")
-// @TestPropertySource(
-//     properties = {
-//
-// "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"
-//     })
 @JdbcTest(
     properties = {
       "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"

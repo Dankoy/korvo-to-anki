@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.config.Languages;
 import ru.dankoy.korvotoanki.config.appprops.ExternalApiProperties;
@@ -15,6 +16,7 @@ import ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabric;
 import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryService;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator;
 
+@ConditionalOnProperty(prefix = "korvo-to-anki", value = "async", havingValue = "false")
 @Slf4j
 @Service
 @RequiredArgsConstructor
