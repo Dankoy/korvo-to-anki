@@ -22,9 +22,7 @@ public class IoServiceConfig {
     return name -> ioServiceFile(fileProviderService, fileNameFormatterService, name);
   }
 
-  /**
-   * This bean is created as prototype and here only to inject it by function bean.
-   */
+  /** This bean is created as prototype and here only to inject it by function bean. */
   @Bean
   @Scope("prototype")
   public IOService ioServiceFile(
