@@ -52,7 +52,8 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
       FileProviderServiceImpl.class,
       FileNameFormatterServiceImpl.class,
       DateTimeProviderImpl.class
-    })
+    },
+    properties = {"korvo-to-anki.async-type=countdownlatch", "korvo-to-anki.async=true"})
 class ExporterServiceAnkiAsyncTest {
 
   @MockBean private VocabularyService vocabularyService;
