@@ -32,12 +32,4 @@ public class IoServiceConfig {
     return new IOServiceFile(fileProviderService, fileNameFormatterService, name);
   }
 
-  @FunctionalInterface
-  public interface IoServiceFactory {
-
-    IOService ioServiceFileCreate(
-        FileProviderService fileProviderService,
-        FileNameFormatterService fileNameFormatterService,
-        String name);
-  }
 }
