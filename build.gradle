@@ -5,7 +5,7 @@ plugins {
     id 'com.diffplug.spotless' version '6.25.0'
 }
 
-apply plugin: "io.spring.dependency-management"
+apply plugin: 'io.spring.dependency-management'
 
 group = 'ru.dankoy'
 version = '0.3.3-SNAPSHOT'
@@ -65,8 +65,10 @@ dependencies {
     // it applied migrations from tests on production environment
     // so I decided to use latest version from maven
     // 11.1.0, 11.0.1, 10.22.0 works perfect
-    // TODO: use versions from spring dep manager (can it even be trusted after this horrendous upgrade?)
-    implementation 'org.flywaydb:flyway-core:11.1.0'
+    // For some reason the problem is in vscode spring boot plugin. 
+    // If you run app from there, you get this problem with other versions of flyway.
+    // If you run app from console - everything is fine as should be.
+    implementation 'org.flywaydb:flyway-core'
 //    implementation 'org.jooq:jooq'
 
     // freemarker
