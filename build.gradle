@@ -65,7 +65,8 @@ dependencies {
     // it applied migrations from tests on production environment
     // so I decided to use latest version from maven
     // 11.1.0, 11.0.1, 10.22.0 works perfect
-    // For some reason the problem is in vscode spring boot plugin. If you run app from there, you get this problem with other versions of flyway.
+    // For some reason the problem is in vscode spring boot plugin. 
+    // If you run app from there, you get this problem with other versions of flyway.
     // If you run app from console - everything is fine as should be.
     implementation 'org.flywaydb:flyway-core'
 //    implementation 'org.jooq:jooq'
