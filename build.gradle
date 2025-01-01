@@ -5,7 +5,7 @@ plugins {
     id 'com.diffplug.spotless' version '6.25.0'
 }
 
-apply plugin: "io.spring.dependency-management"
+apply plugin: 'io.spring.dependency-management'
 
 group = 'ru.dankoy'
 version = '0.3.3-SNAPSHOT'
