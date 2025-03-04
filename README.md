@@ -42,6 +42,8 @@ Added integration with external services for word translation and definition loo
 
 ### Usage
 
+Download app.jar.zip from [releases](https://github.com/Dankoy/korvo-to-anki/releases), and extract jar somewhere.
+
 Program will look up every word in GT for translation, transcription and definitions (with default
 options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms and examples and
 transcription. If word in dictionary api is found then only this data is used. If word in dictionary
