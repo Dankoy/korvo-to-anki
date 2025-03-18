@@ -2,6 +2,7 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/dankoy/korvo-to-anki)](https://github.com/Dankoy/korvo-to-anki/releases/latest)
 ![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/korvo-to-anki)
+![Commits since last release](https://img.shields.io/github/commits-since/Dankoy/korvo-to-anki/latest/main)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dankoy/korvo-to-anki/total)
 
 [![Java CI with Gradle](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/Dankoy/korvo-to-anki/actions/workflows/gradle.yml)
