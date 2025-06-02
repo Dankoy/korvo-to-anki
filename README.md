@@ -155,8 +155,10 @@ Duplicates are checked by anki when imported.
 
 If you have too many words (450 and more) then app will hit the rate limiter of external
 service [dictionaryapi.dev](https://dictionaryapi.dev/). The current limit is 450 requests in 5
-minutes. When reached app fall asleep for 5 minutes and then retry to get word definition of last
-word and run further as normal until requests limit is reached again.    
+minutes. ~~When reached, app fall asleep for 5 minutes and then retry to get word definition of last
+word and run further as normal until requests limit is reached again~~. App should never hit rate limit, because of implementation of local rate limiter which does 15 requests in 10 seconds or 90 requests in one minute or 450 requests in 5 minutes.
+
+
 With all limitations export of 3080 words with sleep timeout was done in about _**30 minutes**_
 
 Dictionary api works only with english source language. Any other languages won't work same as auto.
