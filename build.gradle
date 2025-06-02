@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.5'
+    id 'org.springframework.boot' version '3.5.0'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.diffplug.spotless' version '7.0.3'
+    id 'com.diffplug.spotless' version '7.0.4'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -81,7 +81,7 @@ dependencies {
     testImplementation 'org.liquibase:liquibase-core'
 
     // spotless
-    implementation 'com.diffplug.spotless:spotless-lib:3.1.1'
+    implementation 'com.diffplug.spotless:spotless-lib:3.1.2'
 
     // resilence4j
     implementation 'io.github.resilience4j:resilience4j-spring-boot3'
