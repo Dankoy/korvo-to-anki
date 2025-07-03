@@ -21,6 +21,9 @@ imported to anki
 
 If you want to lemmatize all your words then check another utility - [korvo-to-anki-lemmatizer](https://github.com/Dankoy/korvo-to-anki-lemmatizer)
 
+> [!NOTE]
+> If you have questions about running this utility then feel free to ask it in [github discusstions](https://github.com/Dankoy/korvo-to-anki/discussions) or in [discord server](https://discord.gg/uK9dqt8q)
+
 ### Stack
 
 * Java 21
