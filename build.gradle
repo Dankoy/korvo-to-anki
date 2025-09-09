@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.4'
+    id 'org.springframework.boot' version '3.5.5'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.diffplug.spotless' version '7.2.1'
 }
@@ -25,7 +25,7 @@ repositories {
 }
 
 ext {
-    springShellVersion = '3.4.0'
+    springShellVersion = '3.4.1'
     resilience4jBomVersion = '2.3.0'
 }
 
