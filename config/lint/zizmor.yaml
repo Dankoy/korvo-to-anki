@@ -1,0 +1,11 @@
+rules:
+  unpinned-uses:
+    ignore:
+      - dependencies_check.yml
+      - gradle.yml
+      - super-linter.yml
+      - super-linter-full.yml
+      - rebase_dependencies.yml
+  artipacked:
+    ignore:
+      - rebase_dependencies.yml
