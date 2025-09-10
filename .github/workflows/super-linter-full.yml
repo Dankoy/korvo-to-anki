@@ -17,9 +17,11 @@ jobs:
         uses: "actions/checkout@v5"
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: "Lint Code Base"
         uses: "super-linter/super-linter/slim@v8.1.0"
         env:
+          LINTER_RULES_PATH: config/lint
           VALIDATE_ALL_CODEBASE: true
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
@@ -29,6 +31,7 @@ jobs:
           VALIDATE_SQLFLUFF: false
           VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
+          GITHUB_ACTIONS_ZIZMOR_CONFIG_FILE: zizmor.yaml
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
