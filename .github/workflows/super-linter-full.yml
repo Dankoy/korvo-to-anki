@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: "Lint Code Base"
-        uses: "super-linter/super-linter/slim@v8.1.0"
+        uses: "super-linter/super-linter/slim@v8.2.0"
         env:
           LINTER_RULES_PATH: config/lint
           VALIDATE_ALL_CODEBASE: true
