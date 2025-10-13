@@ -31,6 +31,8 @@ jobs:
           VALIDATE_SQLFLUFF: false
           VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_BIOME_FORMAT: false
           GITHUB_ACTIONS_ZIZMOR_CONFIG_FILE: zizmor.yaml
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: "main"
