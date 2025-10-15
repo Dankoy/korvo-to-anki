@@ -3,7 +3,7 @@ package ru.dankoy.korvotoanki.core.service.converter;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -20,7 +20,11 @@ import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryService;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator;
 
 @ConditionalOnExpression(
-    "${korvo-to-anki.async} and '${korvo-to-anki.async-type}'.equals('completable_future')")
+    """
+        (${korvo-to-anki.async} and '${korvo-to-anki.async-type}'.equals('completable_future'))
+        or
+        (${korvo-to-anki.async} and '${korvo-to-anki.async-type}'.equals('vtcf'))
+    """)
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,13 +34,12 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
   private final GoogleTranslator googleTranslator;
   private final AnkiDataFabric ankiDataFabric;
   private final ExternalApiProperties externalApiProperties;
+  private final ExecutorService ankiConverterTaskExecutor;
 
   public AnkiData convert(
       Vocabulary vocabulary, String sourceLanguage, String targetLanguage, List<String> options) {
 
     var isDictionaryApiEnabled = externalApiProperties.isDictionaryApiEnabled();
-
-    var fixedThreadPool = Executors.newFixedThreadPool(2);
 
     log.debug(String.format("Working with word: '%s'", vocabulary.word()));
 
@@ -50,7 +53,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
                     return dictionaryService.define(vocabulary.word());
                   else return Collections.singletonList(Word.emptyWord());
                 },
-                fixedThreadPool)
+                ankiConverterTaskExecutor)
             .handle(
                 (result, ex) -> {
                   if (ex != null && ex.getCause() instanceof DictionaryApiException) {
@@ -68,7 +71,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
                 () ->
                     googleTranslator.translate(
                         vocabulary.word(), targetLanguage, sourceLanguage, options),
-                fixedThreadPool)
+                ankiConverterTaskExecutor)
             .handle(
                 (result, ex) -> {
                   // it wraps exceptions in CompletionException
@@ -87,7 +90,6 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
             ignored -> {
               return ankiDataFabric.createAnkiData(vocabulary, cf2.join(), cf1.join());
             })
-        .whenComplete((e, ex) -> fixedThreadPool.shutdownNow())
         .join();
   }
 }

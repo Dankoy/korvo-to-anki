@@ -58,7 +58,10 @@ source language.
 
 #### Available options of jar startup
 
-    * korvo-to-anki.api.dictionaryApiEnabled: true/false - turn on or off dictionaryapi service integration. Default - true
+```shell
+korvo-to-anki.api.dictionaryApiEnabled: true/false - turn on or off dictionaryapi service integration. Default - true
+korvo-to-anki.async-type: "vtcf/completable_future" - use virtual threads or completable future as async core. Default vtcf
+```
 
 #### On linux
 
