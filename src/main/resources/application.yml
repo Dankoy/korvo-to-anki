@@ -37,7 +37,7 @@ korvo-to-anki:
     export-file-name: export-${spring.application.name}
     state-file-name: ${spring.application.name}.state
   async: true
-  async-type: "completable_future"
+  async-type: "vtcf"
   http-client: "web-client"
   api:
     dictionaryApiEnabled: true
@@ -71,6 +71,6 @@ debug: false
 resilience4j.ratelimiter:
   instances:
     dictionary-api:
-      limitForPeriod: 15
+      limitForPeriod: 14
       limitRefreshPeriod: 10s
       timeoutDuration: 10s
