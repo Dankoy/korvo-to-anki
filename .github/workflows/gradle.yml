@@ -43,7 +43,7 @@ jobs:
       run: ./gradlew bootJar
 
     - name: Save result jar for further use
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
        name: app.jar
        path: build/libs/*
