@@ -2,6 +2,8 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
+    cooldown:
+      default-days: 5
     directory: "/"
     schedule:
       interval: "monthly"
@@ -11,6 +13,8 @@ updates:
           - "minor"
           - "patch"
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 5
     directory: "/"
     schedule:
       interval: "monthly"
