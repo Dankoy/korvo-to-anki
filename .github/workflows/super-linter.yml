@@ -21,7 +21,7 @@ jobs:
       - name: "Lint Code Base"
         uses: "super-linter/super-linter/slim@v8.3.0"
         env:
-          LINTER_RULES_PATH: config/lint
+          LINTER_RULES_PATH: "config/lint"
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
@@ -33,7 +33,7 @@ jobs:
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_BIOME_LINT: false
           VALIDATE_BIOME_FORMAT: false
-          GITHUB_ACTIONS_ZIZMOR_CONFIG_FILE: zizmor.yaml
+          GITHUB_ACTIONS_ZIZMOR_CONFIG_FILE: "zizmor.yaml"
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

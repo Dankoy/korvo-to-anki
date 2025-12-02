@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
@@ -43,7 +43,7 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 @DisplayName("Test default context ")
 @TestPropertySource(
     properties = {
-      "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
+      "spring.autoconfigure.exclude=org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration"
     })
 @SpringBootTest
 @AutoConfigureTestDatabase(

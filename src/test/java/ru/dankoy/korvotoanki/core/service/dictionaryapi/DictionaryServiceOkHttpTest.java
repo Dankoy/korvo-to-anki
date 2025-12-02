@@ -17,12 +17,14 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.config.appprops.AppProperties;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
@@ -37,10 +39,11 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
       ObjectMapper.class,
       DictionaryServiceOkHttp.class
     })
+@ExtendWith(MockitoExtension.class) // necessary for @Mock annotation to work
 @TestPropertySource(properties = "korvo-to-anki.http-client=ok-http")
 class DictionaryServiceOkHttpTest {
 
-  @MockBean private OkHttpClient okHttpClient;
+  @MockitoBean private OkHttpClient okHttpClient;
 
   @Mock private Call call;
 
@@ -48,7 +51,7 @@ class DictionaryServiceOkHttpTest {
 
   @Mock private ResponseBody responseBody;
 
-  @MockBean private DictionaryApiProperties dictionaryApiProperties;
+  @MockitoBean private DictionaryApiProperties dictionaryApiProperties;
 
   @Autowired private DictionaryService dictionaryService;
 
@@ -101,10 +104,7 @@ class DictionaryServiceOkHttpTest {
 
     given(okHttpClient.newCall(any())).willReturn(call);
     given(call.execute()).willReturn(response);
-    given(response.body()).willReturn(null);
     given(response.isSuccessful()).willReturn(true);
-    given(response.code()).willReturn(200);
-    given(responseBody.string()).willReturn(null);
 
     List<Word> actual = dictionaryService.define(word);
 

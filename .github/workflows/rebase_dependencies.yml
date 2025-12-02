@@ -1,23 +1,20 @@
-name: Automatic Rebase
-on:
+---
+name: "Automatic Rebase"
+"on":
   push:
     branches:
-      - main
-
+      - "main"
 permissions:
-  contents: write
-
+  contents: "write"
 jobs:
   rebase:
-    name: Rebase `dependencies` with `main`
-    runs-on: ubuntu-latest
+    name: "Rebase `dependencies` with `main`"
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v6
+      - uses: "actions/checkout@v6"
         with:
-          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
-          ref: dependencies
-      - run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git rebase origin/main
-          git push origin dependencies --force
+          fetch-depth: 0
+          ref: "dependencies"
+      - run:
+          "git config user.name github-actions\ngit config user.email github-actions@github.com\n\
+          git rebase origin/main\ngit push origin dependencies --force\n"

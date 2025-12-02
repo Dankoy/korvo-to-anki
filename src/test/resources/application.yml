@@ -2,7 +2,6 @@ spring:
   application:
     name: korvo-to-anki
   freemarker:
-    enabled: true
     template-loader-path: /templates/
   shell:
     interactive:

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
 
@@ -23,7 +23,7 @@ class TitleServiceJdbcTest {
   private static final long id = 1L;
   private static final String name = "title1";
 
-  @MockBean private TitleDaoJdbc titleDaoJdbc;
+  @MockitoBean private TitleDaoJdbc titleDaoJdbc;
 
   @Autowired private TitleServiceJdbc titleServiceJdbc;
 

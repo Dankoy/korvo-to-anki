@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary.VocabularyDao;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.vocabulary.VocabularyDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
@@ -21,7 +21,7 @@ import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 @SpringBootTest(classes = {VocabularyServiceJdbc.class, VocabularyDaoJdbc.class})
 class VocabularyServiceJdbcTest {
 
-  @MockBean private VocabularyDao vocabularyDao;
+  @MockitoBean private VocabularyDao vocabularyDao;
 
   @Autowired private VocabularyService vocabularyService;
 

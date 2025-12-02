@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import ru.dankoy.korvotoanki.config.datasource.StateDataSourceConfig;
@@ -23,8 +23,8 @@ import ru.dankoy.korvotoanki.core.exceptions.StateDaoException;
 @Import({StateDataSourceConfig.class, StateDaoJdbc.class})
 @JdbcTest(
     excludeAutoConfiguration = {
-      org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.class,
-      org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class
+      org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.class,
+      org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.class
     })
 @AutoConfigureTestDatabase(
     replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database
