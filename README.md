@@ -27,7 +27,7 @@ If you want to lemmatize all your words then check another utility - [korvo-to-a
 ### Stack
 
 * Java 21
-* Spring boot 3.3.2
+* Spring boot ~~3.3.2~~ -> 4.0.0
 * Spring shell
 * Spring boot jdbc
 * Caffeine cache
@@ -36,6 +36,7 @@ If you want to lemmatize all your words then check another utility - [korvo-to-a
 * Freemarker
 * Liquibase 
 * Flyway
+* Gradle
 
 ### Integrations
 
