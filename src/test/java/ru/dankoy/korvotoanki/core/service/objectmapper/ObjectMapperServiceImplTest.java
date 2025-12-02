@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.core.exceptions.ObjectMapperException;
 
 @DisplayName("Test ObjectMapperService ")
 @SpringBootTest(classes = {ObjectMapper.class, ObjectMapperServiceImpl.class})
 class ObjectMapperServiceImplTest {
 
-  @MockBean private ObjectMapper mapper;
+  @MockitoBean private ObjectMapper mapper;
   @Autowired private ObjectMapperServiceImpl objectMapperService;
 
   @DisplayName("should correctly convert object to json")

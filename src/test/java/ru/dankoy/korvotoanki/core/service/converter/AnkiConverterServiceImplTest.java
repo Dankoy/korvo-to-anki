@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.config.appprops.ExternalApiParams;
 import ru.dankoy.korvotoanki.config.appprops.ExternalApiProperties;
 import ru.dankoy.korvotoanki.core.domain.Title;
@@ -43,13 +43,13 @@ import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
     properties = {"korvo-to-anki.async=false"})
 class AnkiConverterServiceImplTest {
 
-  @MockBean private DictionaryService dictionaryService;
+  @MockitoBean private DictionaryService dictionaryService;
 
-  @MockBean private GoogleTranslator googleTranslator;
+  @MockitoBean private GoogleTranslator googleTranslator;
 
-  @MockBean private AnkiDataFabric ankiDataFabric;
+  @MockitoBean private AnkiDataFabric ankiDataFabric;
 
-  @MockBean private ExternalApiProperties externalApiProperties;
+  @MockitoBean private ExternalApiProperties externalApiProperties;
 
   @Autowired private AnkiConverterService ankiConverterService;
 

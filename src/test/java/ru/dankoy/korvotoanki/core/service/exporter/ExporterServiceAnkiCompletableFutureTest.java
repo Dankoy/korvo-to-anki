@@ -15,9 +15,11 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -60,6 +62,7 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
       DateTimeProviderImpl.class
     },
     properties = {"korvo-to-anki.async-type=completable_future", "korvo-to-anki.async=true"})
+@ExtendWith(MockitoExtension.class)
 class ExporterServiceAnkiCompletableFutureTest {
 
   @MockitoBean private VocabularyService vocabularyService;
@@ -130,7 +133,6 @@ class ExporterServiceAnkiCompletableFutureTest {
     given(vocabularyService.getAll()).willReturn(vocabularies);
     given(stateService.filterState(vocabularies)).willReturn(Collections.emptyList());
     given(templateCreatorService.create(any())).willReturn(templ);
-    doNothing().when(ioService).print(any());
     doNothing().when(stateService).saveState(vocabularies);
 
     exporterServiceAnkiAsync.export(sourceLanguage, targetLanguage, options);
@@ -160,7 +162,6 @@ class ExporterServiceAnkiCompletableFutureTest {
     given(vocabularyService.getAll()).willReturn(vocabularies);
     given(stateService.filterState(vocabularies)).willReturn(Collections.emptyList());
     given(templateCreatorService.create(any())).willReturn(templ);
-    doNothing().when(ioService).print(any());
     doNothing().when(stateService).saveState(vocabularies);
 
     exporterServiceAnkiAsync.export(sourceLanguage, targetLanguage, options);

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.config.appprops.FilesParams;
 import ru.dankoy.korvotoanki.config.appprops.FilesProperties;
 import ru.dankoy.korvotoanki.core.domain.Title;
@@ -56,17 +56,17 @@ import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
     properties = {"korvo-to-anki.async-type=countdownlatch", "korvo-to-anki.async=true"})
 class ExporterServiceAnkiAsyncTest {
 
-  @MockBean private VocabularyService vocabularyService;
+  @MockitoBean private VocabularyService vocabularyService;
 
-  @MockBean private AnkiConverterService ankiConverterService;
+  @MockitoBean private AnkiConverterService ankiConverterService;
 
-  @MockBean private TemplateCreatorService templateCreatorService;
+  @MockitoBean private TemplateCreatorService templateCreatorService;
 
-  @MockBean private FilesProperties filesProperties;
+  @MockitoBean private FilesProperties filesProperties;
 
-  @MockBean private IOService ioService;
+  @MockitoBean private IOService ioService;
 
-  @MockBean private StateService stateService;
+  @MockitoBean private StateService stateService;
 
   @Autowired private ExporterServiceAnkiAsync exporterServiceAnkiAsync;
 
