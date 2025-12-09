@@ -73,6 +73,7 @@ dependencies {
 
     // resilence4j
     implementation 'io.github.resilience4j:resilience4j-spring-boot3'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj' // necessary for resilience4j
 
     // mockito as javaagent
     testImplementation(libs.mockito)
