@@ -5,6 +5,8 @@ spring:
     template-loader-path: /templates/
   main:
     web-application-type: none
+  lifecycle:
+    timeout-per-shutdown-phase: 5s
 
   shell:
     interactive:
@@ -70,6 +72,6 @@ debug: false
 resilience4j.ratelimiter:
   instances:
     dictionary-api:
-      limitForPeriod: 14
-      limitRefreshPeriod: 10s
-      timeoutDuration: 10s
+      limitForPeriod: 5
+      limitRefreshPeriod: 5s
+      timeoutDuration: 6s
