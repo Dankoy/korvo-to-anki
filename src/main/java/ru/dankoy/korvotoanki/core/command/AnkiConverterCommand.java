@@ -3,14 +3,15 @@ package ru.dankoy.korvotoanki.core.command;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.shell.command.annotation.Command;
-import org.springframework.shell.command.annotation.Option;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.stereotype.Component;
 import ru.dankoy.korvotoanki.core.domain.Title;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
 import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
-@Command(group = "Anki converter Commands")
+@Component
 @RequiredArgsConstructor
 public class AnkiConverterCommand {
 
@@ -19,16 +20,29 @@ public class AnkiConverterCommand {
 
   // ac --word hello
   @Command(
-      command = "anki-converter",
+      group = "Anki converter Commands",
+      name = "anki-converter",
       alias = "ac",
       description = "Translate and define text using google translator and dictionaryapi.dev")
   public String translateAndConvert(
-      @Option(required = true, description = "text to translate") String text,
-      @Option(required = false, defaultValue = "en", description = "source language")
+      @Option(longName = "text", required = true, description = "text to translate") String text,
+      @Option(
+              longName = "sourceLanguage",
+              required = false,
+              defaultValue = "en",
+              description = "source language")
           String sourceLanguage,
-      @Option(required = false, defaultValue = "ru", description = "target language")
+      @Option(
+              longName = "targetLanguage",
+              required = false,
+              defaultValue = "ru",
+              description = "target language")
           String targetLanguage,
-      @Option(required = false, defaultValue = "t,at,md,rm", description = "options")
+      @Option(
+              longName = "options",
+              required = false,
+              defaultValue = "t,at,md,rm",
+              description = "options")
           String[] options) {
 
     var vocabulary = new Vocabulary(text, new Title(0, null, 0L), 0L, 0L, 0L, 0L, null, null, 0L);
