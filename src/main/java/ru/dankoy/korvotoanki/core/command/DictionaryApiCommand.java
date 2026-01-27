@@ -1,12 +1,13 @@
 package ru.dankoy.korvotoanki.core.command;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.shell.command.annotation.Command;
-import org.springframework.shell.command.annotation.Option;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.stereotype.Component;
 import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 
-@Command(group = "Dictionary Api Commands")
+@Component
 @RequiredArgsConstructor
 public class DictionaryApiCommand {
 
@@ -15,10 +16,12 @@ public class DictionaryApiCommand {
 
   // da --word hello
   @Command(
-      command = "dictionary-api",
+      group = "Dictionary Api Commands",
+      name = "dictionary-api",
       alias = "da",
       description = "Define word using dictionaryapi.dev")
-  public String define(@Option(required = true, description = "text to translate") String word) {
+  public String define(
+      @Option(longName = "word", required = true, description = "text to translate") String word) {
 
     var translatedString = dictionaryService.define(word);
     return objectMapperService.convertToString(translatedString);

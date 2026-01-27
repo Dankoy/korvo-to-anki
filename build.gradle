@@ -1,14 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.1'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.diffplug.spotless' version '8.1.0'
+    alias(libs.plugins.spring.boot.plugin)
+    alias(libs.plugins.spring.dependency.management.plugin)
+    alias(libs.plugins.spotless.plugin)
 }
 
-apply plugin: 'io.spring.dependency-management'
-
 group = 'ru.dankoy'
-version = '0.3.10-SNAPSHOT'
+version = '0.3.9-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -26,8 +24,9 @@ repositories {
 }
 
 ext {
-    springShellVersion = '3.4.1'
-    resilience4jBomVersion = '2.3.0'
+    springShellVersion = libs.versions.spring.shell.get()
+    resilience4jBomVersion = libs.versions.resilience4j.bom.get()
+    googleJavaFormatVersion = libs.versions.google.java.format.get()
 }
 
 dependencyManagement {
@@ -38,38 +37,36 @@ dependencyManagement {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.springframework.boot:spring-boot-starter-jackson'
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
-    implementation 'org.springframework.shell:spring-shell-starter'
+    implementation 'org.springframework.shell:spring-shell-starter-jansi'
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-liquibase-test'
     
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:5.3.2'
+    testImplementation libs.okhttp3.mockwebserver
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
 
-    implementation 'ch.qos.logback:logback-classic'
-    implementation 'ch.qos.logback:logback-core'
-
     // sqlite with default version from spring boot bom (3.43.2.0) doesn't work with spring boot 3.2.2
     // sqlite version 3.42.1 works with spring boot 3.1.3
     // Working sqlite version with spring boot 3.2.2 is 3.45.1.0
-    implementation 'org.xerial:sqlite-jdbc:3.51.1.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation libs.sqlite.jdbc
 
     // okhttp is not a part of spring dependencies BOM. Migrating to WebClient
-    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+    implementation libs.okhttp3
+    implementation libs.okhttp3.logging.interceptor
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
 
     // spotless
-    implementation 'com.diffplug.spotless:spotless-lib:4.1.0'
+    implementation libs.spotless.lib
 
     // resilence4j
     implementation 'io.github.resilience4j:resilience4j-spring-boot3'
@@ -111,7 +108,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         toggleOffOn()
-        googleJavaFormat('1.25.1')
+        googleJavaFormat("${googleJavaFormatVersion}")
                 .reflowLongStrings()
                 .formatJavadoc(true)
                 .reorderImports(false)
