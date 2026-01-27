@@ -1,5 +1,29 @@
 [versions]
 mockito = "5.21.0"
+google-java-format = "1.33.0"
+spotless-lib = "4.1.0"
+okhttp3 = "5.3.2"
+sqlite-jdbc = "3.51.1.0"
+resilience4j-bom = "2.3.0"
+
+spotless = "8.1.0"
+
+spring-shell = "4.0.0"
+spring-boot = "4.0.1"
+spring-dependency-management = "1.1.7"
+
 
 [libraries]
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp3" }
+okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3" }
+okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
+spotless-lib = { module = "com.diffplug.spotless:spotless-lib", version.ref = "spotless-lib" }
+
+[plugins]
+spring-boot-plugin = { id = "org.springframework.boot", version.ref = "spring-boot"}
+spring-dependency-management-plugin = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+spotless-plugin = { id = "com.diffplug.spotless", version.ref = "spotless" }
+
+# In build.gradle  "spring-boot-plugin" becomes "spring.boot.plugin"
