@@ -34,6 +34,7 @@ jobs:
           VALIDATE_BIOME_LINT: false
           VALIDATE_BIOME_FORMAT: false
           GITHUB_ACTIONS_ZIZMOR_CONFIG_FILE: "zizmor.yaml"
+          SPELL_CODESPELL_CONFIG_FILE: ".codespellrc"
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

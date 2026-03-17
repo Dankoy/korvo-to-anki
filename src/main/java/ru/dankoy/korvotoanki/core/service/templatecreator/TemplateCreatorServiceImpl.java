@@ -33,12 +33,12 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
 
     // async with splitting list into chunks
     int cores = Runtime.getRuntime().availableProcessors();
-    List<List<AnkiData>> splitted = splitToPartitions(ankiDataList, cores);
+    List<List<AnkiData>> split = splitToPartitions(ankiDataList, cores);
 
     try (ExecutorService executorService = Executors.newFixedThreadPool(cores)) {
-      latch = new CountDownLatch(splitted.size());
+      latch = new CountDownLatch(split.size());
 
-      for (List<AnkiData> sp : splitted) {
+      for (List<AnkiData> sp : split) {
         executorService.execute(() -> convertToDto(dtos, sp));
       }
 

@@ -90,7 +90,7 @@ public class GoogleTranslatorOkHttp implements GoogleTranslator {
     if (!response.isSuccessful()) {
       log.error("Something went wrong");
       throw new GoogleTranslatorException(
-          "Response is not successfull", new RuntimeException(String.valueOf(response.body())));
+          "Response is not successful", new RuntimeException(String.valueOf(response.body())));
     }
   }
 }
