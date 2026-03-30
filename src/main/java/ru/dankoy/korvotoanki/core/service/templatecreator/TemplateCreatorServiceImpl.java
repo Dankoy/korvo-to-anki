@@ -95,7 +95,7 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
       dto.setMeanings(meaningString.replace("\t", ""));
       dto.setMeanings(meaningString.replace("\n", ""));
 
-      dto.getTags().add(appName);
+      dto.setTags(dto.getTags().stream().map(t -> appName + "::" + t).toList());
 
       dtos.add(dto);
     }

@@ -20,7 +20,7 @@ public class AnkiDataDTO {
   private final List<String> translations; // from google translate
   private final String
       transcription; // from dictionaryapi, if not found then from Google Translate or null
-  private final List<String> tags;
+  @Setter private List<String> tags;
 
   @Setter private String meanings; // html string
 
