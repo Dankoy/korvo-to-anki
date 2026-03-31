@@ -36,6 +36,7 @@ public class AnkiDataDTO {
         ankiData.getMeanings().stream()
             .map(m -> m.type())
             .map(t -> t.toLowerCase())
+            .map(t -> t.replace(" ", "_"))
             .distinct()
             .collect(Collectors.toCollection(ArrayList::new));
     tags.add(ankiData.getBook().toLowerCase().replace(" ", "_"));
