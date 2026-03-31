@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
@@ -12,6 +13,7 @@ import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 /** Used in freemarker template builder */
 @Getter
 @Builder
+@EqualsAndHashCode
 public class AnkiDataDTO {
 
   private final String word;
