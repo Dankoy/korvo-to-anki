@@ -85,6 +85,7 @@ class TemplateBuilderImplTest {
             .myExample("my_example")
             .translations(Collections.singletonList("translation1"))
             .meanings("meanings")
+            .tags(List.of("korvo-to-anki::book", "korvo-to-anki::type"))
             .build();
 
     var path =
