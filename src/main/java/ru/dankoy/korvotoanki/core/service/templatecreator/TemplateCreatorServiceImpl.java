@@ -9,8 +9,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 import ru.dankoy.korvotoanki.core.dto.AnkiDataDTO;
@@ -19,11 +19,18 @@ import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class TemplateCreatorServiceImpl implements TemplateCreatorService {
+
+  private final String appName;
 
   private final TemplateBuilder templateBuilder;
   private CountDownLatch latch;
+
+  public TemplateCreatorServiceImpl(
+      @Value("${spring.application.name}") String appName, TemplateBuilder templateBuilder) {
+    this.appName = appName;
+    this.templateBuilder = templateBuilder;
+  }
 
   @Override
   public String create(List<AnkiData> ankiDataList) {
@@ -87,6 +94,8 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
 
       dto.setMeanings(meaningString.replace("\t", ""));
       dto.setMeanings(meaningString.replace("\n", ""));
+
+      dto.setTags(dto.getTags().stream().map(t -> appName + "::" + t).toList());
 
       dtos.add(dto);
     }
