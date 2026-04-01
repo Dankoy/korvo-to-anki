@@ -5,6 +5,7 @@ spotless-lib = "4.3.0"
 okhttp3 = "5.3.2"
 sqlite-jdbc = "3.51.2.0"
 resilience4j-bom = "2.3.0"
+# wire-mock = "4.2.1"
 
 spotless = "8.1.0"
 
@@ -20,6 +21,7 @@ okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3" }
 okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
 spotless-lib = { module = "com.diffplug.spotless:spotless-lib", version.ref = "spotless-lib" }
+# wire-mock = {module = "org.wiremock.integrations:wiremock-spring-boot-standalone", version.ref = "wire-mock"}
 
 [plugins]
 spring-boot-plugin = { id = "org.springframework.boot", version.ref = "spring-boot"}

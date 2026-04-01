@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import io.netty.handler.timeout.ReadTimeoutException;
 import java.io.IOException;
 import java.util.List;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.mockwebserver.SocketPolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import ru.dankoy.korvotoanki.config.WebClientConfig;
 import ru.dankoy.korvotoanki.config.appprops.AppProperties;
 import ru.dankoy.korvotoanki.config.appprops.GoogleParamsProperties;
@@ -140,6 +143,30 @@ class GoogleTranslatorWebClientTest {
     assertEquals(
         "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
         recordedRequest.getPath());
+  }
+
+  @DisplayName("definition read timeout")
+  @Test
+  void defineReadTimeout() throws InterruptedException {
+
+    given(googleTranslatorProperties.getGoogleTranslatorUrl()).willReturn(mockUrl);
+
+    var list = List.of("option1");
+
+    server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE));
+
+    assertThatThrownBy(
+            () -> {
+              googleTranslatorWebClient.translate("text", "en", "ru", list);
+            })
+        .isInstanceOf(WebClientRequestException.class)
+        .hasCauseInstanceOf(ReadTimeoutException.class);
+
+    var req = server.takeRequest();
+    assertThat(req.getMethod()).isEqualTo("GET");
+    assertEquals(
+        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
+        req.getPath());
   }
 
   private GoogleTranslation createGoogleTranslation() {
