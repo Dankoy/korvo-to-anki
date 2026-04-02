@@ -92,10 +92,13 @@ public class TemplateCreatorServiceImpl implements TemplateCreatorService {
       templateDataMeaning.put("ankiData", ankiData);
       var meaningString = templateBuilder.writeTemplate(templateDataMeaning, "meaning.ftl");
 
-      dto.setMeanings(meaningString.replace("\t", ""));
-      dto.setMeanings(meaningString.replace("\n", ""));
+      meaningString = meaningString.replace("\t", "").replace("\n", "").replace("|", "");
 
-      dto.setTags(dto.getTags().stream().map(t -> appName + "::" + t).toList());
+      dto.setMeanings(meaningString);
+
+      List<String> tags = dto.getTags().stream().map(t -> appName + "::" + t).toList();
+
+      dto.setTags(tags);
 
       dtos.add(dto);
     }
