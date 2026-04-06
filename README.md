@@ -49,6 +49,8 @@ Added integration with external services for word translation and definition loo
 
 Download app.jar.zip from [releases](https://github.com/Dankoy/korvo-to-anki/releases), and extract jar somewhere.
 
+JDK 21 should be installed on your computer too. See [official Oracle instructions](https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html) for installation process.
+
 Program will look up every word in GT for translation, transcription and definitions (with default
 options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms and examples and
 transcription. If word in dictionary api is found then only this data is used. If word in dictionary
