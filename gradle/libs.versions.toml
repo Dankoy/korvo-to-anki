@@ -10,7 +10,7 @@ resilience4j-bom = "2.3.0"
 spotless = "8.4.0"
 
 spring-shell = "4.0.0"
-spring-boot = "4.0.4"
+spring-boot = "4.0.5"
 spring-dependency-management = "1.1.7"
 
 
