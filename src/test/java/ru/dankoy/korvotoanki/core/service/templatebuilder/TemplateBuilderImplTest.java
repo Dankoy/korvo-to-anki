@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ class TemplateBuilderImplTest {
             .book("book")
             .transcription("transcription")
             .myExample("my_example")
-            .translations(Collections.singletonList("translation1"))
+            .translations(Set.of("translation1"))
             .meanings("meanings")
             .tags(List.of("korvo-to-anki::book", "korvo-to-anki::type"))
             .build();

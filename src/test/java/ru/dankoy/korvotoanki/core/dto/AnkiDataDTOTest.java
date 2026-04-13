@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
@@ -33,7 +34,7 @@ public class AnkiDataDTOTest {
             .myExample(example)
             .tags(List.of(type, book))
             .transcription(transcription)
-            .translations(List.of(translation))
+            .translations(Set.of(translation))
             .build();
 
     var meaning =
@@ -80,7 +81,7 @@ public class AnkiDataDTOTest {
             .myExample(example)
             .tags(List.of(typeCorrect, bookCorrect))
             .transcription(transcription)
-            .translations(List.of(translation))
+            .translations(Set.of(translation))
             .build();
 
     var meaning =
