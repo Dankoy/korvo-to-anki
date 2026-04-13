@@ -39,3 +39,8 @@ out/
 
 # Ignore .secret-stack folder
 .secret-stack
+
+# Ignore project artifacts
+*.txt
+*.sqlite3*
+*.log
