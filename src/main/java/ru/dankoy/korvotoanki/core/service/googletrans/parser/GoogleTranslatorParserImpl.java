@@ -53,6 +53,9 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
               .toList();
     }
 
+    // remove url encoding from translations
+    translationsStrings = translationsStrings.stream().map(t -> t.replaceAll("%20", " ")).toList();
+
     // obtain definitions
     if (Objects.nonNull(definitions)) {
       defs =
