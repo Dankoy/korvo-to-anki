@@ -21,7 +21,29 @@ public class GoogleTranslateCommand {
       group = "Google Translate Commands",
       name = "google-translate",
       alias = "gt",
-      description = "Translate text using google translate")
+      description = "Translate text using google translate",
+      help =
+          """
+          SYNOPSIS
+              google-translate --text String --sourceLanguage String --targetLanguage String --options String[]
+
+          OPTIONS
+              --sourceLanguage String
+             source language
+             [Optional, default = en]
+
+             --targetLanguage String
+             target language
+             [Optional, default = ru]
+
+             --options String[]
+             options
+             [Optional, default = t,at,md,rm]
+
+             --help or -h
+             help for google-translate
+             [Optional]
+          """)
   public String translate(
       @Option(longName = "text", required = true, description = "text to translate") String text,
       @Option(
