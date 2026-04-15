@@ -22,7 +22,29 @@ public class AnkiExporterCommand {
       name = "anki-exporter",
       alias = "ae",
       description =
-          "Export to anki. Translate and define text using google translator and dictionaryapi.dev")
+          "Export to anki. Translate and define text using google translator and dictionaryapi.dev",
+      help =
+          """
+          SYNOPSIS
+              anki-exporter --sourceLanguage String --targetLanguage String --options String[]
+
+          OPTIONS
+              --sourceLanguage String
+             source language
+             [Optional, default = en]
+
+             --targetLanguage String
+             target language
+             [Optional, default = ru]
+
+             --options String[]
+             options
+             [Optional, default = t,at,md,rm]
+
+             --help or -h
+             help for anki-exporter
+             [Optional]
+          """)
   public String export(
       @Option(
               longName = "sourceLanguage",

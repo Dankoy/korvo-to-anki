@@ -23,7 +23,33 @@ public class AnkiConverterCommand {
       group = "Anki converter Commands",
       name = "anki-converter",
       alias = "ac",
-      description = "Translate and define text using google translator and dictionaryapi.dev")
+      description = "Translate and define text using google translator and dictionaryapi.dev",
+      help =
+          """
+          SYNOPSIS
+              anki-converter --text String --sourceLanguage String --targetLanguage String --options String[]
+
+          OPTIONS
+             --text String
+             text to define
+             [Required]
+
+              --sourceLanguage String
+             source language
+             [Optional, default = en]
+
+             --targetLanguage String
+             target language
+             [Optional, default = ru]
+
+             --options String[]
+             options
+             [Optional, default = t,at,md,rm]
+
+             --help or -h
+             help for anki-converter
+             [Optional]
+          """)
   public String translateAndConvert(
       @Option(longName = "text", required = true, description = "text to translate") String text,
       @Option(

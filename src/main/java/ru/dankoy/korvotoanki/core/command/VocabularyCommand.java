@@ -22,7 +22,17 @@ public class VocabularyCommand {
       group = "Vocabulary Commands",
       name = "vocabulary-count",
       alias = "vc",
-      description = "Count all vocabulary")
+      description = "Count all vocabulary",
+      help =
+          """
+          SYNOPSIS
+              vocabulary-count
+
+          OPTIONS
+             --help or -h
+             help for vocabulary-count
+             [Optional]
+          """)
   public String count() {
     Long count = vocabularyService.count();
     return objectMapperService.convertToString(count);
@@ -32,7 +42,21 @@ public class VocabularyCommand {
       group = "Vocabulary Commands",
       name = "vocabulary-get-by-title",
       alias = "vgbt",
-      description = "Get vocabulary by title")
+      description = "Get vocabulary by title",
+      help =
+          """
+          SYNOPSIS
+              vocabulary-get-by-title --name String
+
+          OPTIONS
+              --name String
+             title name
+             [Required]
+
+             --help or -h
+             help for vocabulary-get-by-title
+             [Optional]
+          """)
   public String getByTitle(
       @Option(longName = "name", required = true, description = "title name") String titleName) {
 
@@ -45,7 +69,17 @@ public class VocabularyCommand {
       group = "Vocabulary Commands",
       name = "vocabulary-get-all",
       alias = "vga",
-      description = "Get all vocabulary")
+      description = "Get all vocabulary",
+      help =
+          """
+          SYNOPSIS
+              vocabulary-get-all
+
+          OPTIONS
+             --help or -h
+             help for vocabulary-get-by-title
+             [Optional]
+          """)
   public String getAll() {
     List<Vocabulary> vocabulary = vocabularyService.getAll();
     return objectMapperService.convertToString(vocabulary);
