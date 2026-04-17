@@ -17,7 +17,7 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-  public static final int TIMEOUT = 30000;
+  public static final int TIMEOUT = 15000;
 
   @Bean
   public WebClient webClientWithTimeout() {
