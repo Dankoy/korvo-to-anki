@@ -23,6 +23,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.config.appprops.AppProperties;
@@ -41,6 +43,7 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
     })
 @ExtendWith(MockitoExtension.class) // necessary for @Mock annotation to work
 @TestPropertySource(properties = "korvo-to-anki.http-client=ok-http")
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class DictionaryServiceOkHttpTest {
 
   @MockitoBean private OkHttpClient okHttpClient;
