@@ -48,7 +48,6 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
       ObjectMapper.class,
       DictionaryServiceWebClient.class
     })
-// @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 // @TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
 class DictionaryServiceWebClientTest {
 

@@ -43,7 +43,6 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
     })
 @ExtendWith(MockitoExtension.class) // necessary for @Mock annotation to work
 @TestPropertySource(properties = "korvo-to-anki.http-client=ok-http")
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class DictionaryServiceOkHttpTest {
 
   @MockitoBean private OkHttpClient okHttpClient;

@@ -46,8 +46,6 @@ import tools.jackson.databind.ObjectMapper;
       org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.class,
       org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.class
     })
-// @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-
 public class DictionaryServiceWebClientTestResilience {
 
   @TestConfiguration
