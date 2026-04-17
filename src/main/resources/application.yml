@@ -28,12 +28,14 @@ spring:
 
 logging:
   level:
+    root: INFO
     ru.dankoy.*: INFO
   pattern:
     console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
     file: "%d %p %c{1} [%t] %m%n"
   file:
     name: full-shell.log
+  
   logback:
     rollingpolicy:
       max-file-size: 10MB
@@ -89,6 +91,8 @@ resilience4j.retry:
         retry-exceptions:
           - org.springframework.web.reactive.function.client.WebClientResponseException
           - org.springframework.web.reactive.function.client.WebClientRequestException
+          - io.netty.handler.timeout.ReadTimeoutException
+          - io.netty.handler.timeout.WriteTimeoutException
     instances:
       dictionary-api:
         base-config: default
