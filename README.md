@@ -37,6 +37,7 @@ If you want to lemmatize all your words then check another utility - [korvo-to-a
 * Liquibase 
 * Flyway
 * Gradle
+* Resilience4j (Retry, Rate Limit)
 
 ### Integrations
 
