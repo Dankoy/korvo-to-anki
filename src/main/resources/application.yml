@@ -32,6 +32,8 @@ logging:
   pattern:
     console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
     file: "%d %p %c{1.} [%t] %m%n"
+  file:
+    name: full-shell.log
 
 korvo-to-anki:
   files:
@@ -75,3 +77,16 @@ resilience4j.ratelimiter:
       limitForPeriod: 5
       limitRefreshPeriod: 5s
       timeoutDuration: 6s
+resilience4j.retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 1000
+        retry-exceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+    instances:
+      dictionary-api:
+        base-config: default
+        ignore-exceptions:
+          - ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException
