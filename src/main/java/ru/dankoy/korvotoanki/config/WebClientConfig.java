@@ -3,6 +3,7 @@ package ru.dankoy.korvotoanki.config;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,7 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-  public static final int TIMEOUT = 10000;
+  public static final int TIMEOUT = 30000;
 
   @Bean
   public WebClient webClientWithTimeout() {
@@ -24,6 +25,7 @@ public class WebClientConfig {
     final var httpClient =
         HttpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT)
+            .responseTimeout(Duration.ofMillis(TIMEOUT))
             .doOnConnected(
                 connection -> {
                   connection.addHandlerLast(new ReadTimeoutHandler(TIMEOUT, TimeUnit.MILLISECONDS));
@@ -35,7 +37,10 @@ public class WebClientConfig {
         .clientConnector(new ReactorClientHttpConnector(httpClient))
         .defaultHeaders(
             httpHeaders -> {
-              httpHeaders.set(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+              httpHeaders.set(
+                  HttpHeaders.USER_AGENT,
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
+                      + " Chrome/147.0.0.0 Safari/537.36");
             })
         .build();
   }
