@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'ru.dankoy'
-version = '0.4.1-SNAPSHOT'
+version = '0.5.0-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
