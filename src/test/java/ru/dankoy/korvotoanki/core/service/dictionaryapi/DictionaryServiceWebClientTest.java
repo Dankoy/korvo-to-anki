@@ -18,8 +18,7 @@ import java.util.stream.Stream;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.SocketPolicy;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,17 +51,18 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
 // @TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
 class DictionaryServiceWebClientTest {
 
-  private static MockWebServer server;
+  private MockWebServer server;
   private String mockUrl = "http://127.0.0.1:%s/";
 
-  @BeforeAll
-  static void setUp() throws IOException {
+  @BeforeEach
+  void setUp() throws IOException {
     server = new MockWebServer();
     server.start();
+    mockUrl = String.format(mockUrl, server.getPort());
   }
 
-  @AfterAll
-  static void tearDown() throws IOException {
+  @AfterEach
+  void tearDown() throws IOException {
     server.shutdown();
   }
 
@@ -71,11 +71,6 @@ class DictionaryServiceWebClientTest {
   @Autowired private DictionaryServiceWebClient dictionaryService;
 
   @Autowired private ObjectMapper mapper;
-
-  @BeforeEach
-  void initialize() {
-    mockUrl = String.format(mockUrl, server.getPort());
-  }
 
   @DisplayName("correct translation")
   @Test

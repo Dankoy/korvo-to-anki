@@ -1,6 +1,7 @@
 package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class DictionaryServiceWebClient implements DictionaryService {
 
   private final DictionaryApiProperties dictionaryApiProperties;
 
+  @Retry(name = "dictionary-api")
   @RateLimiter(name = "dictionary-api")
   @Cacheable(cacheManager = "cacheManager", value = "dictionaryApi", key = "#word")
   @Override
@@ -60,4 +62,11 @@ public class DictionaryServiceWebClient implements DictionaryService {
         .bodyToMono(String.class)
         .flatMap(body -> Mono.error(new DictionaryApiException(body)));
   }
+
+  // public List<Word> fallback(String word, Exception ex) {
+  //   // this method is always called by resilience4j even if it ignores exception in
+  // configuration.
+  //   log.warn(String.format("Fallback to empty word after retry exhaust for - %s", word));
+  //   return List.of(Word.emptyWord());
+  // }
 }
