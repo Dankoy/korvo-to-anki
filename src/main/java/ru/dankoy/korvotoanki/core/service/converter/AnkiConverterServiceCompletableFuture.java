@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import ru.dankoy.korvotoanki.config.Languages;
 import ru.dankoy.korvotoanki.config.appprops.ExternalApiProperties;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
@@ -56,11 +58,15 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
                 ankiConverterTaskExecutor)
             .handle(
                 (result, ex) -> {
-                  if (ex != null && ex.getCause() instanceof DictionaryApiException) {
+                  if (ex != null
+                      && (ex.getCause() instanceof DictionaryApiException
+                          || ex.getCause() instanceof WebClientResponseException
+                          || ex.getCause() instanceof WebClientRequestException)) {
                     log.warn(
                         String.format(
-                            "Couldn't get definition from dictionaryapi.dev for '%s' - %s",
-                            vocabulary.word(), ex.getMessage()));
+                            "Couldn't get definition from dictionaryapi.dev for '%s' with cause"
+                                + " '%s'. Fallback to empty word.",
+                            vocabulary.word(), ex.getCause().getMessage()));
                     return Collections.singletonList(Word.emptyWord());
                   }
                   return result;
