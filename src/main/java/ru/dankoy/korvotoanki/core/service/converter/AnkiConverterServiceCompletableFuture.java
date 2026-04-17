@@ -58,6 +58,11 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
                 ankiConverterTaskExecutor)
             .handle(
                 (result, ex) -> {
+                  log.atDebug()
+                      .setMessage("Handle exception for word {}: {}")
+                      .addArgument(vocabulary.word())
+                      .addArgument(ex)
+                      .log();
                   if (ex != null
                       && (ex.getCause() instanceof DictionaryApiException
                           || ex.getCause() instanceof WebClientResponseException
