@@ -44,3 +44,4 @@ out/
 *.txt
 *.sqlite3*
 *.log
+*.gz
