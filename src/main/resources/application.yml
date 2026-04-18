@@ -34,8 +34,7 @@ logging:
     console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
     file: "%d %p %c{1} [%t] %m%n"
   file:
-    name: full-shell.log
-  
+    name: ${spring.application.name}-shell.log
   logback:
     rollingpolicy:
       max-file-size: 10MB
