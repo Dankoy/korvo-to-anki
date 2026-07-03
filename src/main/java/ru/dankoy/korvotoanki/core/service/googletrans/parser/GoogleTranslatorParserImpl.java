@@ -1,8 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.googletrans.parser;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +9,9 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.Definition;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
 
 // Currently parse only data for keys: t,at,md,rm
 
@@ -19,7 +19,7 @@ import ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException;
 @RequiredArgsConstructor
 public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
 
-  private final ObjectMapper mapper;
+  private final JsonMapper mapper;
 
   @Override
   public GoogleTranslation parse(String data) {
@@ -39,7 +39,8 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
     JsonNode transcription = translationAndTranscriptionNode.get(1);
     if (Objects.nonNull(transcription)) {
       JsonNode transcriptionNode = transcription.get(3);
-      transcriptionString = Objects.nonNull(transcriptionNode) ? transcriptionNode.asText() : null;
+      transcriptionString =
+          Objects.nonNull(transcriptionNode) ? transcriptionNode.asString() : null;
     }
 
     // obtain list of translations
@@ -49,7 +50,7 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
           IntStream.range(0, mts.size())
               .mapToObj(mts::get)
               .map(c -> (ArrayNode) c)
-              .map(n -> n.get(0).asText())
+              .map(n -> n.get(0).asString())
               .toList();
     }
 
@@ -63,8 +64,8 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
               .mapToObj(definitions::get)
               .map(
                   d -> {
-                    var type = d.get(0).asText();
-                    var def = d.get(1).get(0).get(0).asText();
+                    var type = d.get(0).asString();
+                    var def = d.get(1).get(0).get(0).asString();
                     return new Definition(type, def);
                   })
               .toList();

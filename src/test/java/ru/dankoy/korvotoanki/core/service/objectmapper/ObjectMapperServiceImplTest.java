@@ -6,8 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,17 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.core.exceptions.ObjectMapperException;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Test ObjectMapperService ")
-@SpringBootTest(classes = {ObjectMapper.class, ObjectMapperServiceImpl.class})
+@SpringBootTest(classes = {JsonMapper.class, ObjectMapperServiceImpl.class})
 class ObjectMapperServiceImplTest {
 
-  @MockitoBean private ObjectMapper mapper;
+  @MockitoBean private JsonMapper mapper;
   @Autowired private ObjectMapperServiceImpl objectMapperService;
 
   @DisplayName("should correctly convert object to json")
   @Test
-  void shouldCorrectlyMapObjectToString() throws JsonProcessingException {
+  void shouldCorrectlyMapObjectToString() {
 
     var correctMappedObj = "correct";
 
@@ -39,7 +38,7 @@ class ObjectMapperServiceImplTest {
 
   @DisplayName("should throw ObjectMapperException")
   @Test
-  void shouldThrowException() throws JsonProcessingException {
+  void shouldThrowException() {
 
     var objectToMap = new Object();
 

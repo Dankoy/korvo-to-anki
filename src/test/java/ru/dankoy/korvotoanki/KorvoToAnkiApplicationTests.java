@@ -2,7 +2,6 @@ package ru.dankoy.korvotoanki;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import ru.dankoy.korvotoanki.core.service.templatebuilder.TemplateBuilder;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorServiceImpl;
 import ru.dankoy.korvotoanki.core.service.title.TitleServiceJdbc;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Test default context ")
 @TestPropertySource(
@@ -59,7 +59,7 @@ class KorvoToAnkiApplicationTests {
     var debugProperties = context.getBean(DebugProperties.class);
     var templateBuilder = context.getBean(TemplateBuilder.class);
     var cacheManager = context.getBean(CacheManager.class);
-    var objectMapper = context.getBean(ObjectMapper.class);
+    var objectMapper = context.getBean(JsonMapper.class);
     var googleTranslatorProperties = context.getBean(GoogleTranslatorProperties.class);
     var dictionaryApiProperties = context.getBean(DictionaryApiProperties.class);
     var externalApiProperties = context.getBean(ExternalApiProperties.class);
