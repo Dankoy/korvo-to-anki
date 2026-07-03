@@ -21,12 +21,12 @@ jobs:
       pull-requests: write
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: "Lint Code Base"
-        uses: "super-linter/super-linter/slim@v8.6.0"
+        uses: "super-linter/super-linter/slim@v8.7.0"
         env:
           LINTER_RULES_PATH: "config/lint"
           VALIDATE_ALL_CODEBASE: false
