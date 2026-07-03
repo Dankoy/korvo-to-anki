@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -38,6 +37,7 @@ import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Test DictionaryServiceWebClient ")
 @SpringBootTest(
@@ -45,7 +45,7 @@ import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
       WebClient.class,
       DictionaryServiceWebClientTest.WebClientConfig.class,
       AppProperties.class,
-      ObjectMapper.class,
+      JsonMapper.class,
       DictionaryServiceWebClient.class
     })
 // @TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
@@ -70,7 +70,7 @@ class DictionaryServiceWebClientTest {
 
   @Autowired private DictionaryServiceWebClient dictionaryService;
 
-  @Autowired private ObjectMapper mapper;
+  @Autowired private JsonMapper mapper;
 
   @DisplayName("correct translation")
   @Test

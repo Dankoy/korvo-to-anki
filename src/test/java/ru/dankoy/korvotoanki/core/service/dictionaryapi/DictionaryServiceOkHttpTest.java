@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -30,13 +29,14 @@ import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Test DictionaryServiceOkHttp ")
 @SpringBootTest(
     classes = {
       OkHttpClient.class,
       AppProperties.class,
-      ObjectMapper.class,
+      JsonMapper.class,
       DictionaryServiceOkHttp.class
     })
 @ExtendWith(MockitoExtension.class) // necessary for @Mock annotation to work

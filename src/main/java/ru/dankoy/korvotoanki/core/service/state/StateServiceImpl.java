@@ -1,7 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.state;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +14,8 @@ import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterSer
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @deprecated support for file based state. New state is collected in sqlite {@link
@@ -28,7 +28,7 @@ import ru.dankoy.korvotoanki.core.service.objectmapper.ObjectMapperService;
 public class StateServiceImpl implements StateService {
 
   private final FilesProperties filesProperties;
-  private final ObjectMapper mapper;
+  private final JsonMapper mapper;
   private final ObjectMapperService mapperService;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.

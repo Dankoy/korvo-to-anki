@@ -1,7 +1,5 @@
 package ru.dankoy.korvotoanki.core.service.dictionaryapi;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +18,8 @@ import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
 import ru.dankoy.korvotoanki.core.exceptions.TooManyRequestsException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @deprecated in favor for {@link DictionaryServiceWebClient}
@@ -35,7 +35,7 @@ public class DictionaryServiceOkHttp implements DictionaryService {
 
   private final DictionaryApiProperties dictionaryApiProperties;
 
-  private final ObjectMapper mapper;
+  private final JsonMapper mapper;
 
   @RateLimiter(name = "dictionary-api")
   @Cacheable(cacheManager = "cacheManager", value = "dictionaryApi", key = "#word")

@@ -3,7 +3,6 @@ package ru.dankoy.korvotoanki;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,6 +17,7 @@ import ru.dankoy.korvotoanki.config.appprops.GoogleParamsProperties;
 import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
 import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorParser;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Test okhttp beans context ")
 class KorvoToAnkiApplicationWebClientTests {
@@ -85,8 +85,8 @@ class KorvoToAnkiApplicationWebClientTests {
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-      return Mockito.mock(ObjectMapper.class);
+    public JsonMapper objectMapper() {
+      return Mockito.mock(JsonMapper.class);
     }
   }
 }

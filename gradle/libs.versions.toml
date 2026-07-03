@@ -1,16 +1,16 @@
 [versions]
 mockito = "5.23.0"
 google-java-format = "1.33.0"
-spotless-lib = "4.6.1"
-okhttp3 = "5.3.2"
-sqlite-jdbc = "3.53.1.0"
+spotless-lib = "4.7.0"
+okhttp3 = "5.4.0"
+sqlite-jdbc = "3.53.2.0"
 resilience4j-bom = "2.3.0"
 # wire-mock = "4.2.1"
 
-spotless = "8.5.1"
+spotless = "8.7.0"
 
 spring-shell = "4.0.0"
-spring-boot = "4.0.6"
+spring-boot = "4.1.0"
 spring-dependency-management = "1.1.7"
 
 
