@@ -3,7 +3,7 @@ mockito = "5.23.0"
 google-java-format = "1.33.0"
 spotless-lib = "4.7.0"
 okhttp3 = "5.4.0"
-sqlite-jdbc = "3.53.2.0"
+sqlite-jdbc = "3.53.2.1"
 resilience4j-bom = "2.3.0"
 # wire-mock = "4.2.1"
 
