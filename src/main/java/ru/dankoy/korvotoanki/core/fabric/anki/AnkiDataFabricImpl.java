@@ -1,9 +1,12 @@
 package ru.dankoy.korvotoanki.core.fabric.anki;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import ru.dankoy.korvotoanki.core.domain.Vocabulary;
@@ -13,9 +16,13 @@ import ru.dankoy.korvotoanki.core.domain.anki.Meaning;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
+import ru.dankoy.korvotoanki.core.domain.googletranslation.Synonym;
 
 @Component
 public class AnkiDataFabricImpl implements AnkiDataFabric {
+
+  private static final long MAX_EXAMPLES = 10;
+  private static final long MAX_SYNONYMS = 15;
 
   @Override
   public AnkiData createAnkiData(
@@ -28,6 +35,7 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
         .transcription(chooseTranscription(googleTranslation, words))
         .myExample(obtainVocabularyExample(vocabulary))
         .meanings(chooseDefinitions(googleTranslation, words))
+        .examples(chooseExamples(googleTranslation, words))
         .build();
   }
 
@@ -80,28 +88,140 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
         var ankiDefs =
             daMeaning.getDefinitions().stream()
-                .map(d -> new Definition(d.getInfo(), d.getExample()))
+                .map(
+                    d ->
+                        new Definition(
+                            d.getInfo(),
+                            d.getExample(),
+                            capSynonyms(d.getSynonyms()),
+                            capSynonyms(d.getAntonyms())))
                 .toList();
 
-        result.add(new Meaning(partOfSpeech, ankiDefs, daSynonyms, daAntonyms));
+        result.add(new Meaning(partOfSpeech, ankiDefs, capSynonyms(daSynonyms), daAntonyms));
       }
     }
 
     // if data from dictionaryapi is empty then take from Google translation
     if (result.isEmpty()) {
-
-      googleTranslation
-          .getDefinitions()
-          .forEach(
-              gtd ->
-                  result.add(
-                      new Meaning(
-                          gtd.type(),
-                          Collections.singletonList(new Definition(gtd.info(), null)),
-                          new ArrayList<>(),
-                          new ArrayList<>())));
+      result.addAll(createMeaningsFromGoogleTranslation(googleTranslation));
     }
 
     return result;
+  }
+
+  // Google translation definitions are grouped by part of speech. Synonyms are bound to
+  // definitions by google translate internal definition id. Synonyms without bound definition
+  // (no id, or the bound definition is not in the data, e.g. when md option was not requested)
+  // are added to meaning level synonyms of the same part of speech. Types that have only
+  // synonyms and no definitions get a meaning without definitions. Synonym lists are capped
+  // on both levels, so the card doesn't become overloaded.
+  private List<Meaning> createMeaningsFromGoogleTranslation(GoogleTranslation googleTranslation) {
+
+    List<Meaning> result = new ArrayList<>();
+
+    Map<String, List<ru.dankoy.korvotoanki.core.domain.googletranslation.Definition>>
+        definitionsByType =
+            googleTranslation.getDefinitions().stream()
+                .collect(
+                    Collectors.groupingBy(
+                        ru.dankoy.korvotoanki.core.domain.googletranslation.Definition::type));
+
+    Set<String> definitionIds =
+        googleTranslation.getDefinitions().stream()
+            .map(ru.dankoy.korvotoanki.core.domain.googletranslation.Definition::definitionId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+    Map<String, List<String>> synonymsByDefinitionId = new HashMap<>();
+    Map<String, List<String>> unboundSynonymsByType = new HashMap<>();
+
+    for (Synonym synonym : googleTranslation.getSynonyms()) {
+      var bound =
+          Objects.nonNull(synonym.definitionId())
+              && !synonym.definitionId().isBlank()
+              && definitionIds.contains(synonym.definitionId());
+      if (bound) {
+        synonymsByDefinitionId.merge(
+            synonym.definitionId(),
+            new ArrayList<>(synonym.synonyms()),
+            (s1, s2) -> {
+              List<String> merged = new ArrayList<>(s1);
+              merged.addAll(s2);
+              return merged;
+            });
+      } else {
+        unboundSynonymsByType.merge(
+            synonym.type(),
+            new ArrayList<>(synonym.synonyms()),
+            (s1, s2) -> {
+              List<String> merged = new ArrayList<>(s1);
+              merged.addAll(s2);
+              return merged;
+            });
+      }
+    }
+
+    definitionsByType.forEach(
+        (type, defs) ->
+            result.add(
+                new Meaning(
+                    type,
+                    defs.stream()
+                        .map(
+                            d ->
+                                new Definition(
+                                    d.info(),
+                                    d.example(),
+                                    capSynonyms(
+                                        synonymsByDefinitionId.getOrDefault(
+                                            d.definitionId(), new ArrayList<>())),
+                                    new ArrayList<>()))
+                        .toList(),
+                    capSynonyms(unboundSynonymsByType.getOrDefault(type, new ArrayList<>())),
+                    new ArrayList<>())));
+
+    // types that have only synonyms and no definitions, e.g. when ss option was requested
+    // without md
+    unboundSynonymsByType.keySet().stream()
+        .filter(type -> !definitionsByType.containsKey(type))
+        .forEach(
+            type ->
+                result.add(
+                    new Meaning(
+                        type,
+                        new ArrayList<>(),
+                        capSynonyms(unboundSynonymsByType.get(type)),
+                        new ArrayList<>())));
+
+    return result;
+  }
+
+  // both dictionaryapi and google translate can return very long synonym lists
+  private List<String> capSynonyms(List<String> synonyms) {
+
+    if (Objects.isNull(synonyms)) {
+      return null;
+    }
+
+    return synonyms.stream().limit(MAX_SYNONYMS).toList();
+  }
+
+  // Google translation examples are not bound to any part of speech, so they can't be mapped to
+  // any meaning. They are used only if nothing is found in dictionaryapi. The list is capped
+  // because google translate returns every example it has and the card becomes overloaded.
+  private List<String> chooseExamples(GoogleTranslation googleTranslation, List<Word> words) {
+
+    var dictionaryApiMeaningsEmpty =
+        words.stream()
+            .flatMap(w -> Stream.of(w.getMeanings()))
+            .flatMap(List::stream)
+            .findFirst()
+            .isEmpty();
+
+    if (dictionaryApiMeaningsEmpty) {
+      return googleTranslation.getExamples().stream().limit(MAX_EXAMPLES).toList();
+    }
+
+    return new ArrayList<>();
   }
 }

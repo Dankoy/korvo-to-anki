@@ -20,6 +20,16 @@
                               <b>example</b>: <span><i>${definition.example()}</i></span>
                             </p>
                           </#if>
+                          <#if definition.synonyms()?? && definition.synonyms()?has_content>
+                            <p style="margin-top:1px">
+                              <b>synonyms</b>: <span><i>${definition.synonyms()?join(", ")}</i></span>
+                            </p>
+                          </#if>
+                          <#if definition.antonyms()?? && definition.antonyms()?has_content>
+                            <p style="margin-top:1px">
+                              <b>antonyms</b>: <span><i>${definition.antonyms()?join(", ")}</i></span>
+                            </p>
+                          </#if>
                       </dd>
                     </#list>
                 </#if>
@@ -40,3 +50,12 @@
         </#list>
     </#if>
 </ul>
+<#if ankiData.examples?? && ankiData.examples?has_content>
+  <p>
+    <b>examples:</b>
+  </p>
+  <ul>
+    <#list ankiData.examples as example>
+      <li><i>${example}</i></li>
+    </#list>
+  </ul></#if>

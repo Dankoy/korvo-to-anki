@@ -52,8 +52,9 @@ Download app.jar.zip from [releases](https://github.com/Dankoy/korvo-to-anki/rel
 
 JDK 21 should be installed on your computer too. See [official Oracle instructions](https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html) for installation process.
 
-Program will look up every word in GT for translation, transcription and definitions (with default
-options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms and examples and
+Program will look up every word in GT for translation, transcription, definitions, synonyms and
+examples (with default options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms
+and examples and
 transcription. If word in dictionary api is found then only this data is used. If word in dictionary
 api is not found, then data from GT is used. If none found, then meanings are empty, because GT at
 least has a translation.    
@@ -92,17 +93,19 @@ OPTIONS
 
        --options String[]
        options
-       [Optional, default = t,at,md,rm]
+       [Optional, default = t,at,md,rm,ss,ex,qca]
 
        --help or -h
        help for anki-exporter
        [Optional]
 ```
 
-`ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm`
+`ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm,ss,ex,qca`
 
-Options t,at,md,rm are the only options that currently works. These options are google translate
-options.
+Options are google translate options. Currently `t`, `at`, `md`, `rm`, `ss`, `ex` and `qca` are parsed
+and used. The rest (`bd`, `ld`, `rw`) could be requested, but are not parsed. Options `ss`, `ex`
+and `qca` only give additional results when text is a single word. When `qca` finds a possible
+mistake, it is logged during export.
 
 #### Run result
 

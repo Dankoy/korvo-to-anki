@@ -39,7 +39,7 @@ public class AnkiExporterCommand {
 
              --options String[]
              options
-             [Optional, default = t,at,md,rm]
+             [Optional, default = t,at,md,rm,ss,ex,qca]
 
              --help or -h
              help for anki-exporter
@@ -61,7 +61,7 @@ public class AnkiExporterCommand {
       @Option(
               longName = "options",
               required = false,
-              defaultValue = "t,at,md,rm",
+              defaultValue = "t,at,md,rm,ss,ex,qca",
               description = "options")
           String[] options) {
 

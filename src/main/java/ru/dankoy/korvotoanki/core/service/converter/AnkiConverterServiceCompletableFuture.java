@@ -2,6 +2,7 @@ package ru.dankoy.korvotoanki.core.service.converter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
@@ -99,7 +100,14 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
     return CompletableFuture.allOf(cf1, cf2)
         .thenApply(
             ignored -> {
-              return ankiDataFabric.createAnkiData(vocabulary, cf2.join(), cf1.join());
+              var gtResult = cf2.join();
+              if (Objects.nonNull(gtResult.getPossibleMistake())) {
+                log.info(
+                    String.format(
+                        "Google translate found possible mistake for '%s'. Maybe you meant '%s'",
+                        vocabulary.word(), gtResult.getPossibleMistake()));
+              }
+              return ankiDataFabric.createAnkiData(vocabulary, gtResult, cf1.join());
             })
         .join();
   }

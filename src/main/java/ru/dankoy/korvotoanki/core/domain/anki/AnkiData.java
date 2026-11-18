@@ -17,5 +17,7 @@ public class AnkiData {
       transcription; // from dictionaryapi, if not found then from Google Translate or null
   private final List<Meaning>
       meanings; // from dictionaryapi, if not found then from Google Translate or empty
+  private final List<String>
+      examples; // example sentences from Google Translate, if not found in dictionaryapi or empty
   private final String book;
 }

@@ -38,7 +38,12 @@ public class TemplateCreatorServiceImplTest {
     var meaning =
         new Meaning(
             "type",
-            Collections.singletonList(new Definition("info", "example")),
+            Collections.singletonList(
+                new Definition(
+                    "info",
+                    "example",
+                    Collections.singletonList("synonym1"),
+                    Collections.singletonList("antonym1"))),
             Collections.singletonList("synonym1"),
             Collections.singletonList("antonym1"));
 
