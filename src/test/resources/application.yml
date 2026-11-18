@@ -65,13 +65,13 @@ korvo-to-anki:
       - "at"                                    # alternate translations
       - "md"                                    # definitions of source text
       - "rm"                                    # transcription / transliteration of source and translated texts
-#                    # Next options only give additional results when text is a single word
+      # Next options only give additional results when text is a single word
+      - "ss"                                    # synonyms of source text
+      - "ex"                                    # examples
+      - "qca"                                   # possible mistakes / corrections
 #      - "bd"        # dictionary (articles, reverse translations, etc)
-#      - "ex"        # examples
 #      - "ld"        # ?
-#      - "qca"       # ?
 #      - "rw"        # "see also" list
-#      - "ss"        # synonyms of source text, if it's one word
 debug: false
 
 resilience4j.retry:

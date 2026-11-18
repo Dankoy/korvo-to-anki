@@ -2,6 +2,7 @@ package ru.dankoy.korvotoanki.core.service.converter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -50,6 +51,13 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
 
     var gtResult =
         googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
+
+    if (Objects.nonNull(gtResult.getPossibleMistake())) {
+      log.info(
+          String.format(
+              "Google translate found possible mistake for '%s'. Maybe you meant '%s'",
+              vocabulary.word(), gtResult.getPossibleMistake()));
+    }
 
     return ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult);
   }

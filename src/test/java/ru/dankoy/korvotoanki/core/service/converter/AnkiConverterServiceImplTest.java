@@ -185,7 +185,7 @@ class AnkiConverterServiceImplTest {
                             gtd.type(),
                             Collections.singletonList(
                                 new ru.dankoy.korvotoanki.core.domain.anki.Definition(
-                                    gtd.info(), null)),
+                                    gtd.info(), null, new ArrayList<>(), new ArrayList<>())),
                             new ArrayList<>(),
                             new ArrayList<>()))
                 .toList())
@@ -197,7 +197,7 @@ class AnkiConverterServiceImplTest {
   private GoogleTranslation getOneGt() {
 
     var gtResult = new GoogleTranslation("transcription");
-    gtResult.getDefinitions().add(new Definition("type", "info"));
+    gtResult.getDefinitions().add(new Definition("type", "info", null, null));
     gtResult.getTranslations().add("tr1");
 
     return gtResult;

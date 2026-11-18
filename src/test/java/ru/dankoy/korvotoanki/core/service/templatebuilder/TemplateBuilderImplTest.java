@@ -47,7 +47,12 @@ class TemplateBuilderImplTest {
     var meaning =
         new Meaning(
             "type",
-            Collections.singletonList(new Definition("info", "example")),
+            Collections.singletonList(
+                new Definition(
+                    "info",
+                    "example",
+                    List.of("definition_synonym1", "definition_synonym2"),
+                    Collections.singletonList("definition_antonym1"))),
             Collections.singletonList("synonym1"),
             Collections.singletonList("antonym1"));
 
@@ -59,6 +64,7 @@ class TemplateBuilderImplTest {
             .myExample("my_example")
             .translations(Collections.singletonList("translation1"))
             .meanings(Collections.singletonList(meaning))
+            .examples(List.of("example1", "example2"))
             .build();
 
     var path = Paths.get(getClass().getResource("/templates/correct/correct-meaning.ftl").toURI());
