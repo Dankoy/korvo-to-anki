@@ -60,5 +60,5 @@ databaseChangeLog:
                   value: "0"
       rollback:
         - delete:
-            tableName: title
+            tableName: vocabulary
             where: word in ("contemplating","word")

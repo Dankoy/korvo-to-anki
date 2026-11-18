@@ -38,7 +38,7 @@ import ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
 import tools.jackson.databind.ObjectMapper;
 
-@DisplayName("Test DictionaryServiceWebClient with full contexst and resilience ")
+@DisplayName("Test DictionaryServiceWebClient with full context and resilience ")
 @Import(DictionaryServiceWebClientTestResilience.WebClientConfigInternal.class)
 @SpringBootTest(classes = {KorvoToAnkiApplication.class})
 @EnableAutoConfiguration(
