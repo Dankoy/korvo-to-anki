@@ -1,14 +1,15 @@
 package ru.dankoy.korvotoanki;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 import ru.dankoy.korvotoanki.config.appprops.DebugProperties;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
@@ -50,73 +51,42 @@ import tools.jackson.databind.json.JsonMapper;
     replace = AutoConfigureTestDatabase.Replace.NONE) // use embedded database to run migrations on
 class KorvoToAnkiApplicationTests {
 
-  @Autowired ApplicationContext context;
+  @Autowired ConfigurableApplicationContext context;
 
   @DisplayName("all default necessary beans should be created")
   @Test
   void contextLoads() {
 
-    var debugProperties = context.getBean(DebugProperties.class);
-    var templateBuilder = context.getBean(TemplateBuilder.class);
-    var cacheManager = context.getBean(CacheManager.class);
-    var objectMapper = context.getBean(JsonMapper.class);
-    var googleTranslatorProperties = context.getBean(GoogleTranslatorProperties.class);
-    var dictionaryApiProperties = context.getBean(DictionaryApiProperties.class);
-    var externalApiProperties = context.getBean(ExternalApiProperties.class);
-    var filesProperties = context.getBean(FilesProperties.class);
-    var ankiConverterCommand = context.getBean(AnkiConverterCommand.class);
-    var ankiExporterCommand = context.getBean(AnkiExporterCommand.class);
-    var dictionaryApiCommand = context.getBean(DictionaryApiCommand.class);
-    var googleTranslateCommand = context.getBean(GoogleTranslateCommand.class);
-    var titleCommand = context.getBean(TitleCommand.class);
-    var vocabularyCommand = context.getBean(VocabularyCommand.class);
-    var titleDaoJdbc = context.getBean(TitleDaoJdbc.class);
-    var vocabularyDaoJdbc = context.getBean(VocabularyDaoJdbc.class);
-    var ankiDataFabric = context.getBean(AnkiDataFabricImpl.class);
-    var ankiConverterService = context.getBean(AnkiConverterServiceCompletableFuture.class);
-    var dictionaryServiceWebClient = context.getBean(DictionaryServiceWebClient.class);
-    var exporterServiceAnkiAsync = context.getBean(ExporterServiceAnkiCompletableFuture.class);
-    //    var exporterServiceAnki = context.getBean(ExporterServiceAnki.class);
-    var fileNameFormatterService = context.getBean(FileNameFormatterServiceImpl.class);
-    var fileProviderService = context.getBean(FileProviderServiceImpl.class);
-    var googleTranslatorWebClient = context.getBean(GoogleTranslatorWebClient.class);
-    var googleTranslatorParser = context.getBean(GoogleTranslatorParserImpl.class);
-    var objectMapperService = context.getBean(ObjectMapperServiceImpl.class);
-    var stateService = context.getBean(StateServiceImpl.class);
-    var stateServiceSqlite = context.getBean(StateServiceSqlite.class);
-    var templateCreatorService = context.getBean(TemplateCreatorServiceImpl.class);
-    var titleServiceJdbc = context.getBean(TitleServiceJdbc.class);
-    var vocabularyServiceJdbc = context.getBean(VocabularyServiceJdbc.class);
-
-    assertNotNull(debugProperties);
-    assertNotNull(templateBuilder);
-    assertNotNull(cacheManager);
-    assertNotNull(googleTranslatorProperties);
-    assertNotNull(dictionaryApiProperties);
-    assertNotNull(objectMapper);
-    assertNotNull(externalApiProperties);
-    assertNotNull(filesProperties);
-    assertNotNull(ankiConverterCommand);
-    assertNotNull(objectMapperService);
-    assertNotNull(ankiExporterCommand);
-    assertNotNull(dictionaryApiCommand);
-    assertNotNull(googleTranslateCommand);
-    assertNotNull(titleCommand);
-    assertNotNull(vocabularyCommand);
-    assertNotNull(titleDaoJdbc);
-    assertNotNull(vocabularyDaoJdbc);
-    assertNotNull(ankiDataFabric);
-    assertNotNull(ankiConverterService);
-    assertNotNull(dictionaryServiceWebClient);
-    assertNotNull(exporterServiceAnkiAsync);
-    assertNotNull(fileNameFormatterService);
-    assertNotNull(fileProviderService);
-    assertNotNull(googleTranslatorWebClient);
-    assertNotNull(googleTranslatorParser);
-    assertNotNull(stateService);
-    assertNotNull(stateServiceSqlite);
-    assertNotNull(templateCreatorService);
-    assertNotNull(titleServiceJdbc);
-    assertNotNull(vocabularyServiceJdbc);
+    assertThat(AssertableApplicationContext.get(() -> context))
+        .hasSingleBean(DebugProperties.class)
+        .hasSingleBean(TemplateBuilder.class)
+        .hasSingleBean(CacheManager.class)
+        .hasSingleBean(JsonMapper.class)
+        .hasSingleBean(GoogleTranslatorProperties.class)
+        .hasSingleBean(DictionaryApiProperties.class)
+        .hasSingleBean(ExternalApiProperties.class)
+        .hasSingleBean(FilesProperties.class)
+        .hasSingleBean(AnkiConverterCommand.class)
+        .hasSingleBean(AnkiExporterCommand.class)
+        .hasSingleBean(DictionaryApiCommand.class)
+        .hasSingleBean(GoogleTranslateCommand.class)
+        .hasSingleBean(TitleCommand.class)
+        .hasSingleBean(VocabularyCommand.class)
+        .hasSingleBean(TitleDaoJdbc.class)
+        .hasSingleBean(VocabularyDaoJdbc.class)
+        .hasSingleBean(AnkiDataFabricImpl.class)
+        .hasSingleBean(AnkiConverterServiceCompletableFuture.class)
+        .hasSingleBean(DictionaryServiceWebClient.class)
+        .hasSingleBean(ExporterServiceAnkiCompletableFuture.class)
+        .hasSingleBean(FileNameFormatterServiceImpl.class)
+        .hasSingleBean(FileProviderServiceImpl.class)
+        .hasSingleBean(GoogleTranslatorWebClient.class)
+        .hasSingleBean(GoogleTranslatorParserImpl.class)
+        .hasSingleBean(ObjectMapperServiceImpl.class)
+        .hasSingleBean(StateServiceImpl.class)
+        .hasSingleBean(StateServiceSqlite.class)
+        .hasSingleBean(TemplateCreatorServiceImpl.class)
+        .hasSingleBean(TitleServiceJdbc.class)
+        .hasSingleBean(VocabularyServiceJdbc.class);
   }
 }

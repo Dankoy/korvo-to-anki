@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,8 +43,6 @@ class TemplateBuilderImplTest {
   @DisplayName("writeTemplate anki export")
   @Test
   void writeTemplateMeaning() throws IOException, URISyntaxException {
-
-    List<AnkiData> list = new ArrayList<>();
 
     var meaning =
         new Meaning(
