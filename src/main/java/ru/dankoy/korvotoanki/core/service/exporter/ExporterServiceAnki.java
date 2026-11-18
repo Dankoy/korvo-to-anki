@@ -61,6 +61,8 @@ public class ExporterServiceAnki implements ExporterService {
   @Override
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {
 
+    counter = 0;
+
     List<AnkiData> ankiDataList = new ArrayList<>();
 
     List<Vocabulary> vocabulariesFull = vocabularyService.getAll();

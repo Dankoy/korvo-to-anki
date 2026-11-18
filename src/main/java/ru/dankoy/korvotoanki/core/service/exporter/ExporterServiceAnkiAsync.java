@@ -32,7 +32,7 @@ public class ExporterServiceAnkiAsync implements ExporterService {
 
   private static final int STEP_SIZE = 30;
   private static final int THREADS = 2;
-  private static final AtomicInteger atomicInteger = new AtomicInteger(0);
+  private final AtomicInteger atomicInteger = new AtomicInteger(0);
   private final VocabularyService vocabularyService;
   private final AnkiConverterService ankiConverterService;
   private final TemplateCreatorService templateCreatorService;
@@ -63,6 +63,8 @@ public class ExporterServiceAnkiAsync implements ExporterService {
 
   @Override
   public void export(String sourceLanguage, String targetLanguage, List<String> options) {
+
+    atomicInteger.set(0);
 
     List<AnkiData> ankiDataList = new CopyOnWriteArrayList<>();
 

@@ -1,5 +1,6 @@
 package ru.dankoy.korvotoanki.core.service.exporter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -7,6 +8,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -203,6 +208,49 @@ class ExporterServiceAnkiCompletableFutureTest {
     Mockito.verify(stateService, times(1)).saveState(vocabularies);
     Mockito.verify(templateCreatorService, times(1)).create(any());
     Mockito.verify(ioService, times(1)).print(any());
+  }
+
+  @DisplayName("counter should reset on each export")
+  @Test
+  void counterShouldResetOnEachExport() {
+
+    var templ = "templ";
+    List<Vocabulary> vocabularies =
+        Stream.generate(this::correctVocabularies).limit(120).flatMap(Collection::stream).toList();
+    var sourceLanguage = "en";
+    var targetLanguage = "ru";
+    List<String> options = Stream.of("t").toList();
+
+    var ankiData = getOneFromGoogleTranslate(vocabularies.get(0), getOneGt());
+
+    given(ankiConverterService.convert(any(), eq(sourceLanguage), eq(targetLanguage), eq(options)))
+        .willReturn(ankiData);
+    given(vocabularyService.getAll()).willReturn(vocabularies);
+    given(stateService.filterState(vocabularies)).willReturn(vocabularies);
+    given(templateCreatorService.create(any())).willReturn(templ);
+    doNothing().when(ioService).print(any());
+    doNothing().when(stateService).saveState(vocabularies);
+    given(ioServiceFileFactory.apply(anyString())).willReturn(ioService);
+    given(filesProperties.getExportFileName()).willReturn("name");
+
+    var logger = (Logger) LoggerFactory.getLogger(ExporterServiceAnkiCompletableFuture.class);
+    var listAppender = new ListAppender<ILoggingEvent>();
+    listAppender.start();
+    logger.addAppender(listAppender);
+    try {
+      exporterServiceAnkiAsync.export(sourceLanguage, targetLanguage, options);
+      exporterServiceAnkiAsync.export(sourceLanguage, targetLanguage, options);
+    } finally {
+      logger.detachAppender(listAppender);
+    }
+
+    var messages = listAppender.list.stream().map(ILoggingEvent::getFormattedMessage).toList();
+
+    // 120 words per export, step 30. Each export should log progress starting from 0
+    assertThat(Collections.frequency(messages, "processed - 30")).isEqualTo(2);
+    assertThat(Collections.frequency(messages, "processed - 60")).isEqualTo(2);
+    assertThat(Collections.frequency(messages, "processed - 90")).isEqualTo(2);
+    assertThat(messages).doesNotContain("processed - 120", "processed - 150");
   }
 
   private List<Vocabulary> correctVocabularies() {
