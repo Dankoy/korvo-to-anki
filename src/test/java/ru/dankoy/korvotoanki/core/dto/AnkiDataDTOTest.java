@@ -22,7 +22,6 @@ public class AnkiDataDTOTest {
     var word = "word";
     var type = "type";
     var example = "my_example";
-    var meaningC = "info";
     var transcription = "transcription";
     var translation = "translation1";
 
@@ -30,7 +29,6 @@ public class AnkiDataDTOTest {
         AnkiDataDTO.builder()
             .word(word)
             .book(book)
-            // .meanings(meaningC)
             .myExample(example)
             .tags(List.of(type, book))
             .transcription(transcription)
@@ -69,7 +67,6 @@ public class AnkiDataDTOTest {
     var typeCorrect = "type_type1";
     var type = "type type1";
     var example = "my_example";
-    var meaningC = "info";
     var transcription = "transcription";
     var translation = "translation1";
 
@@ -77,7 +74,6 @@ public class AnkiDataDTOTest {
         AnkiDataDTO.builder()
             .word(word)
             .book(book)
-            // .meanings(meaningC)
             .myExample(example)
             .tags(List.of(typeCorrect, bookCorrect))
             .transcription(transcription)

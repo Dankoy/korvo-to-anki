@@ -1,13 +1,11 @@
 package ru.dankoy.korvotoanki.core.service.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ class IOServiceFileTest {
     ioServiceFile.print(message);
 
     // Assert
-    assertFilesEqual(tempDir.resolve(fileName), message);
+    assertThat(Files.readString(tempDir.resolve(fileName))).isEqualTo(message);
   }
 
   @Test
@@ -71,8 +69,8 @@ class IOServiceFileTest {
     // Act
     String result = ioServiceFile.readAllLines();
 
-    // Assert
-    assertFilesEqual(tempDir.resolve(fileName), result);
+    // Assert - service contract: all lines are concatenated without separators
+    assertThat(result).isEqualTo("Line 1Line 2Line 3");
   }
 
   @Test
@@ -93,13 +91,5 @@ class IOServiceFileTest {
 
     // Act and Assert
     assertThrows(UnsupportedOperationException.class, () -> ioServiceFile.readLong());
-  }
-
-  private void assertFilesEqual(Path file1, String content) throws Exception {
-
-    List<String> lines = Files.readAllLines(file1, StandardCharsets.UTF_8);
-    var result = String.join("", lines);
-
-    assertEquals(content, result);
   }
 }

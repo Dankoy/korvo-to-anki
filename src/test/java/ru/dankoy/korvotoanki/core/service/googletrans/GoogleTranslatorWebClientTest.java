@@ -43,6 +43,9 @@ import ru.dankoy.korvotoanki.core.service.googletrans.parser.GoogleTranslatorPar
 // @TestPropertySource(properties = "korvo-to-anki.http-client=web-client")
 class GoogleTranslatorWebClientTest {
 
+  private static final String EXPECTED_PATH =
+      "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text";
+
   private MockWebServer server;
   private String mockUrl = "http://127.0.0.1:%s/";
 
@@ -93,9 +96,7 @@ class GoogleTranslatorWebClientTest {
 
     // do not assert hostname and port because localhost changes to 127.0.0.1 and 127.0.0.1 changes
     // to localhost. Always fails assertion.
-    assertEquals(
-        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        recordedRequest.getPath());
+    assertEquals(EXPECTED_PATH, recordedRequest.getPath());
 
     assertThat(translation).isEqualTo(createGoogleTranslation());
   }
@@ -118,9 +119,7 @@ class GoogleTranslatorWebClientTest {
 
     // do not assert hostname and port because localhost changes to 127.0.0.1 and 127.0.0.1 changes
     // to localhost. Always fails assertion.
-    assertEquals(
-        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        recordedRequest.getPath());
+    assertEquals(EXPECTED_PATH, recordedRequest.getPath());
   }
 
   @Test
@@ -140,9 +139,7 @@ class GoogleTranslatorWebClientTest {
 
     // do not assert hostname and port because localhost changes to 127.0.0.1 and 127.0.0.1 changes
     // to localhost. Always fails assertion.
-    assertEquals(
-        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        recordedRequest.getPath());
+    assertEquals(EXPECTED_PATH, recordedRequest.getPath());
   }
 
   @DisplayName("definition read timeout")
@@ -164,9 +161,7 @@ class GoogleTranslatorWebClientTest {
 
     var req = server.takeRequest();
     assertThat(req.getMethod()).isEqualTo("GET");
-    assertEquals(
-        "/?client=client&sl=ru&tl=en&ie=UTF-8&oe=UTF-8&hl=en&otf=0&ssel=0&tsel=0&dt=option1&q=text",
-        req.getPath());
+    assertEquals(EXPECTED_PATH, req.getPath());
   }
 
   private GoogleTranslation createGoogleTranslation() {

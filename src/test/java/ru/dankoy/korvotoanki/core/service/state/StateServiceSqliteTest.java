@@ -3,6 +3,7 @@ package ru.dankoy.korvotoanki.core.service.state;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -83,6 +85,7 @@ class StateServiceSqliteTest {
   /** Save States. */
   @Test
   @DisplayName("Save States")
+  @SuppressWarnings("unchecked")
   void testSaveState() {
     // Arrange
     List<Vocabulary> vocabularies = new ArrayList<>(createVocabularyList());
@@ -92,8 +95,15 @@ class StateServiceSqliteTest {
     // Act
     stateService.saveState(vocabularies);
 
-    // Assert
-    assertThat(stateDao.getAll()).isNotNull();
+    // Assert - service should map each vocabulary to a state with the same word and pass them to
+    // the dao in a single batch insert
+    ArgumentCaptor<List<State>> statesCaptor = ArgumentCaptor.forClass(List.class);
+    verify(stateDao).batchInsert(statesCaptor.capture());
+
+    assertThat(statesCaptor.getValue())
+        .hasSize(vocabularies.size())
+        .extracting(State::word)
+        .containsExactlyElementsOf(vocabularies.stream().map(Vocabulary::word).toList());
   }
 
   /** Save State with transactional save operation. */
