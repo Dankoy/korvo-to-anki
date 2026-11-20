@@ -96,8 +96,8 @@ class AnkiDataFabricImplTest {
   }
 
   @DisplayName(
-      "create anki data with dictionaryapi meaning of the same part of speech doesn't duplicate"
-          + " google translate meaning and takes google translate synonyms only when it has none")
+      "create anki data merges google translate definitions and unions synonyms with dictionaryapi"
+          + " meaning of the same part of speech")
   @Test
   void createAnkiDataMergesMeaningsOfSamePartOfSpeech() {
 
@@ -136,7 +136,8 @@ class AnkiDataFabricImplTest {
     // no duplicated meanings for noun and exclamation of google translate
     assertThat(ankiData.getMeanings())
         .containsExactlyInAnyOrder(
-            // dictionaryapi noun has its own synonyms, google translate noun synonyms are not used
+            // dictionaryapi noun is the base, google translate definition of the same part of
+            // speech is appended with its example and bound synonyms
             new Meaning(
                 "noun",
                 List.of(
@@ -144,10 +145,16 @@ class AnkiDataFabricImplTest {
                         "da_noun_info",
                         "da_noun_example",
                         List.of("da_noun_definition_synonym"),
+                        List.of()),
+                    new Definition(
+                        "a greeting or reception",
+                        "the proposal got a warm welcome",
+                        List.of("приветствие", "салют"),
                         List.of())),
                 List.of("da_noun_synonym"),
                 List.of()),
-            // dictionaryapi verb keeps its definitions and gets google translate synonyms
+            // dictionaryapi verb keeps its definitions, google translate verb synonyms are
+            // unioned into the meaning level
             new Meaning(
                 "verb",
                 List.of(new Definition("da_verb_info", "da_verb_example", List.of(), List.of())),
@@ -166,6 +173,93 @@ class AnkiDataFabricImplTest {
                         "used to begin a phone conversation", null, List.of(), List.of())),
                 List.of("здравствуй"),
                 List.of()));
+  }
+
+  @DisplayName("meaning level synonyms are union of dictionaryapi and google translate ones")
+  @Test
+  void createAnkiDataUnionsMeaningSynonyms() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+    googleTranslation
+        .getDefinitions()
+        .add(
+            new ru.dankoy.korvotoanki.core.domain.googletranslation.Definition(
+                "noun", "gt_noun_info", null, null));
+    googleTranslation.getSynonyms().add(new Synonym("noun", null, List.of("gt_synonym")));
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(new Phonetics("text", "audio", "source")),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_noun_info", List.of(), List.of(), null)),
+                        List.of("da_synonym"),
+                        List.of()))));
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+
+    var noun =
+        ankiData.getMeanings().stream()
+            .filter(m -> m.type().equals("noun"))
+            .findFirst()
+            .orElseThrow();
+
+    assertThat(noun.synonyms()).containsExactly("da_synonym", "gt_synonym");
+  }
+
+  @DisplayName(
+      "google translate definition with the same info as dictionaryapi one is merged: synonyms"
+          + " are unioned and example is used when dictionaryapi has none")
+  @Test
+  void createAnkiDataMergesDuplicateDefinitions() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+    googleTranslation
+        .getDefinitions()
+        .add(
+            new ru.dankoy.korvotoanki.core.domain.googletranslation.Definition(
+                "noun", "same info", "gt_example", "noun.1"));
+    googleTranslation
+        .getSynonyms()
+        .add(new Synonym("noun", "noun.1", List.of("gt_synonym", "da_synonym")));
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(new Phonetics("text", "audio", "source")),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "same info", List.of("da_synonym"), List.of(), null)),
+                        List.of(),
+                        List.of()))));
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+
+    var noun =
+        ankiData.getMeanings().stream()
+            .filter(m -> m.type().equals("noun"))
+            .findFirst()
+            .orElseThrow();
+
+    // single definition: synonyms unioned (dictionaryapi first, no duplicates), example taken
+    // from google translate
+    assertThat(noun.definitions())
+        .containsExactly(
+            new Definition(
+                "same info", "gt_example", List.of("da_synonym", "gt_synonym"), List.of()));
   }
 
   @DisplayName(
@@ -198,6 +292,42 @@ class AnkiDataFabricImplTest {
 
     assertThat(ankiData.getExamples())
         .containsExactly("La fourchette des prix.", "Another example sentence.");
+  }
+
+  @DisplayName(
+      "google translate examples are de-duplicated by normalized text and against the book"
+          + " example sentence")
+  @Test
+  void createAnkiDataNormalizesExampleDuplicates() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+    googleTranslation
+        .getExamples()
+        .addAll(
+            List.of(
+                "hello there katie", // differs from the definition example only in case/punctuation
+                "prev_contextWORDnext_context", // the book example sentence with different case
+                "unique example"));
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(new Phonetics("text", "audio", "source")),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_info", List.of(), List.of(), "Hello there, Katie!")),
+                        List.of(),
+                        List.of()))));
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+
+    assertThat(ankiData.getExamples()).containsExactly("unique example");
   }
 
   @DisplayName(

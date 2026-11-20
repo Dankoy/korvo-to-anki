@@ -28,14 +28,16 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
   public AnkiData createAnkiData(
       Vocabulary vocabulary, GoogleTranslation googleTranslation, List<Word> words) {
 
+    var myExample = obtainVocabularyExample(vocabulary);
+
     return AnkiData.builder()
         .word(vocabulary.word())
         .book(vocabulary.title().name())
         .translations(googleTranslation.getTranslations()) // could be empty list
         .transcription(chooseTranscription(googleTranslation, words))
-        .myExample(obtainVocabularyExample(vocabulary))
+        .myExample(myExample)
         .meanings(mergeMeanings(googleTranslation, words))
-        .examples(mergeExamples(googleTranslation, words))
+        .examples(mergeExamples(googleTranslation, words, myExample))
         .build();
   }
 
@@ -72,11 +74,14 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     }
   }
 
-  // dictionaryapi meanings are the base. Google translation meanings of parts of speech that
-  // dictionaryapi doesn't have are added on top. Google translation synonyms are bound to
-  // definitions by google translate internal definition ids, which dictionaryapi doesn't share,
-  // so for dictionaryapi meanings the only merge level is the meaning itself: google translation
-  // synonyms of the same part of speech are used only when the dictionaryapi meaning has none.
+  // dictionaryapi meanings are the base. Google translation definitions of the same part of
+  // speech are appended to them with their examples and per-definition synonyms. Google
+  // translation definitions that are exact duplicates of a dictionaryapi definition (same info)
+  // are merged instead of added: their synonyms are unioned into the dictionaryapi definition
+  // and their example is used when the dictionaryapi definition has none. Google translation
+  // synonyms of the same part of speech are unioned into the meaning level synonyms, the list
+  // stays capped so the card doesn't become overloaded. Meanings of parts of speech that only
+  // google translation has are added on top.
   private List<Meaning> mergeMeanings(GoogleTranslation googleTranslation, List<Word> words) {
 
     List<Meaning> dictionaryApiMeanings = createMeaningsFromDictionaryApi(words);
@@ -99,20 +104,17 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
       Meaning googleMeaning = googleMeaningsByType.get(dictionaryApiMeaning.type());
 
+      List<Definition> definitions = new ArrayList<>(dictionaryApiMeaning.definitions());
       List<String> synonyms = dictionaryApiMeaning.synonyms();
-      if ((Objects.isNull(synonyms) || synonyms.isEmpty())
-          && Objects.nonNull(googleMeaning)
-          && Objects.nonNull(googleMeaning.synonyms())
-          && !googleMeaning.synonyms().isEmpty()) {
-        synonyms = googleMeaning.synonyms();
+
+      if (Objects.nonNull(googleMeaning)) {
+        mergeDefinitions(definitions, googleMeaning.definitions());
+        synonyms = mergeSynonyms(synonyms, googleMeaning.synonyms());
       }
 
       result.add(
           new Meaning(
-              dictionaryApiMeaning.type(),
-              dictionaryApiMeaning.definitions(),
-              synonyms,
-              dictionaryApiMeaning.antonyms()));
+              dictionaryApiMeaning.type(), definitions, synonyms, dictionaryApiMeaning.antonyms()));
     }
 
     // parts of speech that only google translation has
@@ -121,6 +123,64 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
         .forEach(result::add);
 
     return result;
+  }
+
+  // appends google translation definitions after dictionaryapi ones. Exact duplicates (same
+  // info) are merged instead: union of synonyms (capped, dictionaryapi first) and the google
+  // translation example when the dictionaryapi definition has none.
+  private void mergeDefinitions(List<Definition> definitions, List<Definition> googleDefinitions) {
+
+    for (Definition googleDefinition : googleDefinitions) {
+
+      int duplicateIndex = -1;
+      for (int i = 0; i < definitions.size(); i++) {
+        if (Objects.equals(definitions.get(i).info(), googleDefinition.info())) {
+          duplicateIndex = i;
+          break;
+        }
+      }
+
+      if (duplicateIndex < 0) {
+        definitions.add(googleDefinition);
+        continue;
+      }
+
+      Definition duplicate = definitions.get(duplicateIndex);
+      String example =
+          (Objects.isNull(duplicate.example()) || duplicate.example().isBlank())
+              ? googleDefinition.example()
+              : duplicate.example();
+
+      definitions.set(
+          duplicateIndex,
+          new Definition(
+              duplicate.info(),
+              example,
+              mergeSynonyms(duplicate.synonyms(), googleDefinition.synonyms()),
+              duplicate.antonyms()));
+    }
+  }
+
+  // union of two synonym lists, dictionaryapi first, capped; null-safe, returns null when both
+  // are null
+  private List<String> mergeSynonyms(List<String> first, List<String> second) {
+
+    if (Objects.isNull(first) || first.isEmpty()) {
+      return capSynonyms(second);
+    }
+
+    if (Objects.isNull(second) || second.isEmpty()) {
+      return first;
+    }
+
+    List<String> merged = new ArrayList<>(first);
+    for (String synonym : second) {
+      if (!merged.contains(synonym)) {
+        merged.add(synonym);
+      }
+    }
+
+    return capSynonyms(merged);
   }
 
   private List<Meaning> createMeaningsFromDictionaryApi(List<Word> words) {
@@ -253,12 +313,14 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
   // Google translation examples are not bound to any part of speech, so they can't be mapped to
   // any meaning. They are always merged into the card regardless of the dictionaryapi result.
-  // Examples that duplicate an example of a definition already on the card (from dictionaryapi
-  // or from google translate itself) are skipped, the list is capped because google translate
-  // returns every example it has and the card becomes overloaded.
-  private List<String> mergeExamples(GoogleTranslation googleTranslation, List<Word> words) {
+  // Examples that duplicate an example already on the card (a definition example from
+  // dictionaryapi or google translate, or the book example sentence) are skipped. Comparison is
+  // done on normalized text (lowercase, no punctuation, single spaces), the list is capped
+  // because google translate returns every example it has and the card becomes overloaded.
+  private List<String> mergeExamples(
+      GoogleTranslation googleTranslation, List<Word> words, String myExample) {
 
-    Set<String> definitionExamples =
+    Set<String> cardExamples =
         Stream.concat(
                 words.stream()
                     .flatMap(w -> w.getMeanings().stream())
@@ -267,12 +329,23 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
                 googleTranslation.getDefinitions().stream()
                     .map(ru.dankoy.korvotoanki.core.domain.googletranslation.Definition::example))
             .filter(Objects::nonNull)
-            .map(String::trim)
+            .map(this::normalizeExample)
             .collect(Collectors.toSet());
 
+    if (Objects.nonNull(myExample)) {
+      cardExamples.add(normalizeExample(myExample));
+    }
+
     return googleTranslation.getExamples().stream()
-        .filter(example -> !definitionExamples.contains(example.trim()))
+        .filter(Objects::nonNull)
+        .filter(example -> !cardExamples.contains(normalizeExample(example)))
         .limit(MAX_EXAMPLES)
         .toList();
+  }
+
+  // lowercase, punctuation removed, whitespace collapsed to single spaces
+  private String normalizeExample(String example) {
+
+    return example.toLowerCase().replaceAll("\\p{P}+", "").replaceAll("\\s+", " ").trim();
   }
 }

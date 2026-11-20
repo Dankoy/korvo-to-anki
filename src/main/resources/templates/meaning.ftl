@@ -34,16 +34,14 @@
                     </#list>
                 </#if>
                 <#if meaning.synonyms()?has_content>
-                  <dt><h5 style="margin-bottom:0;margin-top:0;color:green">synonyms</h5></dt><#t>
-                    <#list meaning.synonyms() as synonym>
-                      <dd>${synonym}</dd><#t>
-                    </#list>
+                  <p style="margin-top:1px"><#t>
+                    <b>synonyms</b>: <span style="color:green"><i>${meaning.synonyms()?join(", ")}</i></span><#t>
+                  </p><#t>
                 </#if>
                 <#if meaning.antonyms()?has_content>
-                  <dt><h5 style="margin-bottom:0;margin-top:10px;color:red">antonyms</h5></dt><#t>
-                    <#list meaning.antonyms() as antonym>
-                      <dd>${antonym}</dd><#t>
-                    </#list>
+                  <p style="margin-top:1px"><#t>
+                    <b>antonyms</b>: <span style="color:red"><i>${meaning.antonyms()?join(", ")}</i></span><#t>
+                  </p><#t>
                 </#if>
             </dl><#t>
           </li><#t>
