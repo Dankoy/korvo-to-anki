@@ -19,7 +19,9 @@ class AnkiDataFabricImplTest {
 
   private final AnkiDataFabricImpl fabric = new AnkiDataFabricImpl();
 
-  @DisplayName("create anki data with dictionaryapi data takes precedence over google translate")
+  @DisplayName(
+      "create anki data with dictionaryapi data merges google translate examples and meanings"
+          + " of missing parts of speech")
   @Test
   void createAnkiDataWithDictionaryApiData() {
 
@@ -53,9 +55,9 @@ class AnkiDataFabricImplTest {
     assertThat(ankiData.getTranscription()).isEqualTo("da_transcription");
     assertThat(ankiData.getMyExample())
         .isEqualTo(vocabulary.prevContext() + vocabulary.word() + vocabulary.nextContext());
-    // only dictionaryapi meanings are used
+    // dictionaryapi meaning stays, google translate meanings of other parts of speech are added
     assertThat(ankiData.getMeanings())
-        .containsExactly(
+        .containsExactlyInAnyOrder(
             new Meaning(
                 "ps",
                 List.of(
@@ -65,9 +67,137 @@ class AnkiDataFabricImplTest {
                         List.of("da_definition_synonym"),
                         List.of("da_definition_antonym"))),
                 List.of("da_synonym"),
-                List.of("da_antonym")));
-    // google translate examples are not used when dictionaryapi has data
-    assertThat(ankiData.getExamples()).isEmpty();
+                List.of("da_antonym")),
+            new Meaning(
+                "noun",
+                List.of(
+                    new Definition(
+                        "a greeting or reception",
+                        "the proposal got a warm welcome",
+                        List.of("приветствие", "салют"),
+                        List.of())),
+                List.of(),
+                List.of()),
+            new Meaning(
+                "exclamation",
+                List.of(
+                    new Definition(
+                        "an expression of greeting",
+                        "every morning they exchanged polite hellos",
+                        List.of("greeting"),
+                        List.of()),
+                    new Definition(
+                        "used to begin a phone conversation", null, List.of(), List.of())),
+                List.of("здравствуй"),
+                List.of()));
+    // google translate examples are merged regardless of the dictionaryapi result
+    assertThat(ankiData.getExamples())
+        .containsExactly("La fourchette des prix.", "Another example sentence.");
+  }
+
+  @DisplayName(
+      "create anki data with dictionaryapi meaning of the same part of speech doesn't duplicate"
+          + " google translate meaning and takes google translate synonyms only when it has none")
+  @Test
+  void createAnkiDataMergesMeaningsOfSamePartOfSpeech() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+    // verb has no definitions in google translation data, so its synonyms are unbound
+    googleTranslation.getSynonyms().add(new Synonym("verb", null, List.of("звать")));
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(new Phonetics("text", "audio", "source")),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_noun_info",
+                                List.of("da_noun_definition_synonym"),
+                                List.of(),
+                                "da_noun_example")),
+                        List.of("da_noun_synonym"),
+                        List.of()),
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "verb",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_verb_info", List.of(), List.of(), "da_verb_example")),
+                        List.of(),
+                        List.of()))));
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+
+    // no duplicated meanings for noun and exclamation of google translate
+    assertThat(ankiData.getMeanings())
+        .containsExactlyInAnyOrder(
+            // dictionaryapi noun has its own synonyms, google translate noun synonyms are not used
+            new Meaning(
+                "noun",
+                List.of(
+                    new Definition(
+                        "da_noun_info",
+                        "da_noun_example",
+                        List.of("da_noun_definition_synonym"),
+                        List.of())),
+                List.of("da_noun_synonym"),
+                List.of()),
+            // dictionaryapi verb keeps its definitions and gets google translate synonyms
+            new Meaning(
+                "verb",
+                List.of(new Definition("da_verb_info", "da_verb_example", List.of(), List.of())),
+                List.of("звать"),
+                List.of()),
+            // exclamation is missing in dictionaryapi and comes entirely from google translate
+            new Meaning(
+                "exclamation",
+                List.of(
+                    new Definition(
+                        "an expression of greeting",
+                        "every morning they exchanged polite hellos",
+                        List.of("greeting"),
+                        List.of()),
+                    new Definition(
+                        "used to begin a phone conversation", null, List.of(), List.of())),
+                List.of("здравствуй"),
+                List.of()));
+  }
+
+  @DisplayName(
+      "create anki data skips google translate examples that duplicate definition examples from"
+          + " dictionaryapi or google translate itself")
+  @Test
+  void createAnkiDataSkipsDuplicatedExamples() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+    googleTranslation.getExamples().add(0, "da_example");
+    googleTranslation.getExamples().add(0, "every morning they exchanged polite hellos");
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(new Phonetics("text", "audio", "source")),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_info", List.of(), List.of(), "da_example")),
+                        List.of(),
+                        List.of()))));
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+
+    assertThat(ankiData.getExamples())
+        .containsExactly("La fourchette des prix.", "Another example sentence.");
   }
 
   @DisplayName(

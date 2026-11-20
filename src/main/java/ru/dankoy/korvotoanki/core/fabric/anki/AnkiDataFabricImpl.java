@@ -34,8 +34,8 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
         .translations(googleTranslation.getTranslations()) // could be empty list
         .transcription(chooseTranscription(googleTranslation, words))
         .myExample(obtainVocabularyExample(vocabulary))
-        .meanings(chooseDefinitions(googleTranslation, words))
-        .examples(chooseExamples(googleTranslation, words))
+        .meanings(mergeMeanings(googleTranslation, words))
+        .examples(mergeExamples(googleTranslation, words))
         .build();
   }
 
@@ -72,11 +72,61 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     }
   }
 
-  private List<Meaning> chooseDefinitions(GoogleTranslation googleTranslation, List<Word> words) {
+  // dictionaryapi meanings are the base. Google translation meanings of parts of speech that
+  // dictionaryapi doesn't have are added on top. Google translation synonyms are bound to
+  // definitions by google translate internal definition ids, which dictionaryapi doesn't share,
+  // so for dictionaryapi meanings the only merge level is the meaning itself: google translation
+  // synonyms of the same part of speech are used only when the dictionaryapi meaning has none.
+  private List<Meaning> mergeMeanings(GoogleTranslation googleTranslation, List<Word> words) {
+
+    List<Meaning> dictionaryApiMeanings = createMeaningsFromDictionaryApi(words);
+    List<Meaning> googleMeanings = createMeaningsFromGoogleTranslation(googleTranslation);
+
+    if (dictionaryApiMeanings.isEmpty()) {
+      return googleMeanings;
+    }
+
+    Map<String, Meaning> googleMeaningsByType =
+        googleMeanings.stream()
+            .collect(Collectors.toMap(Meaning::type, m -> m, (m1, m2) -> m1, HashMap::new));
+
+    Set<String> dictionaryApiTypes =
+        dictionaryApiMeanings.stream().map(Meaning::type).collect(Collectors.toSet());
 
     List<Meaning> result = new ArrayList<>();
 
-    // convert to anki definition
+    for (Meaning dictionaryApiMeaning : dictionaryApiMeanings) {
+
+      Meaning googleMeaning = googleMeaningsByType.get(dictionaryApiMeaning.type());
+
+      List<String> synonyms = dictionaryApiMeaning.synonyms();
+      if ((Objects.isNull(synonyms) || synonyms.isEmpty())
+          && Objects.nonNull(googleMeaning)
+          && Objects.nonNull(googleMeaning.synonyms())
+          && !googleMeaning.synonyms().isEmpty()) {
+        synonyms = googleMeaning.synonyms();
+      }
+
+      result.add(
+          new Meaning(
+              dictionaryApiMeaning.type(),
+              dictionaryApiMeaning.definitions(),
+              synonyms,
+              dictionaryApiMeaning.antonyms()));
+    }
+
+    // parts of speech that only google translation has
+    googleMeanings.stream()
+        .filter(googleMeaning -> !dictionaryApiTypes.contains(googleMeaning.type()))
+        .forEach(result::add);
+
+    return result;
+  }
+
+  private List<Meaning> createMeaningsFromDictionaryApi(List<Word> words) {
+
+    List<Meaning> result = new ArrayList<>();
+
     for (Word daWord : words) {
 
       for (ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning daMeaning :
@@ -99,11 +149,6 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
         result.add(new Meaning(partOfSpeech, ankiDefs, capSynonyms(daSynonyms), daAntonyms));
       }
-    }
-
-    // if data from dictionaryapi is empty then take from Google translation
-    if (result.isEmpty()) {
-      result.addAll(createMeaningsFromGoogleTranslation(googleTranslation));
     }
 
     return result;
@@ -207,21 +252,27 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
   }
 
   // Google translation examples are not bound to any part of speech, so they can't be mapped to
-  // any meaning. They are used only if nothing is found in dictionaryapi. The list is capped
-  // because google translate returns every example it has and the card becomes overloaded.
-  private List<String> chooseExamples(GoogleTranslation googleTranslation, List<Word> words) {
+  // any meaning. They are always merged into the card regardless of the dictionaryapi result.
+  // Examples that duplicate an example of a definition already on the card (from dictionaryapi
+  // or from google translate itself) are skipped, the list is capped because google translate
+  // returns every example it has and the card becomes overloaded.
+  private List<String> mergeExamples(GoogleTranslation googleTranslation, List<Word> words) {
 
-    var dictionaryApiMeaningsEmpty =
-        words.stream()
-            .flatMap(w -> Stream.of(w.getMeanings()))
-            .flatMap(List::stream)
-            .findFirst()
-            .isEmpty();
+    Set<String> definitionExamples =
+        Stream.concat(
+                words.stream()
+                    .flatMap(w -> w.getMeanings().stream())
+                    .flatMap(m -> m.getDefinitions().stream())
+                    .map(ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition::getExample),
+                googleTranslation.getDefinitions().stream()
+                    .map(ru.dankoy.korvotoanki.core.domain.googletranslation.Definition::example))
+            .filter(Objects::nonNull)
+            .map(String::trim)
+            .collect(Collectors.toSet());
 
-    if (dictionaryApiMeaningsEmpty) {
-      return googleTranslation.getExamples().stream().limit(MAX_EXAMPLES).toList();
-    }
-
-    return new ArrayList<>();
+    return googleTranslation.getExamples().stream()
+        .filter(example -> !definitionExamples.contains(example.trim()))
+        .limit(MAX_EXAMPLES)
+        .toList();
   }
 }

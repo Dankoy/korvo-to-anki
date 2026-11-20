@@ -55,9 +55,11 @@ JDK 21 should be installed on your computer too. See [official Oracle instructio
 Program will look up every word in GT for translation, transcription, definitions, synonyms and
 examples (with default options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms
 and examples and
-transcription. If word in dictionary api is found then only this data is used. If word in dictionary
-api is not found, then data from GT is used. If none found, then meanings are empty, because GT at
-least has a translation.    
+transcription. Data from both sources is merged: dictionaryapi meanings are the base, meanings of
+parts of speech that only GT has are added on top, GT synonyms fill in only when a dictionaryapi
+meaning has none of its own, and GT example sentences always populate the examples section.
+If word in dictionary api is not found, then data from GT is used. If none found, then meanings are
+empty, because GT at least has a translation.    
 GT can translate from any language to any language, but dictionary api works only with english
 source language.
 
