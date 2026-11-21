@@ -40,13 +40,13 @@
                             </div><#t>
                           </#if>
                           <#if definition.synonyms()?? && definition.synonyms()?has_content>
-                            <div style="margin:3px 0 0 18px; font-size:14px; color:#2e7d32"><#t>
-                              <b>synonyms</b>: <@cappedList definition.synonyms() "#2e7d32"/><#t>
+                            <div style="margin:3px 0 0 18px; font-size:14px; color:#7a9a7d"><#t>
+                              <b>synonyms</b>: <@cappedList definition.synonyms() "#7a9a7d"/><#t>
                             </div><#t>
                           </#if>
                           <#if definition.antonyms()?? && definition.antonyms()?has_content>
-                            <div style="margin:3px 0 0 18px; font-size:14px; color:#c62828"><#t>
-                              <b>antonyms</b>: <@cappedList definition.antonyms() "#c62828"/><#t>
+                            <div style="margin:3px 0 0 18px; font-size:14px; color:#b07f7f"><#t>
+                              <b>antonyms</b>: <@cappedList definition.antonyms() "#b07f7f"/><#t>
                             </div><#t>
                           </#if>
                       </div><#t>
@@ -54,12 +54,12 @@
                 </#if>
                 <#if meaning.synonyms()?has_content>
                   <div style="margin:6px 0 0 0; font-size:14px"><#t>
-                    <b>synonyms</b>: <@cappedList meaning.synonyms() "#2e7d32"/><#t>
+                    <b>synonyms</b>: <@cappedList meaning.synonyms() "#7a9a7d"/><#t>
                   </div><#t>
                 </#if>
                 <#if meaning.antonyms()?has_content>
                   <div style="margin:6px 0 0 0; font-size:14px"><#t>
-                    <b>antonyms</b>: <@cappedList meaning.antonyms() "#c62828"/><#t>
+                    <b>antonyms</b>: <@cappedList meaning.antonyms() "#b07f7f"/><#t>
                   </div><#t>
                 </#if>
             </div><#t>
