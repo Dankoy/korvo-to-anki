@@ -47,6 +47,23 @@ class GoogleTranslatorParserImplTest {
         .containsExactly("La fourchette des prix.", "Another example sentence.");
   }
 
+  @DisplayName("definitions with blank info (category headers) are skipped")
+  @Test
+  void parseDefinitionsSkipsBlankInfo() {
+
+    var json =
+        "[null,null,null,null,null,null,null,null,null,null,null,null,"
+            + "[[\"verb\",[[\"\",\"1\",null],[\"(Physical movement.)\",\"2\",null],"
+            + "[\"move in a circle\",\"3\",null]],\"revolve\"]]]";
+
+    var result = parser.parse(json);
+
+    assertThat(result.getDefinitions())
+        .containsExactly(
+            new Definition("verb", "(Physical movement.)", null, "2"),
+            new Definition("verb", "move in a circle", null, "3"));
+  }
+
   @DisplayName("parse response without new dt options results in empty optional sections")
   @Test
   void parseResponseWithoutNewOptions() {

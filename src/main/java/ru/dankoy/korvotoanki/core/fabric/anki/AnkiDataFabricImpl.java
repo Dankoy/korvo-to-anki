@@ -308,7 +308,7 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
     return line.matches(
         "^(?:January|February|March|April|May|June|July|August|September|October|November|"
-            + "December)\\s+\\d{3,4}s?([\\s,:].*)?$");
+            + "December)\\s+(?:\\d{1,2}(?:st|nd|rd|th)?\\s*,\\s*)?\\d{3,4}s?([\\s,:].*)?$");
   }
 
   private String firstFreeDictionaryExample(FreeDictionarySense sense) {
