@@ -254,9 +254,14 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
   // wiktionary examples often prepend the quotation reference (year, author, work) separated
   // from the example sentence by a newline ("1850s, Author, Work\nSentence") - the reference
-  // is useless on the card, so it's dropped and only the sentence is kept. Multi-line verses
-  // without a reference are kept whole. All whitespace is collapsed to single spaces.
-  private String cleanFreeDictionaryExample(String example) {
+  // is useless on the card, so it's dropped and only the sentence is kept. The year may be
+  // prefixed with a circa marker ("c. 1824", "circa 1824", "a. 1950", "fl. 1600"). Multi-line
+  // verses without a reference are kept whole. All whitespace is collapsed to single spaces.
+  private String cleanDictionaryExample(String example) {
+
+    if (Objects.isNull(example)) {
+      return null;
+    }
 
     var firstLineEnd = example.indexOf('\n');
 
@@ -264,7 +269,9 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
         && example
             .substring(0, firstLineEnd)
             .trim()
-            .matches("^\\d{3,4}([-–]\\d{2,4})?s?([\\s,:].*)?$")) {
+            .matches(
+                "^(c\\.\\s+|ca\\.\\s+|circa\\s+|a\\.\\s+|fl\\.\\s+)?\\d{3,4}"
+                    + "([-–]\\d{2,4})?s?([\\s,:].*)?$")) {
       return example.substring(firstLineEnd + 1).replaceAll("\\s+", " ").trim();
     }
 
@@ -274,7 +281,7 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
   private String firstFreeDictionaryExample(FreeDictionarySense sense) {
 
     if (Objects.nonNull(sense.getExamples()) && !sense.getExamples().isEmpty()) {
-      return cleanFreeDictionaryExample(sense.getExamples().get(0));
+      return cleanDictionaryExample(sense.getExamples().get(0));
     }
 
     return null;
@@ -384,7 +391,7 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
                     d ->
                         new Definition(
                             d.getInfo(),
-                            d.getExample(),
+                            cleanDictionaryExample(d.getExample()),
                             capSynonyms(d.getSynonyms()),
                             capSynonyms(d.getAntonyms())))
                 .toList();
@@ -582,7 +589,7 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
                     ? Stream.empty()
                     : sense.getExamples().stream().skip(1))
         .filter(Objects::nonNull)
-        .map(this::cleanFreeDictionaryExample)
+        .map(this::cleanDictionaryExample)
         .distinct()
         .toList();
   }

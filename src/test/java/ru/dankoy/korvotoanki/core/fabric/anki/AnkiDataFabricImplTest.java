@@ -786,7 +786,26 @@ class AnkiDataFabricImplTest {
     var vocabulary = getOneVocab();
     var googleTranslation = new GoogleTranslation("gt_transcription");
 
-    List<Word> words = List.of(new Word("word", null, null, new ArrayList<>()));
+    // dictionaryapi examples with a quotation reference are cleaned the same way
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                null,
+                null,
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_definition",
+                                List.of(),
+                                List.of(),
+                                "c. 1824 (written, published in 1891) Robert Hall, Fragment on"
+                                    + " Popery\nWhen two parties, each formidable for their"
+                                    + " numbers, are animated by an equal degree of zeal")),
+                        List.of(),
+                        List.of()))));
 
     var freeDictionaryWord =
         new FreeDictionaryWord(
@@ -818,10 +837,21 @@ class AnkiDataFabricImplTest {
             .findFirst()
             .orElseThrow();
 
-    // quotation reference line is dropped, only the sentence is kept
-    assertThat(noun.definitions().getFirst().example())
-        .isEqualTo(
-            "to do some substantial good, is the compensation for much incidental imperfection");
+    // quotation reference lines are dropped for both dictionaries, only the sentences are kept
+    assertThat(noun.definitions())
+        .containsExactly(
+            new Definition(
+                "da_definition",
+                "When two parties, each formidable for their numbers, are animated by an equal"
+                    + " degree of zeal",
+                List.of(),
+                List.of()),
+            new Definition(
+                "fd_definition",
+                "to do some substantial good, is the compensation for much incidental"
+                    + " imperfection",
+                null,
+                null));
     // multi-line verse without a reference is kept whole, whitespace collapsed
     assertThat(ankiData.getExamples())
         .containsExactly(
