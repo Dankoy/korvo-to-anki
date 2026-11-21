@@ -36,6 +36,7 @@ import ru.dankoy.korvotoanki.KorvoToAnkiApplication;
 import ru.dankoy.korvotoanki.config.appprops.DictionaryApiProperties;
 import ru.dankoy.korvotoanki.config.appprops.GoogleTranslatorProperties;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
+import ru.dankoy.korvotoanki.core.service.freedic.FreeDictionaryService;
 import tools.jackson.databind.ObjectMapper;
 
 @DisplayName("Test DictionaryServiceWebClient with full context and resilience ")
@@ -93,6 +94,8 @@ public class DictionaryServiceWebClientTestResilience {
   @MockitoBean private DictionaryApiProperties dictionaryApiProperties;
 
   @MockitoBean private GoogleTranslatorProperties googleTranslatorProperties;
+
+  @MockitoBean private FreeDictionaryService freeDictionaryService;
 
   @Autowired private DictionaryServiceWebClient dictionaryService;
 

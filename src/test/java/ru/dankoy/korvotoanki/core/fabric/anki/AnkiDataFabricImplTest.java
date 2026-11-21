@@ -2,6 +2,7 @@ package ru.dankoy.korvotoanki.core.fabric.anki;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,10 @@ import ru.dankoy.korvotoanki.core.domain.anki.Definition;
 import ru.dankoy.korvotoanki.core.domain.anki.Meaning;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
+import ru.dankoy.korvotoanki.core.domain.freedic.FreeDictionaryEntry;
+import ru.dankoy.korvotoanki.core.domain.freedic.FreeDictionarySense;
+import ru.dankoy.korvotoanki.core.domain.freedic.FreeDictionaryWord;
+import ru.dankoy.korvotoanki.core.domain.freedic.Pronunciation;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.Synonym;
 
@@ -46,7 +51,8 @@ class AnkiDataFabricImplTest {
                         List.of("da_synonym"),
                         List.of("da_antonym")))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getWord()).isEqualTo(vocabulary.word());
     assertThat(ankiData.getBook()).isEqualTo(vocabulary.title().name());
@@ -131,7 +137,8 @@ class AnkiDataFabricImplTest {
                         List.of(),
                         List.of()))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     // no duplicated meanings for noun and exclamation of google translate
     assertThat(ankiData.getMeanings())
@@ -203,7 +210,8 @@ class AnkiDataFabricImplTest {
                         List.of("da_synonym"),
                         List.of()))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     var noun =
         ankiData.getMeanings().stream()
@@ -246,7 +254,8 @@ class AnkiDataFabricImplTest {
                         List.of(),
                         List.of()))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     var noun =
         ankiData.getMeanings().stream()
@@ -288,7 +297,8 @@ class AnkiDataFabricImplTest {
                         List.of(),
                         List.of()))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getExamples())
         .containsExactly("La fourchette des prix.", "Another example sentence.");
@@ -325,7 +335,8 @@ class AnkiDataFabricImplTest {
                         List.of(),
                         List.of()))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getExamples()).containsExactly("unique example");
   }
@@ -339,7 +350,12 @@ class AnkiDataFabricImplTest {
     var vocabulary = getOneVocab();
     var googleTranslation = getFullGoogleTranslation();
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, List.of(Word.emptyWord()));
+    var ankiData =
+        fabric.createAnkiData(
+            vocabulary,
+            googleTranslation,
+            List.of(Word.emptyWord()),
+            FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getTranscription()).isEqualTo("gt_transcription");
     assertThat(ankiData.getMeanings())
@@ -378,7 +394,12 @@ class AnkiDataFabricImplTest {
     var googleTranslation = new GoogleTranslation("gt_transcription");
     googleTranslation.getTranslations().add("мелочь");
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, List.of(Word.emptyWord()));
+    var ankiData =
+        fabric.createAnkiData(
+            vocabulary,
+            googleTranslation,
+            List.of(Word.emptyWord()),
+            FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getTranscription()).isEqualTo("gt_transcription");
     assertThat(ankiData.getTranslations()).containsExactly("мелочь");
@@ -401,26 +422,32 @@ class AnkiDataFabricImplTest {
                 List.of(new Phonetics("phonetics_text", "audio", "source")),
                 List.of()));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words);
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getTranscription()).isEqualTo("phonetics_text");
   }
 
-  @DisplayName("google translate examples are capped at ten")
+  @DisplayName("google translate examples are capped at twenty")
   @Test
   void createAnkiDataCapsGoogleTranslateExamples() {
 
     var vocabulary = getOneVocab();
     var googleTranslation = new GoogleTranslation("gt_transcription");
-    for (int i = 1; i <= 15; i++) {
+    for (int i = 1; i <= 25; i++) {
       googleTranslation.getExamples().add("example " + i);
     }
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, List.of(Word.emptyWord()));
+    var ankiData =
+        fabric.createAnkiData(
+            vocabulary,
+            googleTranslation,
+            List.of(Word.emptyWord()),
+            FreeDictionaryWord.emptyWord());
 
-    assertThat(ankiData.getExamples()).hasSize(10);
+    assertThat(ankiData.getExamples()).hasSize(20);
     assertThat(ankiData.getExamples().getFirst()).isEqualTo("example 1");
-    assertThat(ankiData.getExamples().getLast()).isEqualTo("example 10");
+    assertThat(ankiData.getExamples().getLast()).isEqualTo("example 20");
   }
 
   @DisplayName(
@@ -439,7 +466,12 @@ class AnkiDataFabricImplTest {
                 new Synonym("noun", null, List.of("здравствуй")),
                 new Synonym("verb", null, List.of("звать"))));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, List.of(Word.emptyWord()));
+    var ankiData =
+        fabric.createAnkiData(
+            vocabulary,
+            googleTranslation,
+            List.of(Word.emptyWord()),
+            FreeDictionaryWord.emptyWord());
 
     assertThat(ankiData.getMeanings())
         .containsExactlyInAnyOrder(
@@ -448,7 +480,7 @@ class AnkiDataFabricImplTest {
             new Meaning("verb", List.of(), List.of("звать"), List.of()));
   }
 
-  @DisplayName("synonyms are capped at fifteen on both levels")
+  @DisplayName("synonyms are capped at twenty on both levels")
   @Test
   void createAnkiDataCapsSynonyms() {
 
@@ -466,17 +498,22 @@ class AnkiDataFabricImplTest {
                 new Synonym(
                     "noun",
                     "noun.1",
-                    java.util.stream.IntStream.rangeClosed(1, 20)
+                    java.util.stream.IntStream.rangeClosed(1, 25)
                         .mapToObj(i -> "bound_synonym_" + i)
                         .toList()),
                 new Synonym(
                     "noun",
                     null,
-                    java.util.stream.IntStream.rangeClosed(1, 20)
+                    java.util.stream.IntStream.rangeClosed(1, 25)
                         .mapToObj(i -> "unbound_synonym_" + i)
                         .toList())));
 
-    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, List.of(Word.emptyWord()));
+    var ankiData =
+        fabric.createAnkiData(
+            vocabulary,
+            googleTranslation,
+            List.of(Word.emptyWord()),
+            FreeDictionaryWord.emptyWord());
 
     var noun =
         ankiData.getMeanings().stream()
@@ -484,10 +521,246 @@ class AnkiDataFabricImplTest {
             .findFirst()
             .orElseThrow();
 
-    assertThat(noun.definitions().getFirst().synonyms()).hasSize(15);
-    assertThat(noun.synonyms()).hasSize(15);
+    assertThat(noun.definitions().getFirst().synonyms()).hasSize(20);
+    assertThat(noun.synonyms()).hasSize(20);
     assertThat(noun.definitions().getFirst().synonyms().getFirst()).isEqualTo("bound_synonym_1");
     assertThat(noun.synonyms().getFirst()).isEqualTo("unbound_synonym_1");
+  }
+
+  @DisplayName(
+      "freedictionaryapi transcription has priority over dictionaryapi and google translate")
+  @Test
+  void createAnkiDataFreeDictionaryTranscriptionPriority() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+
+    List<Word> words = List.of(new Word("word", "da_transcription", null, new ArrayList<>()));
+
+    var freeDictionaryWord = getFreeDictionaryWord();
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words, freeDictionaryWord);
+
+    assertThat(ankiData.getTranscription()).isEqualTo("/fd_transcription/");
+  }
+
+  @DisplayName(
+      "freedictionaryapi senses are merged into meanings of the same part of speech and its"
+          + " parts of speech are added on top")
+  @Test
+  void createAnkiDataMergesFreeDictionaryMeanings() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                null,
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_info", null, null, "da_example")),
+                        List.of("da_synonym"),
+                        List.of("da_antonym")))));
+
+    var freeDictionaryWord = getFreeDictionaryWord();
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words, freeDictionaryWord);
+
+    var noun =
+        ankiData.getMeanings().stream()
+            .filter(m -> m.type().equals("noun"))
+            .findFirst()
+            .orElseThrow();
+
+    // dictionaryapi definition stays first, freedictionaryapi senses with flattened subsenses
+    // are appended after google translate definitions
+    assertThat(noun.definitions())
+        .containsExactly(
+            new Definition("da_info", "da_example", null, null),
+            new Definition(
+                "a greeting or reception",
+                "the proposal got a warm welcome",
+                List.of("приветствие", "салют"),
+                List.of()),
+            new Definition("fd_definition", "fd_example1", List.of("fd_sense_synonym"), null),
+            new Definition("fd_subsense", null, null, null));
+
+    // entry level synonyms are unioned into meaning level synonyms, dictionaryapi first
+    assertThat(noun.synonyms()).containsExactly("da_synonym", "fd_entry_synonym");
+    assertThat(noun.antonyms()).containsExactly("da_antonym", "fd_entry_antonym");
+
+    // part of speech that only freedictionaryapi has is added on top
+    assertThat(ankiData.getMeanings().stream().map(Meaning::type))
+        .containsExactlyInAnyOrder("noun", "exclamation", "verb");
+  }
+
+  @DisplayName(
+      "duplicate freedictionaryapi definitions are merged: synonyms are unioned and its example"
+          + " is used when the existing definition has none")
+  @Test
+  void createAnkiDataMergesDuplicateFreeDictionaryDefinitions() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                null,
+                null,
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "verb",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "fd_definition", List.of("da_synonym"), null, null)),
+                        null,
+                        null))));
+
+    var freeDictionaryWord = getFreeDictionaryWord();
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words, freeDictionaryWord);
+
+    var verb =
+        ankiData.getMeanings().stream()
+            .filter(m -> m.type().equals("verb"))
+            .findFirst()
+            .orElseThrow();
+
+    assertThat(verb.definitions())
+        .containsExactly(
+            new Definition(
+                "fd_definition", "fd_example1", List.of("da_synonym", "fd_sense_synonym"), null));
+  }
+
+  @DisplayName(
+      "freedictionaryapi sense examples that are not definition examples go to the card examples"
+          + " section")
+  @Test
+  void createAnkiDataMergesFreeDictionaryExamples() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+
+    List<Word> words = List.of(new Word("word", null, null, new ArrayList<>()));
+
+    var freeDictionaryWord = getFreeDictionaryWord();
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words, freeDictionaryWord);
+
+    // fd_example2 is the second example of a sense, fd_example1 became a definition example
+    assertThat(ankiData.getExamples())
+        .containsExactly("La fourchette des prix.", "Another example sentence.", "fd_example2");
+  }
+
+  @DisplayName("anki data is created from freedictionaryapi data only")
+  @Test
+  void createAnkiDataWithFreeDictionaryDataOnly() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = getFullGoogleTranslation();
+
+    var freeDictionaryWord = getFreeDictionaryWord();
+
+    var ankiData =
+        fabric.createAnkiData(
+            vocabulary, googleTranslation, List.of(Word.emptyWord()), freeDictionaryWord);
+
+    assertThat(ankiData.getTranscription()).isEqualTo("/fd_transcription/");
+    // google translate meanings stay, freedictionaryapi parts of speech are merged into them or
+    // added on top
+    assertThat(ankiData.getMeanings().stream().map(Meaning::type))
+        .containsExactlyInAnyOrder("noun", "exclamation", "verb");
+  }
+
+  @DisplayName(
+      "wiktionary examples with quotation references are stripped to the sentence only and"
+          + " whitespace is collapsed")
+  @Test
+  void createAnkiDataCleansFreeDictionaryExamples() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+
+    List<Word> words = List.of(new Word("word", null, null, new ArrayList<>()));
+
+    var freeDictionaryWord =
+        new FreeDictionaryWord(
+            "word",
+            List.of(
+                new FreeDictionaryEntry(
+                    "noun",
+                    List.of(new Pronunciation("ipa", "/fd_transcription/", List.of())),
+                    List.of(
+                        new FreeDictionarySense(
+                            "fd_definition",
+                            List.of(
+                                "1850s, Cardinal John Henry Newman, The Rise and Progress of"
+                                    + " Universities\nto do some substantial good, is the"
+                                    + " compensation for much incidental imperfection",
+                                "For making tea I have a kettle,\nBesides a pan made of run metal",
+                                "second example\nwith newline"),
+                            null,
+                            null,
+                            null)),
+                    null,
+                    null)));
+
+    var ankiData = fabric.createAnkiData(vocabulary, googleTranslation, words, freeDictionaryWord);
+
+    var noun =
+        ankiData.getMeanings().stream()
+            .filter(m -> m.type().equals("noun"))
+            .findFirst()
+            .orElseThrow();
+
+    // quotation reference line is dropped, only the sentence is kept
+    assertThat(noun.definitions().getFirst().example())
+        .isEqualTo(
+            "to do some substantial good, is the compensation for much incidental imperfection");
+    // multi-line verse without a reference is kept whole, whitespace collapsed
+    assertThat(ankiData.getExamples())
+        .containsExactly(
+            "For making tea I have a kettle, Besides a pan made of run metal",
+            "second example with newline");
+  }
+
+  private FreeDictionaryWord getFreeDictionaryWord() {
+
+    return new FreeDictionaryWord(
+        "word",
+        List.of(
+            new FreeDictionaryEntry(
+                "noun",
+                List.of(new Pronunciation("ipa", "/fd_transcription/", List.of("UK"))),
+                List.of(
+                    new FreeDictionarySense(
+                        "fd_definition",
+                        List.of("fd_example1", "fd_example2"),
+                        List.of("fd_sense_synonym"),
+                        null,
+                        List.of(new FreeDictionarySense("fd_subsense", null, null, null, null)))),
+                List.of("fd_entry_synonym"),
+                List.of("fd_entry_antonym")),
+            new FreeDictionaryEntry(
+                "verb",
+                List.of(new Pronunciation("ipa", "/fd_transcription/", List.of("UK"))),
+                List.of(
+                    new FreeDictionarySense(
+                        "fd_definition",
+                        List.of("fd_example1", "fd_example2"),
+                        List.of("fd_sense_synonym"),
+                        null,
+                        null)),
+                null,
+                null)));
   }
 
   private GoogleTranslation getFullGoogleTranslation() {

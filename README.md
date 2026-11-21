@@ -45,6 +45,7 @@ Added integration with external services for word translation and definition loo
 
 1. Google Translate. [See also](https://koreader.rocks/doc/modules/ui.translator.html)
 2. [dictionaryapi.dev](https://dictionaryapi.dev/)
+3. [freedictionaryapi.com](https://freedictionaryapi.com/) (Wiktionary data)
 
 ### Usage
 
@@ -58,7 +59,11 @@ and examples and
 transcription. Data from both sources is merged: dictionaryapi meanings are the base, GT
 definitions of the same part of speech are added to them with their examples and synonyms,
 GT meaning level synonyms are unioned with the dictionaryapi ones, and GT example sentences
-always populate the examples section.
+always populate the examples section. Freedictionaryapi (if enabled) is merged on top of both:
+its transcription has the highest priority, its Wiktionary senses are appended to the definitions
+of the same part of speech (subsenses are flattened), its synonyms and antonyms are unioned on
+both levels, the first sense example becomes the definition example and the remaining sense
+examples go to the examples section.
 If word in dictionary api is not found, then data from GT is used. If none found, then meanings are
 empty, because GT at least has a translation.    
 GT can translate from any language to any language, but dictionary api works only with english
@@ -83,7 +88,7 @@ AnkiData
 │       │       └── antonyms
 │       ├── synonyms
 │       └── antonyms
-└── examples - usage example sentences not bound to any part of speech (from GT only)
+└── examples - usage example sentences not bound to any part of speech (from GT and freedictionaryapi)
 ```
 
 Definition level synonyms and antonyms are rendered inside the definition block, indented under
@@ -104,6 +109,20 @@ bound synonyms, a GT definition that is an exact duplicate of a dictionaryapi de
 info) is merged instead - its synonyms are unioned and its example is used when the dictionaryapi
 definition has none. Meaning level synonyms are the union of both sources, capped so the card
 doesn't become overloaded. Parts of speech that only GT has are added as extra meanings.
+Freedictionaryapi is merged last: its IPA transcription has the highest priority (before
+dictionaryapi and GT), its senses (with flattened subsenses) are appended to the definitions of
+the same part of speech, a sense that duplicates an existing definition (same info) is merged
+instead - synonyms and antonyms are unioned and the first sense example is used when the existing
+definition has none (quotation references like "1850s, Author, Work" are stripped from wiktionary
+examples, only the sentence is kept). Entry level synonyms and antonyms are unioned into the
+meaning level lists, the remaining sense examples are appended to the `examples` section. Parts
+of speech that only freedictionaryapi has are added as extra meanings. Unlike dictionaryapi.dev,
+freedictionaryapi is queried for any source language, not only english - the api accepts any
+iso 639-1/639-3 language code, and the source language of the export is passed to it; the lookup
+is skipped only when the source language is `auto`. Note that freedictionaryapi
+is rate limited to 1,000 requests per hour per IP, so the app throttles its calls to 15 per
+minute (900 per hour) - much slower than dictionaryapi; both dictionary lookups run in parallel
+with the google translate call, so this doesn't add to the export time.
 
 The export produces a one-sided card. The front side is the word only, the back side is
 translations, the book example sentence and the rendered `meanings` HTML described above
@@ -116,6 +135,7 @@ card's front will contain the back side columns of the export.
 
 ```shell
 korvo-to-anki.api.dictionaryApiEnabled: true/false - turn on or off dictionaryapi service integration. Default - true
+korvo-to-anki.api.freeDictionaryApiEnabled: true/false - turn on or off freedictionaryapi service integration. Default - true
 korvo-to-anki.async-type: "vtcf/completable_future" - use virtual threads or completable future as async core. Default vtcf
 ```
 

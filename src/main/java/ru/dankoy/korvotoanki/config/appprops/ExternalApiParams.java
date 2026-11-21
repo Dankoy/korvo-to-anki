@@ -10,4 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ExternalApiParams implements ExternalApiProperties {
 
   private final boolean dictionaryApiEnabled;
+
+  private final boolean freeDictionaryApiEnabled;
 }
