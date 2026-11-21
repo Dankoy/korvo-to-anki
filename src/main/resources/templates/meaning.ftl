@@ -35,32 +35,32 @@
                       <div style="margin:0 0 12px 10px"><#t>
                         <div>* ${definition.info()}</div><#t>
                           <#if definition.example()?? && definition.example()?has_content>
-                            <div style="margin:3px 0 0 18px; font-size:13px; color:#555"><#t>
+                            <div style="margin:3px 0 0 18px; font-size:14px; color:#999"><#t>
                               <b>example</b>: <span><i>${definition.example()}</i></span><#t>
                             </div><#t>
                           </#if>
                           <#if definition.synonyms()?? && definition.synonyms()?has_content>
-                            <div style="margin:3px 0 0 18px; font-size:13px; color:#666"><#t>
-                              <b>synonyms</b>: <@cappedList definition.synonyms() "#666"/><#t>
+                            <div style="margin:3px 0 0 18px; font-size:14px; color:#aaa"><#t>
+                              <b>synonyms</b>: <@cappedList definition.synonyms() "#aaa"/><#t>
                             </div><#t>
                           </#if>
                           <#if definition.antonyms()?? && definition.antonyms()?has_content>
-                            <div style="margin:3px 0 0 18px; font-size:13px; color:#8b0000"><#t>
-                              <b>antonyms</b>: <@cappedList definition.antonyms() "#8b0000"/><#t>
+                            <div style="margin:3px 0 0 18px; font-size:14px; color:#d32f2f"><#t>
+                              <b>antonyms</b>: <@cappedList definition.antonyms() "#d32f2f"/><#t>
                             </div><#t>
                           </#if>
                       </div><#t>
                     </#list>
                 </#if>
                 <#if meaning.synonyms()?has_content>
-                  <p style="margin:6px 0 0 0; font-size:13px"><#t>
+                  <div style="margin:6px 0 0 0; font-size:14px"><#t>
                     <b>synonyms</b>: <@cappedList meaning.synonyms() "#2e7d32"/><#t>
-                  </p><#t>
+                  </div><#t>
                 </#if>
                 <#if meaning.antonyms()?has_content>
-                  <p style="margin:6px 0 0 0; font-size:13px"><#t>
+                  <div style="margin:6px 0 0 0; font-size:14px"><#t>
                     <b>antonyms</b>: <@cappedList meaning.antonyms() "#c62828"/><#t>
-                  </p><#t>
+                  </div><#t>
                 </#if>
             </div><#t>
           </li><#t>
@@ -72,7 +72,7 @@
     <summary style="font-size:14px; font-weight:bold; cursor:pointer">examples:</summary><#t>
     <ul style="margin:4px 0 0 0; padding-left:18px"><#t>
       <#list ankiData.examples as example>
-        <li style="margin:2px 0; font-size:13px; color:#555"><i>${example}</i></li><#t>
+        <li style="margin:2px 0; font-size:14px; color:#999"><i>${example}</i></li><#t>
       </#list>
     </ul><#t>
   </details><#t>
