@@ -252,6 +252,13 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     }
   }
 
+  // category header, not a definition: the whole text is a single parenthesized group ending
+  // with a period, e.g. "(Physical movement.)". Real definitions may start with a parenthesized
+  // qualifier, but always have text after the closing parenthesis.
+  private boolean isCategoryLabel(String info) {
+    return Objects.nonNull(info) && info.matches("^\\([^()]*\\)\\.?$");
+  }
+
   // wiktionary examples come in several citation shapes:
   //   "1850s, Author, Work\nSentence" - year, optional circa marker ("c. 1824", "a. 1950"),
   //     month name ("August 1773") or bracketed year ("[1906] 2004") on the first line
@@ -420,6 +427,9 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
         var ankiDefs =
             daMeaning.getDefinitions().stream()
+                // dictionaryapi.dev sometimes lists google translate category headers, e.g.
+                // "(Physical movement.)", as definitions - they carry no meaning of their own
+                .filter(d -> !isCategoryLabel(d.getInfo()))
                 .map(
                     d ->
                         new Definition(

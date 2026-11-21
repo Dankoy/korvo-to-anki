@@ -504,6 +504,63 @@ class AnkiDataFabricImplTest {
     assertThat(ankiData.getExamples()).isEmpty();
   }
 
+  @DisplayName("create anki data filters out dictionaryapi category labels listed as definitions")
+  @Test
+  void createAnkiDataFiltersDictionaryApiCategoryLabels() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                null,
+                List.of(),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "verb",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(Physical movement.)", List.of(), List.of(), null),
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(Mental activity.)", List.of(), List.of(), null),
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "move in a circle on a central axis.",
+                                List.of(),
+                                List.of(),
+                                "overhead, the fan revolved slowly"),
+                            // a real definition with a parenthesized qualifier must be kept
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(rare, intransitive) To show variance or contradiction.",
+                                List.of(),
+                                List.of(),
+                                null)),
+                        List.of(),
+                        List.of()))));
+
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
+
+    assertThat(ankiData.getMeanings())
+        .containsExactly(
+            new Meaning(
+                "verb",
+                List.of(
+                    new Definition(
+                        "move in a circle on a central axis.",
+                        "overhead, the fan revolved slowly",
+                        List.of(),
+                        List.of()),
+                    new Definition(
+                        "(rare, intransitive) To show variance or contradiction.",
+                        null,
+                        List.of(),
+                        List.of())),
+                List.of(),
+                List.of()));
+  }
+
   @DisplayName("transcription is taken from dictionaryapi phonetics when phonetic is null")
   @Test
   void createAnkiDataTranscriptionFromDictionaryApiPhonetics() {
