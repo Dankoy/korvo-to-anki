@@ -116,7 +116,10 @@ instead - synonyms and antonyms are unioned and the first sense example is used 
 definition has none (quotation references like "1850s, Author, Work" are stripped from wiktionary
 examples, only the sentence is kept). Entry level synonyms and antonyms are unioned into the
 meaning level lists, the remaining sense examples are appended to the `examples` section. Parts
-of speech that only freedictionaryapi has are added as extra meanings. Note that freedictionaryapi
+of speech that only freedictionaryapi has are added as extra meanings. Unlike dictionaryapi.dev,
+freedictionaryapi is queried for any source language, not only english - the api accepts any
+iso 639-1/639-3 language code, and the source language of the export is passed to it; the lookup
+is skipped only when the source language is `auto`. Note that freedictionaryapi
 is rate limited to 1,000 requests per hour per IP, so the app throttles its calls to 15 per
 minute (900 per hour) - much slower than dictionaryapi; both dictionary lookups run in parallel
 with the google translate call, so this doesn't add to the export time.

@@ -29,6 +29,7 @@ import ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabric;
 import ru.dankoy.korvotoanki.core.fabric.anki.AnkiDataFabricImpl;
 import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryService;
 import ru.dankoy.korvotoanki.core.service.dictionaryapi.DictionaryServiceOkHttp;
+import ru.dankoy.korvotoanki.core.service.freedic.FreeDictionaryService;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslator;
 import ru.dankoy.korvotoanki.core.service.googletrans.GoogleTranslatorOkHttp;
 
@@ -51,6 +52,8 @@ class AnkiConverterServiceImplTest {
   @MockitoBean private AnkiDataFabric ankiDataFabric;
 
   @MockitoBean private ExternalApiProperties externalApiProperties;
+
+  @MockitoBean private FreeDictionaryService freeDictionaryService;
 
   @Autowired private AnkiConverterService ankiConverterService;
 
@@ -187,6 +190,67 @@ class AnkiConverterServiceImplTest {
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(1)).define(vocabulary.word());
     Mockito.verify(externalApiProperties, times(1)).isDictionaryApiEnabled();
+  }
+
+  @DisplayName("convert with non english source calls freedictionaryapi with the source language")
+  @Test
+  void convertNonEnglishSourceCallsFreeDictionaryApi() {
+
+    var sourceLanguage = "de";
+    var targetLanguage = "whatever";
+    List<String> options = Stream.of("t", "md", "at", "rm").toList();
+
+    List<Word> daResult = getWords(true);
+    var vocabulary = getOneVocab();
+    var gtResult = getOneGt();
+    var ankiData = getOneFromGoogleTranslate(vocabulary, gtResult);
+    var fdResult = new FreeDictionaryWord("word", List.of());
+
+    given(externalApiProperties.isFreeDictionaryApiEnabled()).willReturn(true);
+    given(freeDictionaryService.define(vocabulary.word(), sourceLanguage)).willReturn(fdResult);
+    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
+        .willReturn(gtResult);
+    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult, fdResult))
+        .willReturn(ankiData);
+
+    var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
+
+    assertThat(actual).isEqualTo(ankiData);
+
+    Mockito.verify(freeDictionaryService, times(1)).define(vocabulary.word(), sourceLanguage);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, fdResult);
+  }
+
+  @DisplayName("convert with auto source skips freedictionaryapi")
+  @Test
+  void convertAutoSourceSkipsFreeDictionaryApi() {
+
+    var sourceLanguage = "auto";
+    var targetLanguage = "whatever";
+    List<String> options = Stream.of("t", "md", "at", "rm").toList();
+
+    List<Word> daResult = getWords(true);
+    var vocabulary = getOneVocab();
+    var gtResult = getOneGt();
+    var ankiData = getOneFromGoogleTranslate(vocabulary, gtResult);
+
+    given(externalApiProperties.isFreeDictionaryApiEnabled()).willReturn(true);
+    given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
+        .willReturn(gtResult);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
+
+    var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
+
+    assertThat(actual).isEqualTo(ankiData);
+
+    Mockito.verify(freeDictionaryService, times(0))
+        .define(Mockito.anyString(), Mockito.anyString());
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
   }
 
   private AnkiData getOneFromGoogleTranslate(Vocabulary vocabulary, GoogleTranslation gtResult) {

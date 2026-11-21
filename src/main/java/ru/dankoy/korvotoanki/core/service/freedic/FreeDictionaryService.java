@@ -4,5 +4,5 @@ import ru.dankoy.korvotoanki.core.domain.freedic.FreeDictionaryWord;
 
 public interface FreeDictionaryService {
 
-  FreeDictionaryWord define(String word);
+  FreeDictionaryWord define(String word, String language);
 }

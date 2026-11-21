@@ -45,6 +45,7 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
     var isDictionaryApiEnabled = externalApiProperties.isDictionaryApiEnabled();
     var isFreeDictionaryApiEnabled = externalApiProperties.isFreeDictionaryApiEnabled();
     var isEnglish = sourceLanguage.equals(Languages.EN.name().toLowerCase());
+    var isAuto = sourceLanguage.equals(Languages.AUTO.name().toLowerCase());
 
     // ignore auto source language because won't know the defined language. Look up for Tika
     // Language Detection
@@ -62,10 +63,12 @@ public class AnkiConverterServiceImpl implements AnkiConverterService {
 
     var freeDictionaryService = freeDictionaryServiceProvider.getIfAvailable();
 
-    if (isFreeDictionaryApiEnabled && isEnglish && Objects.nonNull(freeDictionaryService)) {
+    // freedictionaryapi works with any language, not only english, so it is skipped only when the
+    // source language is unknown (auto)
+    if (isFreeDictionaryApiEnabled && !isAuto && Objects.nonNull(freeDictionaryService)) {
 
       try {
-        fdResult = freeDictionaryService.define(vocabulary.word());
+        fdResult = freeDictionaryService.define(vocabulary.word(), sourceLanguage);
       } catch (FreeDictionaryApiException | DictionaryApiException e) {
         log.warn(
             String.format(

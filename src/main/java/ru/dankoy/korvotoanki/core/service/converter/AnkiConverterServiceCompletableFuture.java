@@ -53,6 +53,7 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
     var isDictionaryApiEnabled = externalApiProperties.isDictionaryApiEnabled();
     var isFreeDictionaryApiEnabled = externalApiProperties.isFreeDictionaryApiEnabled();
     var isEnglish = sourceLanguage.equals(Languages.EN.name().toLowerCase());
+    var isAuto = sourceLanguage.equals(Languages.AUTO.name().toLowerCase());
     var freeDictionaryService = freeDictionaryServiceProvider.getIfAvailable();
 
     log.debug(String.format("Working with word: '%s'", vocabulary.word()));
@@ -110,10 +111,12 @@ public class AnkiConverterServiceCompletableFuture implements AnkiConverterServi
     var cf3 =
         CompletableFuture.supplyAsync(
                 () -> {
+                  // freedictionaryapi works with any language, not only english, so it is
+                  // skipped only when the source language is unknown (auto)
                   if (isFreeDictionaryApiEnabled
-                      && isEnglish
+                      && !isAuto
                       && Objects.nonNull(freeDictionaryService))
-                    return freeDictionaryService.define(vocabulary.word());
+                    return freeDictionaryService.define(vocabulary.word(), sourceLanguage);
                   else return FreeDictionaryWord.emptyWord();
                 },
                 ankiConverterTaskExecutor)

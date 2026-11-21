@@ -78,13 +78,13 @@ class FreeDictionaryServiceWebClientTest {
         new MockResponse().setBody(getBody()).addHeader("Content-Type", "application/json"));
 
     var expected = getFreeDictionaryWord();
-    FreeDictionaryWord actual = freeDictionaryService.define(word);
+    FreeDictionaryWord actual = freeDictionaryService.define(word, "en");
 
     assertThat(actual).isEqualTo(expected);
 
     var req = server.takeRequest();
     assertThat(req.getMethod()).isEqualTo("GET");
-    assertThat(req.getPath().substring(1)).isEqualTo(word);
+    assertThat(req.getPath().substring(1)).isEqualTo("en/" + word);
 
     Mockito.verify(freeDictionaryApiProperties, times(1)).getFreeDictionaryApiUrl();
   }
@@ -101,13 +101,13 @@ class FreeDictionaryServiceWebClientTest {
             .setBody("{\"word\":\"exception_word\",\"entries\":[]}")
             .addHeader("Content-Type", "application/json"));
 
-    FreeDictionaryWord actual = freeDictionaryService.define(word);
+    FreeDictionaryWord actual = freeDictionaryService.define(word, "en");
 
     assertThat(actual.getEntries()).isEmpty();
 
     var req = server.takeRequest();
     assertThat(req.getMethod()).isEqualTo("GET");
-    assertThat(req.getPath().substring(1)).isEqualTo(word);
+    assertThat(req.getPath().substring(1)).isEqualTo("en/" + word);
 
     Mockito.verify(freeDictionaryApiProperties, times(1)).getFreeDictionaryApiUrl();
   }
@@ -125,12 +125,12 @@ class FreeDictionaryServiceWebClientTest {
             .setResponseCode(500)
             .addHeader("Content-Type", "application/json"));
 
-    assertThatThrownBy(() -> freeDictionaryService.define(word))
+    assertThatThrownBy(() -> freeDictionaryService.define(word, "en"))
         .isInstanceOf(FreeDictionaryApiException.class);
 
     var req = server.takeRequest();
     assertThat(req.getMethod()).isEqualTo("GET");
-    assertThat(req.getPath().substring(1)).isEqualTo(word);
+    assertThat(req.getPath().substring(1)).isEqualTo("en/" + word);
 
     Mockito.verify(freeDictionaryApiProperties, times(1)).getFreeDictionaryApiUrl();
   }
@@ -144,13 +144,13 @@ class FreeDictionaryServiceWebClientTest {
 
     server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE));
 
-    assertThatThrownBy(() -> freeDictionaryService.define(word))
+    assertThatThrownBy(() -> freeDictionaryService.define(word, "de"))
         .isInstanceOf(WebClientRequestException.class)
         .hasCauseInstanceOf(ReadTimeoutException.class);
 
     var req = server.takeRequest();
     assertThat(req.getMethod()).isEqualTo("GET");
-    assertThat(req.getPath().substring(1)).isEqualTo(word);
+    assertThat(req.getPath().substring(1)).isEqualTo("de/" + word);
 
     Mockito.verify(freeDictionaryApiProperties, times(1)).getFreeDictionaryApiUrl();
   }

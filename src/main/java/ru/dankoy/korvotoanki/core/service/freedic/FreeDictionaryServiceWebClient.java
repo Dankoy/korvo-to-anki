@@ -28,15 +28,20 @@ public class FreeDictionaryServiceWebClient implements FreeDictionaryService {
 
   private final FreeDictionaryApiProperties freeDictionaryApiProperties;
 
+  // the api supports any iso 639-1/639-3 language code in the path, not only english
   @Retry(name = "free-dictionary-api")
   @RateLimiter(name = "free-dictionary-api")
-  @Cacheable(cacheManager = "cacheManager", value = "freeDictionaryApi", key = "#word")
+  @Cacheable(
+      cacheManager = "cacheManager",
+      value = "freeDictionaryApi",
+      key = "#word + ':' + #language")
   @Override
-  public FreeDictionaryWord define(String word) {
+  public FreeDictionaryWord define(String word, String language) {
 
     var url =
         Objects.requireNonNull(
-                HttpUrl.parse(freeDictionaryApiProperties.getFreeDictionaryApiUrl() + word))
+                HttpUrl.parse(
+                    freeDictionaryApiProperties.getFreeDictionaryApiUrl() + language + "/" + word))
             .newBuilder()
             .build()
             .toString();
