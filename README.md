@@ -55,11 +55,62 @@ JDK 21 should be installed on your computer too. See [official Oracle instructio
 Program will look up every word in GT for translation, transcription, definitions, synonyms and
 examples (with default options), and dictionaryapi (if enabled) for definitions, synonyms, antonyms
 and examples and
-transcription. If word in dictionary api is found then only this data is used. If word in dictionary
-api is not found, then data from GT is used. If none found, then meanings are empty, because GT at
-least has a translation.    
+transcription. Data from both sources is merged: dictionaryapi meanings are the base, GT
+definitions of the same part of speech are added to them with their examples and synonyms,
+GT meaning level synonyms are unioned with the dictionaryapi ones, and GT example sentences
+always populate the examples section.
+If word in dictionary api is not found, then data from GT is used. If none found, then meanings are
+empty, because GT at least has a translation.    
 GT can translate from any language to any language, but dictionary api works only with english
 source language.
+
+#### Card structure
+
+The card is built from two levels of meanings. Synonyms and antonyms exist on both levels,
+examples are kept separately because they are not bound to any part of speech:
+
+```
+AnkiData
+├── word, transcription, translations, myExample
+├── meanings - level of part of speech (noun, verb, ...)
+│   └── Meaning
+│       ├── type
+│       ├── definitions - level of definition
+│       │   └── Definition
+│       │       ├── info
+│       │       ├── example - usage example of this definition
+│       │       ├── synonyms
+│       │       └── antonyms
+│       ├── synonyms
+│       └── antonyms
+└── examples - usage example sentences not bound to any part of speech (from GT only)
+```
+
+Definition level synonyms and antonyms are rendered inside the definition block, indented under
+the definition they belong to, with muted colors - examples are gray, synonyms are grayish,
+antonyms are dark red. Meaning level synonyms and antonyms are rendered at the end of the part of
+speech block, synonyms are green and antonyms are red. Long lists (more than 5 items) on both
+levels are truncated: the first 5 items are shown, the rest is hidden behind a clickable
+`more N` toggle that expands them in place. The `examples` section is separated from the meanings
+by a horizontal line and can be collapsed, it is open by default.
+
+Where the data comes from: dictionaryapi.dev provides synonyms and antonyms on both levels, GT
+provides only synonyms - either bound to a definition (by internal GT definition id) or to a
+part of speech. GT examples always populate the `examples` section, duplicates are skipped -
+compared by normalized text (lowercase, no punctuation) against definition examples of both
+sources and the book example sentence. If the same part of speech exists in both sources, the dictionaryapi
+meaning is the base: GT definitions of that part of speech are appended with their examples and
+bound synonyms, a GT definition that is an exact duplicate of a dictionaryapi definition (same
+info) is merged instead - its synonyms are unioned and its example is used when the dictionaryapi
+definition has none. Meaning level synonyms are the union of both sources, capped so the card
+doesn't become overloaded. Parts of speech that only GT has are added as extra meanings.
+
+The export produces a one-sided card. The front side is the word only, the back side is
+translations, the book example sentence and the rendered `meanings` HTML described above
+(transcription, meanings with definitions, synonyms, antonyms and the examples section).
+Column layout of the exported file: deck, word, translations, book example, meanings HTML, tags.
+A reverse card is not generated; if the Anki note type has a reverse template, the reverse
+card's front will contain the back side columns of the export.
 
 #### Available options of jar startup
 
