@@ -15,7 +15,7 @@ public class CachingConfig {
   @Bean
   public CacheManager cacheManager() {
     CaffeineCacheManager cacheManager =
-        new CaffeineCacheManager("googleTranslations", "dictionaryApi");
+        new CaffeineCacheManager("googleTranslations", "dictionaryApi", "freeDictionaryApi");
     cacheManager.setCaffeine(caffeineCacheBuilder());
     return cacheManager;
   }

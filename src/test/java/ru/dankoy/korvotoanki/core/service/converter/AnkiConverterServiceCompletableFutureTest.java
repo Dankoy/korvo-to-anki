@@ -25,6 +25,7 @@ import ru.dankoy.korvotoanki.core.domain.anki.AnkiData;
 import ru.dankoy.korvotoanki.core.domain.anki.Meaning;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Phonetics;
 import ru.dankoy.korvotoanki.core.domain.dictionaryapi.Word;
+import ru.dankoy.korvotoanki.core.domain.freedic.FreeDictionaryWord;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.Definition;
 import ru.dankoy.korvotoanki.core.domain.googletranslation.GoogleTranslation;
 import ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException;
@@ -76,13 +77,17 @@ class AnkiConverterServiceCompletableFutureTest {
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
 
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(0)).define(vocabulary.word());
@@ -105,13 +110,17 @@ class AnkiConverterServiceCompletableFutureTest {
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(false);
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(0)).define(vocabulary.word());
@@ -134,13 +143,17 @@ class AnkiConverterServiceCompletableFutureTest {
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(false);
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(0)).define(vocabulary.word());
@@ -163,14 +176,18 @@ class AnkiConverterServiceCompletableFutureTest {
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(true);
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
     given(dictionaryService.define(vocabulary.word())).willReturn(daResult);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(1)).define(vocabulary.word());
@@ -195,14 +212,18 @@ class AnkiConverterServiceCompletableFutureTest {
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(true);
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
     given(dictionaryService.define(vocabulary.word())).willThrow(WebClientRequestException.class);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(1)).define(vocabulary.word());
@@ -227,7 +248,10 @@ class AnkiConverterServiceCompletableFutureTest {
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(true);
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
     given(dictionaryService.define(vocabulary.word()))
         .willThrow(WebClientResponseException.create(200, "status", null, null, null));
 
@@ -235,7 +259,8 @@ class AnkiConverterServiceCompletableFutureTest {
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(1)).define(vocabulary.word());
@@ -259,14 +284,18 @@ class AnkiConverterServiceCompletableFutureTest {
     given(externalApiProperties.isDictionaryApiEnabled()).willReturn(true);
     given(googleTranslator.translate(vocabulary.word(), targetLanguage, sourceLanguage, options))
         .willReturn(gtResult);
-    given(ankiDataFabric.createAnkiData(vocabulary, gtResult, daResult)).willReturn(ankiData);
+    given(
+            ankiDataFabric.createAnkiData(
+                vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord()))
+        .willReturn(ankiData);
     given(dictionaryService.define(vocabulary.word())).willThrow(DictionaryApiException.class);
 
     var actual = ankiConverterService.convert(vocabulary, sourceLanguage, targetLanguage, options);
 
     assertThat(actual).isEqualTo(ankiData);
 
-    Mockito.verify(ankiDataFabric, times(1)).createAnkiData(vocabulary, gtResult, daResult);
+    Mockito.verify(ankiDataFabric, times(1))
+        .createAnkiData(vocabulary, gtResult, daResult, FreeDictionaryWord.emptyWord());
     Mockito.verify(googleTranslator, times(1))
         .translate(vocabulary.word(), targetLanguage, sourceLanguage, options);
     Mockito.verify(dictionaryService, times(1)).define(vocabulary.word());

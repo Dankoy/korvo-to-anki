@@ -49,7 +49,9 @@ korvo-to-anki:
   http-client: "web-client"
   api:
     dictionaryApiEnabled: true
+    freeDictionaryApiEnabled: true
   dictionary-api-url: "https://api.dictionaryapi.dev/api/v2/entries/en/"
+  free-dictionary-api-url: "https://freedictionaryapi.com/api/v1/entries/en/"
   google-translator-url: "https://translate.googleapis.com/translate_a/single"
   trans-params:
     client: "gtx"                               # (using "t" raises 403 Forbidden)
@@ -82,6 +84,10 @@ resilience4j.ratelimiter:
       limitForPeriod: 5
       limitRefreshPeriod: 5s
       timeoutDuration: 6s
+    free-dictionary-api:
+      limitForPeriod: 15
+      limitRefreshPeriod: 60s
+      timeoutDuration: 60s
 resilience4j.retry:
     configs:
       default:
@@ -97,3 +103,7 @@ resilience4j.retry:
         base-config: default
         ignore-exceptions:
           - ru.dankoy.korvotoanki.core.exceptions.DictionaryApiException
+      free-dictionary-api:
+        base-config: default
+        ignore-exceptions:
+          - ru.dankoy.korvotoanki.core.exceptions.FreeDictionaryApiException
