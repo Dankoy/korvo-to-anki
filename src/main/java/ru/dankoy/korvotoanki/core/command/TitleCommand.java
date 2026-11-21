@@ -17,6 +17,7 @@ public class TitleCommand {
   private final ObjectMapperService objectMapperService;
 
   @Command(
+      exitStatusExceptionMapper = "korvoExitStatusExceptionMapper",
       group = "Titles Commands",
       name = "title-count",
       alias = "tc",

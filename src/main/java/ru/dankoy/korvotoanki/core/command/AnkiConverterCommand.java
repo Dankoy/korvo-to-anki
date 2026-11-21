@@ -20,6 +20,7 @@ public class AnkiConverterCommand {
 
   // ac --word hello
   @Command(
+      exitStatusExceptionMapper = "korvoExitStatusExceptionMapper",
       group = "Anki converter Commands",
       name = "anki-converter",
       alias = "ac",

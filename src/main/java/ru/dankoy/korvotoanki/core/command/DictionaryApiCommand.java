@@ -16,6 +16,7 @@ public class DictionaryApiCommand {
 
   // da --word hello
   @Command(
+      exitStatusExceptionMapper = "korvoExitStatusExceptionMapper",
       group = "Dictionary Api Commands",
       name = "dictionary-api",
       alias = "da",
