@@ -826,6 +826,9 @@ class AnkiDataFabricImplTest {
                                 // month name year, "August 1773, Author, Work"
                                 "August 1773, James Cook, journal entry\nI soon dissipated his"
                                     + " fears.",
+                                // month name day year, "December 2, 1832, Author, Work"
+                                "December 2, 1832, John Henry Newman, Wilfulness, the Sin of"
+                                    + " Saul\nA perverse will grows in the soil of self-pity.",
                                 // bracketed year, "[1906] 2004, Work, Author tr."
                                 "[1906] 2004, Memoirs of the Lord of Joinville, Ethel Wedgwood"
                                     + " tr.\nSirs, I am quite sure that the King of England's"
@@ -873,6 +876,7 @@ class AnkiDataFabricImplTest {
             "For making tea I have a kettle, Besides a pan made of run metal",
             "second example with newline",
             "I soon dissipated his fears.",
+            "A perverse will grows in the soil of self-pity.",
             "Sirs, I am quite sure that the King of England's forbears rightly and justly lost"
                 + " the conquered territory.",
             "‘Yes, indeed,’ said Sava with solemn gust.",
