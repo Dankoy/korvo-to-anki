@@ -822,7 +822,21 @@ class AnkiDataFabricImplTest {
                                     + " Universities\nto do some substantial good, is the"
                                     + " compensation for much incidental imperfection",
                                 "For making tea I have a kettle,\nBesides a pan made of run metal",
-                                "second example\nwith newline"),
+                                "second example\nwith newline",
+                                // month name year, "August 1773, Author, Work"
+                                "August 1773, James Cook, journal entry\nI soon dissipated his"
+                                    + " fears.",
+                                // bracketed year, "[1906] 2004, Work, Author tr."
+                                "[1906] 2004, Memoirs of the Lord of Joinville, Ethel Wedgwood"
+                                    + " tr.\nSirs, I am quite sure that the King of England's"
+                                    + " forbears rightly and justly lost the conquered territory.",
+                                // trailing reference after the quote
+                                "1942: ‘Yes, indeed,’ said Sava with solemn gust. — Rebecca West,"
+                                    + " Black Lamb and Grey Falcon (Canongate 2006, p. 1050)",
+                                // full citation whose quoted sentence is the last quoted span
+                                "Edward H[enry] Knight (1877), “Cradle”, in Knight’s American"
+                                    + " Mechanical Dictionary. […], →OCLC: “In the machine shop the"
+                                    + " cradle is oiled daily.”"),
                             null,
                             null,
                             null)),
@@ -852,11 +866,17 @@ class AnkiDataFabricImplTest {
                     + " imperfection",
                 null,
                 null));
-    // multi-line verse without a reference is kept whole, whitespace collapsed
+    // multi-line verse without a reference is kept whole, whitespace collapsed; citation
+    // references of every shape are stripped to the sentence only
     assertThat(ankiData.getExamples())
         .containsExactly(
             "For making tea I have a kettle, Besides a pan made of run metal",
-            "second example with newline");
+            "second example with newline",
+            "I soon dissipated his fears.",
+            "Sirs, I am quite sure that the King of England's forbears rightly and justly lost"
+                + " the conquered territory.",
+            "‘Yes, indeed,’ said Sava with solemn gust.",
+            "In the machine shop the cradle is oiled daily.");
   }
 
   private FreeDictionaryWord getFreeDictionaryWord() {

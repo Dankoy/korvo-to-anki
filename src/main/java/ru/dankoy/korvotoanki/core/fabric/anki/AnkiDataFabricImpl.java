@@ -252,30 +252,63 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     }
   }
 
-  // wiktionary examples often prepend the quotation reference (year, author, work) separated
-  // from the example sentence by a newline ("1850s, Author, Work\nSentence") - the reference
-  // is useless on the card, so it's dropped and only the sentence is kept. The year may be
-  // prefixed with a circa marker ("c. 1824", "circa 1824", "a. 1950", "fl. 1600"). Multi-line
-  // verses without a reference are kept whole. All whitespace is collapsed to single spaces.
+  // wiktionary examples come in several citation shapes:
+  //   "1850s, Author, Work\nSentence" - year, optional circa marker ("c. 1824", "a. 1950"),
+  //     month name ("August 1773") or bracketed year ("[1906] 2004") on the first line
+  //   "Quote — Author, Work (Publisher 2006, p. 1050)" - reference appended after the quote
+  //   "1942: 'Quote'" - leading year prefix
+  //   'Author (1877), "Work", in ... →OCLC: "Quote"' - full citation, quoted sentence is last
+  // The reference is useless on the card, so it is dropped and only the sentence is kept.
+  // Multi-line verses without a reference are kept whole. Whitespace is collapsed.
   private String cleanDictionaryExample(String example) {
 
     if (Objects.isNull(example)) {
       return null;
     }
 
-    var firstLineEnd = example.indexOf('\n');
+    var result = example;
 
-    if (firstLineEnd > 0
-        && example
-            .substring(0, firstLineEnd)
-            .trim()
-            .matches(
-                "^(c\\.\\s+|ca\\.\\s+|circa\\s+|a\\.\\s+|fl\\.\\s+)?\\d{3,4}"
-                    + "([-–]\\d{2,4})?s?([\\s,:].*)?$")) {
-      return example.substring(firstLineEnd + 1).replaceAll("\\s+", " ").trim();
+    var firstLineEnd = result.indexOf('\n');
+    if (firstLineEnd > 0 && isQuotationReferenceLine(result.substring(0, firstLineEnd).trim())) {
+      result = result.substring(firstLineEnd + 1);
     }
 
-    return example.replaceAll("\\s+", " ").trim();
+    result = result.replaceAll("\\s+", " ").trim();
+
+    // trailing " — Author, Work (Publisher 2006, p. 1050)"
+    var dash = result.lastIndexOf(" — ");
+    if (dash > 0 && result.substring(dash).matches(" — .*\\(.*\\d{4}.*\\)")) {
+      result = result.substring(0, dash).trim();
+    }
+
+    // leading "1942: " year prefix left by the trailing-reference cut
+    result = result.replaceFirst("^\\d{3,4}s?:\\s+", "");
+
+    // full citation whose quoted sentence is the last quoted span
+    if ((result.contains("→OCLC") || result.contains("→ISBN"))
+        && result.matches(".*\\(\\d{4}\\).*")) {
+      var start = result.lastIndexOf('“');
+      var end = result.lastIndexOf('”');
+      if (start >= 0 && end > start) {
+        result = result.substring(start + 1, end);
+      }
+    }
+
+    return result;
+  }
+
+  // "1850s, Author, Work", "c. 1824 (note) Author, Work", "[1906] 2004, Work, Author tr.",
+  // "August 1773, Author, Work"
+  private boolean isQuotationReferenceLine(String line) {
+
+    if (line.matches(
+        "^(?:(?:c\\.|ca\\.|circa|a\\.|fl\\.)\\s+)?\\[?\\d{3,4}\\]?([-–]\\d{2,4})?s?([\\s,:].*)?$")) {
+      return true;
+    }
+
+    return line.matches(
+        "^(?:January|February|March|April|May|June|July|August|September|October|November|"
+            + "December)\\s+\\d{3,4}s?([\\s,:].*)?$");
   }
 
   private String firstFreeDictionaryExample(FreeDictionarySense sense) {
@@ -534,14 +567,19 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
       FreeDictionaryWord freeDictionaryWord,
       String myExample) {
 
+    // definition examples are cleaned the same way they are on the card, otherwise a card
+    // example that duplicates a definition example (e.g. google translate and freedictionaryapi
+    // quoting the same wiktionary sentence) would not be recognized as a duplicate
     Set<String> cardExamples =
         Stream.concat(
                 words.stream()
                     .flatMap(w -> w.getMeanings().stream())
                     .flatMap(m -> m.getDefinitions().stream())
-                    .map(ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition::getExample),
+                    .map(ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition::getExample)
+                    .map(this::cleanDictionaryExample),
                 googleTranslation.getDefinitions().stream()
-                    .map(ru.dankoy.korvotoanki.core.domain.googletranslation.Definition::example))
+                    .map(ru.dankoy.korvotoanki.core.domain.googletranslation.Definition::example)
+                    .map(this::cleanDictionaryExample))
             .filter(Objects::nonNull)
             .map(this::normalizeExample)
             .collect(Collectors.toSet());
