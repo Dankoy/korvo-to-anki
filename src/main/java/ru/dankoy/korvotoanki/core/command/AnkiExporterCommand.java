@@ -26,7 +26,7 @@ public class AnkiExporterCommand {
       help =
           """
           SYNOPSIS
-              anki-exporter --sourceLanguage String --targetLanguage String --options String[] --books String[]
+              anki-exporter --sourceLanguage String --targetLanguage String --options String[] --books String
 
           OPTIONS
               --sourceLanguage String
@@ -41,8 +41,9 @@ public class AnkiExporterCommand {
              options
              [Optional, default = t,at,md,rm,ss,ex,qca]
 
-             --books String[]
-             book names to export words from; empty means all books
+             --books String
+             semicolon-separated book names to export words from; book names may
+             contain commas and spaces; empty means all books
              [Optional, default = all books]
 
              --help or -h
@@ -69,11 +70,13 @@ public class AnkiExporterCommand {
               description = "options")
           String[] options,
       @Option(longName = "books", required = false, description = "book names to export words from")
-          String[] books) {
+          String books) {
 
     List<String> optionsList = Arrays.asList(options);
     List<String> booksList =
-        books == null ? List.of() : Arrays.stream(books).filter(b -> !b.isBlank()).toList();
+        books == null
+            ? List.of()
+            : Arrays.stream(books.split(";")).map(String::trim).filter(b -> !b.isEmpty()).toList();
 
     long startTime = System.currentTimeMillis();
 
