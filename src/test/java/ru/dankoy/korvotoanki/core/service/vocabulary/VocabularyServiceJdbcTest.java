@@ -57,6 +57,23 @@ class VocabularyServiceJdbcTest {
     Mockito.verify(vocabularyDao, times(1)).getByTitle(title);
   }
 
+  @DisplayName("getByTitles returns vocabularies of all given titles")
+  @Test
+  void getByTitles() {
+
+    var titles = List.of(new Title(1L, "Title1", 1L), new Title(2L, "Title2", 1L));
+
+    List<Vocabulary> correct = correctVocabularies();
+
+    given(vocabularyDao.getByTitles(titles)).willReturn(correct);
+
+    var actual = vocabularyService.getByTitles(titles);
+
+    assertThat(actual).isNotEmpty().hasSize(correct.size()).isEqualTo(correct);
+
+    Mockito.verify(vocabularyDao, times(1)).getByTitles(titles);
+  }
+
   @DisplayName("count non zero")
   @Test
   void count() {

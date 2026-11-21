@@ -17,6 +17,7 @@ import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
+import ru.dankoy.korvotoanki.core.service.title.TitleService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 /**
@@ -35,6 +36,7 @@ public class ExporterServiceAnki implements ExporterService {
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
   private final StateService sqliteStateService;
+  private final TitleService titleService;
   private int counter = 0;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
@@ -59,13 +61,17 @@ public class ExporterServiceAnki implements ExporterService {
   }
 
   @Override
-  public void export(String sourceLanguage, String targetLanguage, List<String> options) {
+  public void export(
+      String sourceLanguage, String targetLanguage, List<String> options, List<String> books) {
 
     counter = 0;
 
     List<AnkiData> ankiDataList = new ArrayList<>();
 
-    List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
+    List<Vocabulary> vocabulariesFull =
+        books.isEmpty()
+            ? vocabularyService.getAll()
+            : vocabularyService.getByTitles(titleService.getAllByNames(books));
 
     List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
@@ -91,7 +97,7 @@ public class ExporterServiceAnki implements ExporterService {
               filesProperties.getExportFileName());
 
       ioService.print(template);
-      sqliteStateService.saveState(vocabulariesFull);
+      sqliteStateService.saveState(filtered);
 
     } else {
       log.info("State is the same as database. Export is not necessary.");

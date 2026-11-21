@@ -49,6 +49,7 @@ import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.state.StateServiceImpl;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorServiceImpl;
+import ru.dankoy.korvotoanki.core.service.title.TitleService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyServiceJdbc;
 
@@ -82,6 +83,8 @@ class ExporterServiceAnkiVirtualThreadsCFTest {
 
   @MockitoBean private StateService stateService;
 
+  @MockitoBean private TitleService titleService;
+
   @MockitoBean private FileProviderService fileProviderService;
 
   @MockitoBean private FileNameFormatterService fileNameFormatterServiceImpl;
@@ -112,9 +115,45 @@ class ExporterServiceAnkiVirtualThreadsCFTest {
     given(ioServiceFileFactory.apply(anyString())).willReturn(ioService);
     given(filesProperties.getExportFileName()).willReturn("name");
 
-    exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options);
+    exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options, List.of());
 
     Mockito.verify(vocabularyService, times(1)).getAll();
+    Mockito.verify(stateService, times(1)).filterState(vocabularies);
+    Mockito.verify(stateService, times(1)).saveState(vocabularies);
+    Mockito.verify(templateCreatorService, times(1)).create(any());
+    Mockito.verify(ioService, times(1)).print(any());
+  }
+
+  @DisplayName("export one word filtered by book")
+  @Test
+  void exportOneWordFilteredByBook() {
+
+    var templ = "templ";
+    List<Vocabulary> vocabularies = correctVocabularies();
+    var sourceLanguage = "en";
+    var targetLanguage = "ru";
+    List<String> options = Stream.of("t").toList();
+    List<String> books = List.of("Title1");
+    var titles = List.of(new Title(1L, "Title1", 1L));
+
+    var ankiData = getOneFromGoogleTranslate(vocabularies.get(0), getOneGt());
+
+    given(ankiConverterService.convert(any(), eq(sourceLanguage), eq(targetLanguage), eq(options)))
+        .willReturn(ankiData);
+    given(titleService.getAllByNames(books)).willReturn(titles);
+    given(vocabularyService.getByTitles(titles)).willReturn(vocabularies);
+    given(stateService.filterState(vocabularies)).willReturn(vocabularies);
+    given(templateCreatorService.create(any())).willReturn(templ);
+    doNothing().when(ioService).print(any());
+    doNothing().when(stateService).saveState(vocabularies);
+    given(ioServiceFileFactory.apply(anyString())).willReturn(ioService);
+    given(filesProperties.getExportFileName()).willReturn("name");
+
+    exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options, books);
+
+    Mockito.verify(vocabularyService, times(0)).getAll();
+    Mockito.verify(titleService, times(1)).getAllByNames(books);
+    Mockito.verify(vocabularyService, times(1)).getByTitles(titles);
     Mockito.verify(stateService, times(1)).filterState(vocabularies);
     Mockito.verify(stateService, times(1)).saveState(vocabularies);
     Mockito.verify(templateCreatorService, times(1)).create(any());
@@ -140,7 +179,7 @@ class ExporterServiceAnkiVirtualThreadsCFTest {
     given(templateCreatorService.create(any())).willReturn(templ);
     doNothing().when(stateService).saveState(vocabularies);
 
-    exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options);
+    exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options, List.of());
 
     Mockito.verify(vocabularyService, times(1)).getAll();
     Mockito.verify(stateService, times(1)).filterState(vocabularies);
@@ -177,8 +216,8 @@ class ExporterServiceAnkiVirtualThreadsCFTest {
     listAppender.start();
     logger.addAppender(listAppender);
     try {
-      exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options);
-      exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options);
+      exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options, List.of());
+      exporterServiceAnkiVTCF.export(sourceLanguage, targetLanguage, options, List.of());
     } finally {
       logger.detachAppender(listAppender);
     }

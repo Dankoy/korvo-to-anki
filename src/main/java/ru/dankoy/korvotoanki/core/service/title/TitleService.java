@@ -11,6 +11,13 @@ public interface TitleService {
 
   Title getByName(String name);
 
+  /**
+   * Returns all books with the given names. Fails with {@link
+   * ru.dankoy.korvotoanki.core.exceptions.KorvoRootException} when any of the names is not found in
+   * the database.
+   */
+  List<Title> getAllByNames(List<String> names);
+
   long insert(String titleName);
 
   void deleteById(long id);

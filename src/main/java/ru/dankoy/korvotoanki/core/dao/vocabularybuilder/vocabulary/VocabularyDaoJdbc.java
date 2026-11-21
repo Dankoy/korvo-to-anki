@@ -17,26 +17,27 @@ public class VocabularyDaoJdbc implements VocabularyDao {
 
   private static final String COLUMN_TITLE_ID = "title_id";
 
+  private static final String SELECT_VOCABULARY_COLUMNS =
+      "select vocabulary.word as v_word, "
+          + "vocabulary.title_id as v_title_id, "
+          + "title.id as t_id, "
+          + "title.name as t_name, "
+          + "title.filter as t_filter, "
+          + "vocabulary.create_time as v_create_time, "
+          + "vocabulary.review_time as v_review_time, "
+          + "vocabulary.due_time as v_due_time, "
+          + "vocabulary.review_count as v_review_count, "
+          + "vocabulary.prev_context as v_prev_context, "
+          + "vocabulary.next_context as v_next_context, "
+          + "vocabulary.streak_count as v_streak_count "
+          + "from vocabulary, title ";
+
   private final NamedParameterJdbcOperations vocabularyJdbcOperations;
 
   @Override
   public List<Vocabulary> getAll() {
 
-    String query =
-        "select vocabulary.word as v_word, "
-            + "vocabulary.title_id as v_title_id, "
-            + "title.id as t_id, "
-            + "title.name as t_name, "
-            + "title.filter as t_filter, "
-            + "vocabulary.create_time as v_create_time, "
-            + "vocabulary.review_time as v_review_time, "
-            + "vocabulary.due_time as v_due_time, "
-            + "vocabulary.review_count as v_review_count, "
-            + "vocabulary.prev_context as v_prev_context, "
-            + "vocabulary.next_context as v_next_context, "
-            + "vocabulary.streak_count as v_streak_count "
-            + "from vocabulary, title "
-            + "where v_title_id = t_id";
+    String query = SELECT_VOCABULARY_COLUMNS + "where v_title_id = t_id";
 
     Map<String, Vocabulary> books =
         vocabularyJdbcOperations.query(query, new BookResultSetExtractor());
@@ -49,21 +50,21 @@ public class VocabularyDaoJdbc implements VocabularyDao {
 
     Map<String, Object> params = Collections.singletonMap(COLUMN_TITLE_ID, title.id());
 
-    String query =
-        "select vocabulary.word as v_word, "
-            + "vocabulary.title_id as v_title_id, "
-            + "title.id as t_id, "
-            + "title.name as t_name, "
-            + "title.filter as t_filter, "
-            + "vocabulary.create_time as v_create_time, "
-            + "vocabulary.review_time as v_review_time, "
-            + "vocabulary.due_time as v_due_time, "
-            + "vocabulary.review_count as v_review_count, "
-            + "vocabulary.prev_context as v_prev_context, "
-            + "vocabulary.next_context as v_next_context, "
-            + "vocabulary.streak_count as v_streak_count "
-            + "from vocabulary, title "
-            + "where v_title_id = :title_id";
+    String query = SELECT_VOCABULARY_COLUMNS + "where v_title_id = :title_id";
+
+    Map<String, Vocabulary> books =
+        vocabularyJdbcOperations.query(query, params, new BookResultSetExtractor());
+
+    return new ArrayList<>(Objects.requireNonNull(books).values());
+  }
+
+  @Override
+  public List<Vocabulary> getByTitles(List<Title> titles) {
+
+    Map<String, Object> params =
+        Collections.singletonMap("title_ids", titles.stream().map(Title::id).toList());
+
+    String query = SELECT_VOCABULARY_COLUMNS + "where v_title_id = t_id and t_id in (:title_ids)";
 
     Map<String, Vocabulary> books =
         vocabularyJdbcOperations.query(query, params, new BookResultSetExtractor());

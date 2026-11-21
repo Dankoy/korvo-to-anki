@@ -10,5 +10,8 @@ public interface VocabularyService {
 
   List<Vocabulary> getByTitle(Title title);
 
+  /** Returns vocabularies of all given books. */
+  List<Vocabulary> getByTitles(List<Title> titles);
+
   long count();
 }

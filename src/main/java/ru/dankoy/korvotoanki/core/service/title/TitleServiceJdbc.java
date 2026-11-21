@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDao;
 import ru.dankoy.korvotoanki.core.domain.Title;
+import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,17 @@ public class TitleServiceJdbc implements TitleService {
   @Override
   public Title getByName(String name) {
     return titleDao.getByName(name);
+  }
+
+  @Override
+  public List<Title> getAllByNames(List<String> names) {
+    List<Title> titles = titleDao.getAllByNames(names);
+    List<String> foundNames = titles.stream().map(Title::name).toList();
+    List<String> missing = names.stream().filter(n -> !foundNames.contains(n)).toList();
+    if (!missing.isEmpty()) {
+      throw new KorvoRootException(String.format("Books not found in database: %s", missing));
+    }
+    return titles;
   }
 
   @Override

@@ -1,6 +1,7 @@
 package ru.dankoy.korvotoanki.core.service.title;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dankoy.korvotoanki.core.dao.vocabularybuilder.title.TitleDaoJdbc;
 import ru.dankoy.korvotoanki.core.domain.Title;
+import ru.dankoy.korvotoanki.core.exceptions.KorvoRootException;
 
 @DisplayName("Test TitleServiceJdbc ")
 @SpringBootTest(classes = {TitleServiceJdbc.class, TitleDaoJdbc.class})
@@ -67,6 +69,35 @@ class TitleServiceJdbcTest {
     assertThat(actual).isEqualTo(correct.get(0));
 
     Mockito.verify(titleDaoJdbc, times(1)).getByName(name);
+  }
+
+  @Test
+  void getAllByNames() {
+
+    var names = List.of("Title1", "Title2");
+    var titles = List.of(new Title(1L, "Title1", 1L), new Title(2L, "Title2", 1L));
+
+    given(titleDaoJdbc.getAllByNames(names)).willReturn(titles);
+
+    List<Title> actual = titleServiceJdbc.getAllByNames(names);
+
+    assertThat(actual).isEqualTo(titles);
+
+    Mockito.verify(titleDaoJdbc, times(1)).getAllByNames(names);
+  }
+
+  @Test
+  void getAllByNamesThrowsWhenBookNotFound() {
+
+    var names = List.of("Title1", "Unknown");
+
+    given(titleDaoJdbc.getAllByNames(names)).willReturn(List.of(new Title(1L, "Title1", 1L)));
+
+    assertThatThrownBy(() -> titleServiceJdbc.getAllByNames(names))
+        .isInstanceOf(KorvoRootException.class)
+        .hasMessageContaining("Books not found in database: [Unknown]");
+
+    Mockito.verify(titleDaoJdbc, times(1)).getAllByNames(names);
   }
 
   @Test

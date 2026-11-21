@@ -50,6 +50,17 @@ public class TitleDaoJdbc implements TitleDao {
   }
 
   @Override
+  public List<Title> getAllByNames(List<String> names) {
+    Map<String, Object> params = Collections.singletonMap("names", names);
+    try {
+      return vocabularyJdbcOperations.query(
+          "select id, name, filter from title where name in (:names)", params, new TitleMapper());
+    } catch (Exception e) {
+      throw new TitleDaoException(e);
+    }
+  }
+
+  @Override
   public long insert(String titleName) {
     MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("name", titleName);
     KeyHolder keyHolder = new GeneratedKeyHolder();
