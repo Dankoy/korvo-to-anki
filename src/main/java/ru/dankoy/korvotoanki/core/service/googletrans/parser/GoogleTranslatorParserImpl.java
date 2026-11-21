@@ -96,6 +96,10 @@ public class GoogleTranslatorParserImpl implements GoogleTranslatorParser {
                         return;
                       }
                       var info = def.get(0).asString();
+                      // google translate lists category headers as definitions with blank text
+                      if (info.isBlank()) {
+                        return;
+                      }
                       // definition id links the definition to synonyms of the same sense
                       var definitionId = exists(def.get(1)) ? def.get(1).asString() : null;
                       var example = exists(def.get(2)) ? def.get(2).asString() : null;

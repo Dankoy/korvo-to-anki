@@ -504,6 +504,63 @@ class AnkiDataFabricImplTest {
     assertThat(ankiData.getExamples()).isEmpty();
   }
 
+  @DisplayName("create anki data filters out dictionaryapi category labels listed as definitions")
+  @Test
+  void createAnkiDataFiltersDictionaryApiCategoryLabels() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                null,
+                List.of(),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "verb",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(Physical movement.)", List.of(), List.of(), null),
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(Mental activity.)", List.of(), List.of(), null),
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "move in a circle on a central axis.",
+                                List.of(),
+                                List.of(),
+                                "overhead, the fan revolved slowly"),
+                            // a real definition with a parenthesized qualifier must be kept
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(rare, intransitive) To show variance or contradiction.",
+                                List.of(),
+                                List.of(),
+                                null)),
+                        List.of(),
+                        List.of()))));
+
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
+
+    assertThat(ankiData.getMeanings())
+        .containsExactly(
+            new Meaning(
+                "verb",
+                List.of(
+                    new Definition(
+                        "move in a circle on a central axis.",
+                        "overhead, the fan revolved slowly",
+                        List.of(),
+                        List.of()),
+                    new Definition(
+                        "(rare, intransitive) To show variance or contradiction.",
+                        null,
+                        List.of(),
+                        List.of())),
+                List.of(),
+                List.of()));
+  }
+
   @DisplayName("transcription is taken from dictionaryapi phonetics when phonetic is null")
   @Test
   void createAnkiDataTranscriptionFromDictionaryApiPhonetics() {
@@ -826,6 +883,9 @@ class AnkiDataFabricImplTest {
                                 // month name year, "August 1773, Author, Work"
                                 "August 1773, James Cook, journal entry\nI soon dissipated his"
                                     + " fears.",
+                                // month name day year, "December 2, 1832, Author, Work"
+                                "December 2, 1832, John Henry Newman, Wilfulness, the Sin of"
+                                    + " Saul\nA perverse will grows in the soil of self-pity.",
                                 // bracketed year, "[1906] 2004, Work, Author tr."
                                 "[1906] 2004, Memoirs of the Lord of Joinville, Ethel Wedgwood"
                                     + " tr.\nSirs, I am quite sure that the King of England's"
@@ -873,6 +933,7 @@ class AnkiDataFabricImplTest {
             "For making tea I have a kettle, Besides a pan made of run metal",
             "second example with newline",
             "I soon dissipated his fears.",
+            "A perverse will grows in the soil of self-pity.",
             "Sirs, I am quite sure that the King of England's forbears rightly and justly lost"
                 + " the conquered territory.",
             "‘Yes, indeed,’ said Sava with solemn gust.",
