@@ -86,10 +86,13 @@ AnkiData
 └── examples - usage example sentences not bound to any part of speech (from GT only)
 ```
 
-Definition level synonyms and antonyms are rendered inside the definition block next to the
-example. Meaning level synonyms and antonyms are rendered at the end of the part of speech block.
-In the HTML export meaning level synonyms are green and antonyms are red, definition level ones
-are of default color.
+Definition level synonyms and antonyms are rendered inside the definition block, indented under
+the definition they belong to, with muted colors - examples are gray, synonyms are grayish,
+antonyms are dark red. Meaning level synonyms and antonyms are rendered at the end of the part of
+speech block, synonyms are green and antonyms are red. Long lists (more than 5 items) on both
+levels are truncated: the first 5 items are shown, the rest is hidden behind a clickable
+`more N` toggle that expands them in place. The `examples` section is separated from the meanings
+by a horizontal line and can be collapsed, it is open by default.
 
 Where the data comes from: dictionaryapi.dev provides synonyms and antonyms on both levels, GT
 provides only synonyms - either bound to a definition (by internal GT definition id) or to a
