@@ -164,6 +164,25 @@ class GoogleTranslatorWebClientTest {
     assertEquals(EXPECTED_PATH, req.getPath());
   }
 
+  @DisplayName("empty response body expects google translator exception, not null")
+  @Test
+  void testTranslationEmptyBody_ExpectsGoogleTranslatorException() throws InterruptedException {
+
+    // no body - google drops throttled connections with an empty 200 response
+    server.enqueue(
+        new MockResponse().setResponseCode(200).addHeader("Content-Type", "application/json"));
+
+    var list = List.of("option1");
+
+    assertThatThrownBy(() -> googleTranslatorWebClient.translate("text", "en", "ru", list))
+        .isInstanceOf(GoogleTranslatorException.class)
+        .hasMessageContaining("Empty response body");
+
+    RecordedRequest recordedRequest = server.takeRequest();
+
+    assertEquals(EXPECTED_PATH, recordedRequest.getPath());
+  }
+
   private GoogleTranslation createGoogleTranslation() {
     return new GoogleTranslation("Hello, world!");
   }

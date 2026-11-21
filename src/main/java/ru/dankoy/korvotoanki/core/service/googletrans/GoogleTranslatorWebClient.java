@@ -1,5 +1,6 @@
 package ru.dankoy.korvotoanki.core.service.googletrans;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class GoogleTranslatorWebClient implements GoogleTranslator {
       key =
           "#text + #targetLanguage + #sourceLanguage +"
               + " T(java.lang.Integer).toString(#dtOptions.hashCode())")
+  @Retry(name = "google-translator")
   @Override
   public GoogleTranslation translate(
       String text, String targetLanguage, String sourceLanguage, List<String> dtOptions) {
@@ -72,6 +74,11 @@ public class GoogleTranslatorWebClient implements GoogleTranslator {
         .retrieve()
         .onStatus(HttpStatusCode::isError, this::handleAnyResponseError)
         .bodyToMono(String.class)
+        // google sometimes drops throttled connections: the response completes with an empty
+        // body, block() would return null downstream - fail instead so the retry kicks in
+        .switchIfEmpty(
+            Mono.error(
+                new GoogleTranslatorException(String.format("Empty response body for '%s'", text))))
         .map(googleTranslatorParser::parse)
         .block();
   }

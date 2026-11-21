@@ -107,3 +107,10 @@ resilience4j.retry:
         base-config: default
         ignore-exceptions:
           - ru.dankoy.korvotoanki.core.exceptions.FreeDictionaryApiException
+      google-translator:
+        base-config: default
+        retry-exceptions:
+          - ru.dankoy.korvotoanki.core.exceptions.GoogleTranslatorException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+          - io.netty.handler.timeout.ReadTimeoutException
+          - io.netty.handler.timeout.WriteTimeoutException

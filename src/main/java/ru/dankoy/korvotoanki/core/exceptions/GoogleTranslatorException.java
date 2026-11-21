@@ -6,6 +6,10 @@ public class GoogleTranslatorException extends KorvoRootException {
     super(e);
   }
 
+  public GoogleTranslatorException(String message) {
+    super(message);
+  }
+
   public GoogleTranslatorException(String message, Exception e) {
     super(message, e);
   }
