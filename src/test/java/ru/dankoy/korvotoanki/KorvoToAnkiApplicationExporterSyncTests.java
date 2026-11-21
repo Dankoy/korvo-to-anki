@@ -15,6 +15,7 @@ import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.exporter.ExporterServiceAnki;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
+import ru.dankoy.korvotoanki.core.service.title.TitleService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @DisplayName("Test sync exporter bean context ")
@@ -83,6 +84,12 @@ class KorvoToAnkiApplicationExporterSyncTests {
     public StateService stateService() {
       return Mockito.mock(
           StateService.class); // this bean will be automatically autowired into tested beans
+    }
+
+    @Bean
+    public TitleService titleService() {
+      return Mockito.mock(
+          TitleService.class); // this bean will be automatically autowired into tested beans
     }
   }
 }

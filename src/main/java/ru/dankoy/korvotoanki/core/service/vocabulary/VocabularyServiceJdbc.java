@@ -24,6 +24,11 @@ public class VocabularyServiceJdbc implements VocabularyService {
   }
 
   @Override
+  public List<Vocabulary> getByTitles(List<Title> titles) {
+    return vocabularyDao.getByTitles(titles);
+  }
+
+  @Override
   public long count() {
     return vocabularyDao.count();
   }

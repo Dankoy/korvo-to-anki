@@ -21,6 +21,7 @@ import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
+import ru.dankoy.korvotoanki.core.service.title.TitleService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @ConditionalOnExpression(
@@ -38,6 +39,7 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   private final TemplateCreatorService templateCreatorService;
   private final FilesProperties filesProperties;
   private final StateService sqliteStateService;
+  private final TitleService titleService;
   private CountDownLatch latch;
 
   // The IoService is provided type, that's why we inject it using @Lookup annotation.
@@ -62,14 +64,18 @@ public class ExporterServiceAnkiAsync implements ExporterService {
   }
 
   @Override
-  public void export(String sourceLanguage, String targetLanguage, List<String> options) {
+  public void export(
+      String sourceLanguage, String targetLanguage, List<String> options, List<String> books) {
 
     atomicInteger.set(0);
 
     List<AnkiData> ankiDataList = new CopyOnWriteArrayList<>();
 
     try (ExecutorService executorService = Executors.newFixedThreadPool(THREADS)) {
-      List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
+      List<Vocabulary> vocabulariesFull =
+          books.isEmpty()
+              ? vocabularyService.getAll()
+              : vocabularyService.getByTitles(titleService.getAllByNames(books));
       List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
       if (!filtered.isEmpty()) {

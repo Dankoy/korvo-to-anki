@@ -10,5 +10,7 @@ public interface VocabularyDao {
 
   List<Vocabulary> getByTitle(Title title);
 
+  List<Vocabulary> getByTitles(List<Title> titles);
+
   long count();
 }

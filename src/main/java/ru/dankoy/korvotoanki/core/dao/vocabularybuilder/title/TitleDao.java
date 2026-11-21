@@ -11,6 +11,8 @@ public interface TitleDao {
 
   Title getByName(String name);
 
+  List<Title> getAllByNames(List<String> names);
+
   long insert(String titleName);
 
   void deleteById(long id);

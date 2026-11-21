@@ -151,7 +151,7 @@ korvo-to-anki.async-type: "vtcf/completable_future" - use virtual threads or com
 
 ```text
 SYNOPSIS
-       anki-exporter --sourceLanguage String --targetLanguage String --options String[]
+       anki-exporter --sourceLanguage String --targetLanguage String --options String[] --books String[]
 
 OPTIONS
        --sourceLanguage String
@@ -166,12 +166,21 @@ OPTIONS
        options
        [Optional, default = t,at,md,rm,ss,ex,qca]
 
+       --books String[]
+       book names to export words from
+       [Optional, default = all books]
+       When set, only words of the given books are exported; state is checked and
+       saved only for those words, so a per-book export never marks other books
+       as exported. Fails with a clear error when a book name is not found.
+
        --help or -h
        help for anki-exporter
        [Optional]
 ```
 
 `ae --sourceLanguage ja --targetLanguage en --options t,at,md,rm,ss,ex,qca`
+
+`ae --books "The Darkness That Comes Before,Orcs" --sourceLanguage en --targetLanguage ru`
 
 Options are google translate options. Currently `t`, `at`, `md`, `rm`, `ss`, `ex` and `qca` are parsed
 and used. The rest (`bd`, `ld`, `rw`) could be requested, but are not parsed. Options `ss`, `ex`

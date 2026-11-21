@@ -17,6 +17,7 @@ import ru.dankoy.korvotoanki.core.service.converter.AnkiConverterService;
 import ru.dankoy.korvotoanki.core.service.io.IOService;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
+import ru.dankoy.korvotoanki.core.service.title.TitleService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @ConditionalOnExpression(
@@ -35,15 +36,20 @@ public class ExporterServiceAnkiCompletableFuture implements ExporterService {
   private final FilesProperties filesProperties;
   private final StateService sqliteStateService;
   private final Function<String, IOService> ioServiceFileFactory;
+  private final TitleService titleService;
 
   @Override
-  public void export(String sourceLanguage, String targetLanguage, List<String> options) {
+  public void export(
+      String sourceLanguage, String targetLanguage, List<String> options, List<String> books) {
 
     atomicInteger.set(0);
 
     List<AnkiData> ankiDataList = new CopyOnWriteArrayList<>();
 
-    List<Vocabulary> vocabulariesFull = vocabularyService.getAll();
+    List<Vocabulary> vocabulariesFull =
+        books.isEmpty()
+            ? vocabularyService.getAll()
+            : vocabularyService.getByTitles(titleService.getAllByNames(books));
     List<Vocabulary> filtered = sqliteStateService.filterState(vocabulariesFull);
 
     var fixedThreadPool = Executors.newFixedThreadPool(THREADS);

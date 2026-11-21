@@ -18,6 +18,7 @@ import ru.dankoy.korvotoanki.core.service.filenameformatter.FileNameFormatterSer
 import ru.dankoy.korvotoanki.core.service.fileprovider.FileProviderService;
 import ru.dankoy.korvotoanki.core.service.state.StateService;
 import ru.dankoy.korvotoanki.core.service.templatecreator.TemplateCreatorService;
+import ru.dankoy.korvotoanki.core.service.title.TitleService;
 import ru.dankoy.korvotoanki.core.service.vocabulary.VocabularyService;
 
 @DisplayName("Test completable future exporter bean context ")
@@ -107,6 +108,12 @@ class KorvoToAnkiApplicationExporterCompletableFutureTests {
     public StateService stateService() {
       return Mockito.mock(
           StateService.class); // this bean will be automatically autowired into tested beans
+    }
+
+    @Bean
+    public TitleService titleService() {
+      return Mockito.mock(
+          TitleService.class); // this bean will be automatically autowired into tested beans
     }
 
     @Bean
