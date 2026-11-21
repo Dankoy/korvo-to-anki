@@ -2,6 +2,7 @@ package ru.dankoy.korvotoanki.core.fabric.anki;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -253,9 +254,14 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
 
   // wiktionary examples often prepend the quotation reference (year, author, work) separated
   // from the example sentence by a newline ("1850s, Author, Work\nSentence") - the reference
-  // is useless on the card, so it's dropped and only the sentence is kept. Multi-line verses
-  // without a reference are kept whole. All whitespace is collapsed to single spaces.
-  private String cleanFreeDictionaryExample(String example) {
+  // is useless on the card, so it's dropped and only the sentence is kept. The year may be
+  // prefixed with a circa marker ("c. 1824", "circa 1824", "a. 1950", "fl. 1600"). Multi-line
+  // verses without a reference are kept whole. All whitespace is collapsed to single spaces.
+  private String cleanDictionaryExample(String example) {
+
+    if (Objects.isNull(example)) {
+      return null;
+    }
 
     var firstLineEnd = example.indexOf('\n');
 
@@ -263,7 +269,9 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
         && example
             .substring(0, firstLineEnd)
             .trim()
-            .matches("^\\d{3,4}([-–]\\d{2,4})?s?([\\s,:].*)?$")) {
+            .matches(
+                "^(c\\.\\s+|ca\\.\\s+|circa\\s+|a\\.\\s+|fl\\.\\s+)?\\d{3,4}"
+                    + "([-–]\\d{2,4})?s?([\\s,:].*)?$")) {
       return example.substring(firstLineEnd + 1).replaceAll("\\s+", " ").trim();
     }
 
@@ -273,22 +281,25 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
   private String firstFreeDictionaryExample(FreeDictionarySense sense) {
 
     if (Objects.nonNull(sense.getExamples()) && !sense.getExamples().isEmpty()) {
-      return cleanFreeDictionaryExample(sense.getExamples().get(0));
+      return cleanDictionaryExample(sense.getExamples().get(0));
     }
 
     return null;
   }
 
-  // appends definitions after existing ones. Exact duplicates (same info) are merged instead:
-  // union of synonyms and antonyms (capped, existing first) and the incoming example when the
-  // existing definition has none.
+  // appends definitions after existing ones. Duplicates are merged instead: union of synonyms and
+  // antonyms (capped, existing first) and the incoming example when the existing definition has
+  // none. Definitions are considered duplicates when their texts are equal ignoring case and
+  // trailing punctuation, or when they differ only by leading usage qualifiers in parentheses -
+  // dictionaries repeat the same definition with and without tags like "(archaic)" or
+  // "(rare, intransitive, perhaps nonstandard)".
   private void mergeDefinitions(List<Definition> definitions, List<Definition> newDefinitions) {
 
     for (Definition newDefinition : newDefinitions) {
 
       int duplicateIndex = -1;
       for (int i = 0; i < definitions.size(); i++) {
-        if (Objects.equals(definitions.get(i).info(), newDefinition.info())) {
+        if (isSameDefinition(definitions.get(i), newDefinition)) {
           duplicateIndex = i;
           break;
         }
@@ -315,6 +326,27 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     }
   }
 
+  private boolean isSameDefinition(Definition first, Definition second) {
+    return Objects.equals(dedupKey(first.info()), dedupKey(second.info()));
+  }
+
+  // text without leading parenthesized usage qualifiers ("(archaic) ", "(rare, intransitive) "),
+  // lowercased, trailing sentence punctuation stripped, whitespace collapsed
+  private String dedupKey(String info) {
+
+    String normalized = info.trim();
+
+    while (normalized.startsWith("(")) {
+      var end = normalized.indexOf(')');
+      if (end < 0) {
+        break;
+      }
+      normalized = normalized.substring(end + 1).trim();
+    }
+
+    return normalized.toLowerCase().replaceAll("[.!?]+$", "").replaceAll("\\s+", " ").trim();
+  }
+
   // union of two synonym lists, dictionaryapi first, capped; null-safe, returns null when both
   // are null
   private List<String> mergeSynonyms(List<String> first, List<String> second) {
@@ -337,9 +369,14 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
     return capSynonyms(merged);
   }
 
+  // dictionaryapi.dev returns a list of word entries - a word with several etymologies comes as
+  // multiple entries that repeat parts of speech (e.g. ajar is verb+adjective+adverb and
+  // verb+adverb). Meanings of the same part of speech from all entries are grouped into one
+  // meaning: definitions are appended in encounter order (exact duplicates are merged),
+  // synonyms and antonyms are unioned and capped.
   private List<Meaning> createMeaningsFromDictionaryApi(List<Word> words) {
 
-    List<Meaning> result = new ArrayList<>();
+    Map<String, Meaning> meaningsByType = new LinkedHashMap<>();
 
     for (Word daWord : words) {
 
@@ -347,8 +384,6 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
           daWord.getMeanings()) {
 
         var partOfSpeech = daMeaning.getPartOfSpeech();
-        List<String> daSynonyms = daMeaning.getSynonyms();
-        List<String> daAntonyms = daMeaning.getAntonyms();
 
         var ankiDefs =
             daMeaning.getDefinitions().stream()
@@ -356,17 +391,36 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
                     d ->
                         new Definition(
                             d.getInfo(),
-                            d.getExample(),
+                            cleanDictionaryExample(d.getExample()),
                             capSynonyms(d.getSynonyms()),
                             capSynonyms(d.getAntonyms())))
                 .toList();
 
-        result.add(
-            new Meaning(partOfSpeech, ankiDefs, capSynonyms(daSynonyms), capSynonyms(daAntonyms)));
+        Meaning existing = meaningsByType.get(partOfSpeech);
+
+        if (Objects.isNull(existing)) {
+          meaningsByType.put(
+              partOfSpeech,
+              new Meaning(
+                  partOfSpeech,
+                  new ArrayList<>(ankiDefs),
+                  capSynonyms(daMeaning.getSynonyms()),
+                  capSynonyms(daMeaning.getAntonyms())));
+        } else {
+          List<Definition> definitions = new ArrayList<>(existing.definitions());
+          mergeDefinitions(definitions, ankiDefs);
+          meaningsByType.put(
+              partOfSpeech,
+              new Meaning(
+                  partOfSpeech,
+                  definitions,
+                  mergeSynonyms(existing.synonyms(), daMeaning.getSynonyms()),
+                  mergeSynonyms(existing.antonyms(), daMeaning.getAntonyms())));
+        }
       }
     }
 
-    return result;
+    return new ArrayList<>(meaningsByType.values());
   }
 
   // Google translation definitions are grouped by part of speech. Synonyms are bound to
@@ -535,7 +589,7 @@ public class AnkiDataFabricImpl implements AnkiDataFabric {
                     ? Stream.empty()
                     : sense.getExamples().stream().skip(1))
         .filter(Objects::nonNull)
-        .map(this::cleanFreeDictionaryExample)
+        .map(this::cleanDictionaryExample)
         .distinct()
         .toList();
   }

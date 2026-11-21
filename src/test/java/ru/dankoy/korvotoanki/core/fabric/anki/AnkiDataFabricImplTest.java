@@ -182,6 +182,103 @@ class AnkiDataFabricImplTest {
                 List.of()));
   }
 
+  @DisplayName(
+      "dictionaryapi word with several etymologies (multiple word entries) gets one meaning per"
+          + " part of speech, definitions appended and exact duplicates merged")
+  @Test
+  void createAnkiDataGroupsMeaningsOfMultipleWordEntriesByPartOfSpeech() {
+
+    var vocabulary = getOneVocab();
+    var googleTranslation = new GoogleTranslation("gt_transcription");
+
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "verb",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "v1_info", List.of("v1_synonym"), List.of(), "v1_example")),
+                        List.of("verb_synonym_1"),
+                        List.of()),
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "adjective",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "adj_info", List.of(), List.of(), null)),
+                        List.of(),
+                        List.of()),
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "adverb",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "adv1_info", List.of(), List.of(), null)),
+                        List.of(),
+                        List.of()))),
+            new Word(
+                "word",
+                "da_transcription",
+                List.of(),
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "verb",
+                        List.of(
+                            // qualifier-tagged duplicate of v1 - merged, existing example and
+                            // synonyms win
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "(rare, nonstandard) v1_info.",
+                                List.of("v1_synonym_extra"),
+                                List.of(),
+                                "v1_example_new"),
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "v2_info", List.of(), List.of(), null)),
+                        List.of("verb_synonym_2"),
+                        List.of()),
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "adverb",
+                        List.of(
+                            // case-insensitive duplicate of adv1 - merged
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "ADV1_info", List.of(), List.of(), null),
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "adv2_info", List.of(), List.of(), null)),
+                        List.of("adverb_synonym"),
+                        List.of()))));
+
+    var ankiData =
+        fabric.createAnkiData(vocabulary, googleTranslation, words, FreeDictionaryWord.emptyWord());
+
+    assertThat(ankiData.getMeanings())
+        .containsExactly(
+            new Meaning(
+                "verb",
+                List.of(
+                    new Definition(
+                        "v1_info",
+                        "v1_example",
+                        List.of("v1_synonym", "v1_synonym_extra"),
+                        List.of()),
+                    new Definition("v2_info", null, List.of(), List.of())),
+                List.of("verb_synonym_1", "verb_synonym_2"),
+                List.of()),
+            new Meaning(
+                "adjective",
+                List.of(new Definition("adj_info", null, List.of(), List.of())),
+                List.of(),
+                List.of()),
+            new Meaning(
+                "adverb",
+                List.of(
+                    new Definition("adv1_info", null, List.of(), List.of()),
+                    new Definition("adv2_info", null, List.of(), List.of())),
+                List.of("adverb_synonym"),
+                List.of()));
+  }
+
   @DisplayName("meaning level synonyms are union of dictionaryapi and google translate ones")
   @Test
   void createAnkiDataUnionsMeaningSynonyms() {
@@ -689,7 +786,26 @@ class AnkiDataFabricImplTest {
     var vocabulary = getOneVocab();
     var googleTranslation = new GoogleTranslation("gt_transcription");
 
-    List<Word> words = List.of(new Word("word", null, null, new ArrayList<>()));
+    // dictionaryapi examples with a quotation reference are cleaned the same way
+    List<Word> words =
+        List.of(
+            new Word(
+                "word",
+                null,
+                null,
+                List.of(
+                    new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Meaning(
+                        "noun",
+                        List.of(
+                            new ru.dankoy.korvotoanki.core.domain.dictionaryapi.Definition(
+                                "da_definition",
+                                List.of(),
+                                List.of(),
+                                "c. 1824 (written, published in 1891) Robert Hall, Fragment on"
+                                    + " Popery\nWhen two parties, each formidable for their"
+                                    + " numbers, are animated by an equal degree of zeal")),
+                        List.of(),
+                        List.of()))));
 
     var freeDictionaryWord =
         new FreeDictionaryWord(
@@ -721,10 +837,21 @@ class AnkiDataFabricImplTest {
             .findFirst()
             .orElseThrow();
 
-    // quotation reference line is dropped, only the sentence is kept
-    assertThat(noun.definitions().getFirst().example())
-        .isEqualTo(
-            "to do some substantial good, is the compensation for much incidental imperfection");
+    // quotation reference lines are dropped for both dictionaries, only the sentences are kept
+    assertThat(noun.definitions())
+        .containsExactly(
+            new Definition(
+                "da_definition",
+                "When two parties, each formidable for their numbers, are animated by an equal"
+                    + " degree of zeal",
+                List.of(),
+                List.of()),
+            new Definition(
+                "fd_definition",
+                "to do some substantial good, is the compensation for much incidental"
+                    + " imperfection",
+                null,
+                null));
     // multi-line verse without a reference is kept whole, whitespace collapsed
     assertThat(ankiData.getExamples())
         .containsExactly(
