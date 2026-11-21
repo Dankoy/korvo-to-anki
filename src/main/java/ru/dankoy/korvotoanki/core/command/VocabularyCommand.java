@@ -19,6 +19,7 @@ public class VocabularyCommand {
   private final ObjectMapperService objectMapperService;
 
   @Command(
+      exitStatusExceptionMapper = "korvoExitStatusExceptionMapper",
       group = "Vocabulary Commands",
       name = "vocabulary-count",
       alias = "vc",

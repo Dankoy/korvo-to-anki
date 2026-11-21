@@ -18,6 +18,7 @@ public class GoogleTranslateCommand {
 
   // gt --text hello --options t,at,md,bd
   @Command(
+      exitStatusExceptionMapper = "korvoExitStatusExceptionMapper",
       group = "Google Translate Commands",
       name = "google-translate",
       alias = "gt",

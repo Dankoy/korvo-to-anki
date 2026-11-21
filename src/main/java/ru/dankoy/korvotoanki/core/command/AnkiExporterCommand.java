@@ -18,6 +18,7 @@ public class AnkiExporterCommand {
 
   // ae --word hello
   @Command(
+      exitStatusExceptionMapper = "korvoExitStatusExceptionMapper",
       group = "Anki exporter Commands",
       name = "anki-exporter",
       alias = "ae",
